@@ -24,7 +24,8 @@ const { Content } = await render(policy);
 <StarlightPage frontmatter={{ title: 'Kyverno Policies' }} sidebar={[
     {
       label: 'Policies',
-      autogenerate: { directory: 'policies' },
+      collapsed: false,
+      autogenerate: { directory: 'policies', collapsed: true },
     },
   ]}>
   <Content />

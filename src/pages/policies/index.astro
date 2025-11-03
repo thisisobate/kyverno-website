@@ -2,25 +2,20 @@
 // Import the `<StarlightPage>` component first to set up cascade layers.
     import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 
-// Import any other components you want to use in your custom page.
-import AnchorHeading from '@astrojs/starlight/components/AnchorHeading.astro';
-
 // Import collection
-import { getCollection, render } from 'astro:content';
-
-export async function getStaticPaths() {
-  const policies = await getCollection('policies');
-  return policies.map(policy => ({
-    params: { slug: policy.id },
-    props: { policy },
-  }));
-};
+import { getCollection } from 'astro:content';
 
 const allPolicy = await getCollection('policies');
 
 ---
 
-<StarlightPage frontmatter={{ title: 'Kyverno Policies' }}>
+<StarlightPage frontmatter={{ title: 'Kyverno Policies' }} sidebar={[
+    {
+      label: 'Policies',
+      collapsed: false,
+      autogenerate: { directory: 'policies', collapsed: true },
+    },
+  ]}>
     <ul>
         {
             allPolicy.map((policy) => (

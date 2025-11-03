@@ -6,6 +6,6 @@ import { docsSchema } from "@astrojs/starlight/schema";
 export const collections = {
   docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
   policies: defineCollection({
-    loader: glob({ pattern: "**/*.md", base: "./src/content/policies" }),
+    loader: glob({ pattern: "**/*.md", base: "./src/content/docs/policies" }),
   }),
 };
