@@ -5,18 +5,18 @@
 
 .PHONY: codegen-cli-docs
 codegen-cli-docs: ## Build CLI docs
-	@rm -rf ./content/en/docs/kyverno-cli/reference/kyverno*.md
+	@rm -rf ./src/content/docs/docs/kyverno-cli/reference/kyverno*.md
 	@docker run --user root -v ${PWD}:/work --rm ghcr.io/kyverno/kyverno-cli docs	\
 		--autogenTag=false															\
 		--website																	\
 		--noDate																	\
 		--markdownLinks																\
-		--output "/work/content/en/docs/kyverno-cli/reference"
+		--output "/work/content/docs/docs/kyverno-cli/reference"
 
 .PHONY: codegen-policies
 codegen-policies: ## Render policies
-	@rm -rf ./content/en/policies/*/
-	@cd render && go run . -- https://github.com/kyverno/policies/main ../content/en/policies/
+	@rm -rf ./src/content/docs/policies/*/
+	@cd render && go run . -- https://github.com/kyverno/policies/main ../src/content/docs/policies/
 
 .PHONY: codegen
 codegen: ## Rebuild all generated code and docs
