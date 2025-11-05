@@ -1,16 +1,50 @@
 [build]
-command = "npm run build"
-publish = "dist"
+  command = "yarn install --immutable && yarn build"
+  publish = "dist"
 
-[context.production.environment]
-GO_VERSION = "1.24.1"
-NODE_VERSION = "23.6.0"
+  [build.environment]
+    NODE_VERSION = "23.6.0"
+    GO_VERSION = "1.24.1"
+    ASTRO_TELEMETRY_DISABLED = "1"
+    SITE_URL = "https://kyverno.io/"
 
+# --- Production (main branch) ---
+[context.production]
+  command = "yarn install --immutable && yarn build"
+  publish = "dist"
+
+  [context.production.environment]
+    NODE_ENV = "production"
+    SITE_URL = "https://kyverno.io/"
+    ASTRO_ENV = "production"
+
+# --- Deploy Previews (PRs) ---
+[context.deploy-preview]
+  command = "yarn install --immutable && yarn build"
+  publish = "dist"
+
+  [context.deploy-preview.environment]
+    NODE_ENV = "development"
+    ASTRO_ENV = "preview"
+    SITE_URL = "$DEPLOY_PRIME_URL"
+
+# --- Branch Deploys (non-main branches) ---
+[context.branch-deploy]
+  command = "yarn install --immutable && yarn build"
+  publish = "dist"
+
+  [context.branch-deploy.environment]
+    NODE_ENV = "development"
+    ASTRO_ENV = "branch"
+    SITE_URL = "$DEPLOY_PRIME_URL"
+
+# --- Redirects ---
 [[redirects]]
-from = "/npmjs/*"
-to = "/npmjs/"
-status = 200
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
+# --- Headers ---
 [[headers]]
   for = "/*"
   [headers.values]

@@ -73,6 +73,110 @@ All commands are run from the root of the project, from a terminal:
 | `yarn astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `yarn astro -- --help` | Get help using the Astro CLI                     |
 
-## 👀 Want to learn more?
+## Rendering Policies to Markdown
 
-Check out [Starlight’s docs](https://starlight.astro.build/) or read [the Astro documentation](https://docs.astro.build).
+Policies found at https://kyverno.io/policies/ are generated in Markdown from the source repository at [kyverno/policies](https://github.com/kyverno/policies). For any changes to appear on https://kyverno.io/policies/, edits must be made to the upstream policy YAML files at kyverno/policies, and the `render` tool run from this repository to generate the respective Markdown. See [render](/render/README.md) README for more details.
+
+## Style and typographical conventions
+
+The Kyverno website has established several writing conventions in the interest of consistency and accuracy.
+
+### Voice
+
+Active voice is preferred in most writing examples. Ex., "this ClusterPolicy mutates incoming Pods..." and not "incoming Pods are mutated by this ClusterPolicy".
+
+### Code styling
+
+- Kubernetes resource kinds are considered proper nouns and are distinguished from other nouns by the initial letter capitalization. Ex., "a Kubernetes Pod will be annotated".
+- Anything intended to be proper code or typed at a CLI is formatting using Markdown code syntax with backticks or in blocks (surrounded by three backticks).
+- Code represented in blocks should prefer a syntax declaration for this theme's highlighting ability. Ex., when displaying YAML notate the code block with three backticks and "yaml".
+
+### Grammar
+
+- We standardize on use of the Oxford comma.
+
+### Links
+
+In order to ensure that broken link detection works optimally as well as providing a way for users to find linked content when viewing the raw Markdown files on GitHub, links should be made using **relative paths to files** and not relative rendered paths. Following this method ensures not only pages can be found but anchor links are still valid.
+
+This is a good link:
+
+```
+[some link text](foo.md#my-anchor)
+```
+
+This is a bad link:
+
+```
+[some link text](/docs/foo/#my-anchor)
+```
+
+## Documentation Versioning
+
+The Kyverno website now uses releases to organize documentation by the specified release making it easier for users to find the information that pertains to their version. Releases are defined by branches of kyverno/website and a combination of exposing them in the website configuration and modifying hosting parameters.
+
+## Managing Release Versions
+
+Here are the rules for managing release versions:
+
+1. All fixes and feature changes go to the `main` branch (we may in a few rare cases make fixes to prior versions of the documentation.) The main branch can be accessed at `https://main.kyverno.io`.
+
+2. When a new release is ready for GA, a new release branch is created (see steps below). Release branches are named `release-{major}-{minor}-{patch}` for example `release-1-4-2`. The release branch can be accessed using the `{branch}.kyverno.io` and the latest release is available at `kyverno.io`.
+
+### Creating a release branch
+
+To create a new release branch:
+
+1. Create and push the branch using `git checkout -b release-{major}-{minor}-{patch}` or via [GitHub](https://github.com/kyverno/website/branches).
+
+2. [Update Netlify](https://app.netlify.com/sites/kyverno/settings/deploys#branches) to point `production` to the new release branch.
+
+3. Also in Netlify, go into the Domain management settings of the site and add a new subdomain for the branch representing the previous version. For example, if the release to be cut is 1.8.0, there will not be a `release-1-7-0.kyverno.io` record which exists. One must be created for `release-1-7-0.kyverno.io`.
+
+In the `main` branch:
+
+1. Add a new menu version corresponding to the new release branch in [params.toml](/config/_default/params.toml) that points to https://kyverno.io below these lines:
+
+```toml
+# version_menu = "Versions"
+# Add your release versions here
+[[menu.versions]]
+  version = "1.8.0"
+  url = "https://release-1-8-0.kyverno.io"
+  weight = 1
+```
+
+and change the older release version entry to point to its own versioned url, so for example if adding 1.13:
+
+```toml
+[[versions]] # New Line
+  version = "v1.13.0" # New Line
+  url = "https://kyverno.io" # New Line
+
+[[versions]]
+  version = "v1.12.0"
+  url = "https://release-1-12-0.kyverno.io" # Change this line
+```
+
+2. Clear the Netlify cache!
+
+In the current release branch:
+
+1. Do the same as above.
+
+2. Update `version` to the new release version. Following our example from above that would be `v1.13.0`.
+
+3. Update `version_menu` to the same release version.
+
+#### Submitting a PR to multiple release branches
+
+Ideally all changes will go to `main` and then be promoted to a release branch. However, occasionally we will need to fix documentation issues for already released versions. Rendered policies will always go to all branches because the policy samples themselves declare minimum capable versions via the `policies.kyverno.io/minversion` annotation.
+
+Use the cherry pick bot to request a PR be cherry picked to a target branch. Call for the bot with a comment on the desired PR with `/cherry-pick release-1-12-0` to cherry pick this PR to the `release-1-12-0` branch. A new PR will be opened with `release-1-12-0` as the target branch.
+
+There are several ways to create multiple PRs, but here is one easy flow:
+
+1. Create a PR for the `main` branch, as usual.
+2. For each additional branch, checkout the branch (`git checkout <branch>`), and then cherry pick the commit(s) to that branch using `git --cherry-pick <commit>`. If using GitHub Desktop, a commit can be cherry picked by setting the source branch where the PR was merged, accessing the History tab, and dragging-and-dropping that commit to the destination branch.
+3. Submit PRs for each release branch.
+
