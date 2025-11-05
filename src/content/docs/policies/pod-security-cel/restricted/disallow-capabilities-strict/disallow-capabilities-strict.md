@@ -1,14 +1,15 @@
 ---
-title: "Disallow Capabilities (Strict) in CEL expressions"
+title: 'Disallow Capabilities (Strict) in CEL expressions'
 category: Pod Security Standards (Restricted) in CEL
 version: 1.11.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.
+  Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-cel/restricted/disallow-capabilities-strict/disallow-capabilities-strict.yaml" target="-blank">/pod-security-cel/restricted/disallow-capabilities-strict/disallow-capabilities-strict.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kyverno-version: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition,
@@ -34,31 +35,31 @@ spec:
     - name: require-drop-all
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         message: >-
           Containers must drop `ALL` capabilities.
-        cel: 
+        cel:
           expressions:
-            - expression: >- 
+            - expression: >-
                 object.spec.containers.all(container, has(container.securityContext) &&
                 has(container.securityContext.capabilities) &&
                 has(container.securityContext.capabilities.drop) &&
                 container.securityContext.capabilities.drop.exists_one(capability, capability == 'ALL'))
-    
-            - expression: >- 
+
+            - expression: >-
                 !has(object.spec.initContainers) ||
                 object.spec.initContainers.all(container, has(container.securityContext) &&
                 has(container.securityContext.capabilities) &&
                 has(container.securityContext.capabilities.drop) &&
                 container.securityContext.capabilities.drop.exists_one(capability, capability == 'ALL'))
-            
-            - expression: >- 
+
+            - expression: >-
                 !has(object.spec.ephemeralContainers) ||
                 object.spec.ephemeralContainers.all(container, has(container.securityContext) &&
                 has(container.securityContext.capabilities) &&
@@ -67,39 +68,38 @@ spec:
     - name: adding-capabilities-strict
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
-          - expression: >- 
-              object.spec.containers.all(container, !has(container.securityContext) ||
-              !has(container.securityContext.capabilities) ||
-              !has(container.securityContext.capabilities.add) ||
-              ((size(container.securityContext.capabilities.add) == 1) && (container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE')))
-            message: >-
-              Any capabilities added other than NET_BIND_SERVICE are disallowed.
-    
-          - expression: >- 
-              !has(object.spec.initContainers) ||
-              object.spec.initContainers.all(container, !has(container.securityContext) ||
-              !has(container.securityContext.capabilities) ||
-              !has(container.securityContext.capabilities.add) ||
-              ((size(container.securityContext.capabilities.add) == 1) && (container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE')))
-            message: >-
-              Any capabilities added other than NET_BIND_SERVICE are disallowed.
-          
-          - expression: >- 
-              !has(object.spec.ephemeralContainers) ||
-              object.spec.ephemeralContainers.all(container, !has(container.securityContext) ||
-              !has(container.securityContext.capabilities) ||
-              !has(container.securityContext.capabilities.add) ||
-              ((size(container.securityContext.capabilities.add) == 1) && (container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE')))
-            message: >-
-              Any capabilities added other than NET_BIND_SERVICE are disallowed.
+            - expression: >-
+                object.spec.containers.all(container, !has(container.securityContext) ||
+                !has(container.securityContext.capabilities) ||
+                !has(container.securityContext.capabilities.add) ||
+                ((size(container.securityContext.capabilities.add) == 1) && (container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE')))
+              message: >-
+                Any capabilities added other than NET_BIND_SERVICE are disallowed.
 
+            - expression: >-
+                !has(object.spec.initContainers) ||
+                object.spec.initContainers.all(container, !has(container.securityContext) ||
+                !has(container.securityContext.capabilities) ||
+                !has(container.securityContext.capabilities.add) ||
+                ((size(container.securityContext.capabilities.add) == 1) && (container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE')))
+              message: >-
+                Any capabilities added other than NET_BIND_SERVICE are disallowed.
+
+            - expression: >-
+                !has(object.spec.ephemeralContainers) ||
+                object.spec.ephemeralContainers.all(container, !has(container.securityContext) ||
+                !has(container.securityContext.capabilities) ||
+                !has(container.securityContext.capabilities.add) ||
+                ((size(container.securityContext.capabilities.add) == 1) && (container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE')))
+              message: >-
+                Any capabilities added other than NET_BIND_SERVICE are disallowed.
 ```

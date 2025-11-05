@@ -1,5 +1,5 @@
 ---
-title: "kyverno apply"
+title: 'kyverno apply'
 sidebar:
   order: 35
 ---

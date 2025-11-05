@@ -1,14 +1,15 @@
 ---
-title: "Cleanup Empty ReplicaSets"
+title: 'Cleanup Empty ReplicaSets'
 category: Other
 version: 1.9.0
 subject: ReplicaSet
-policyType: "cleanUp"
+policyType: 'cleanUp'
 description: >
-    ReplicaSets serve as an intermediate controller for various Pod controllers like Deployments. When a new version of a Deployment is initiated, it generates a new ReplicaSet with the specified number of replicas and scales down the current one to zero. Consequently, numerous empty ReplicaSets may accumulate in the cluster, leading to clutter and potential false positives in policy reports if enabled. This cleanup policy is designed to remove empty ReplicaSets across the cluster within a specified timeframe, for instance, ReplicaSets created one day ago, ensuring the ability to rollback to previous ReplicaSets in case of deployment issues
+  ReplicaSets serve as an intermediate controller for various Pod controllers like Deployments. When a new version of a Deployment is initiated, it generates a new ReplicaSet with the specified number of replicas and scales down the current one to zero. Consequently, numerous empty ReplicaSets may accumulate in the cluster, leading to clutter and potential false positives in policy reports if enabled. This cleanup policy is designed to remove empty ReplicaSets across the cluster within a specified timeframe, for instance, ReplicaSets created one day ago, ensuring the ability to rollback to previous ReplicaSets in case of deployment issues
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//cleanup/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml" target="-blank">/cleanup/cleanup-empty-replicasets/cleanup-empty-replicasets.yaml</a>
 
 ```yaml
@@ -24,28 +25,27 @@ metadata:
     policies.kyverno.io/subject: ReplicaSet
     kyverno.io/kyverno-version: 1.11.1
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/description: >-
       ReplicaSets serve as an intermediate controller for various Pod controllers like Deployments. When a new version of a Deployment is initiated, it generates a new ReplicaSet with the specified number of replicas and scales down the current one to zero. Consequently, numerous empty ReplicaSets may accumulate in the cluster, leading to clutter and potential false positives in policy reports if enabled. This cleanup policy is designed to remove empty ReplicaSets across the cluster within a specified timeframe, for instance, ReplicaSets created one day ago, ensuring the ability to rollback to previous ReplicaSets in case of deployment issues
 spec:
   match:
     any:
-    - resources:
-        kinds:
-          - ReplicaSet
+      - resources:
+          kinds:
+            - ReplicaSet
   exclude:
     any:
-    - resources:
-        namespaces:
-          - kube-system
+      - resources:
+          namespaces:
+            - kube-system
   conditions:
     all:
-    - key: "{{ target.spec.replicas }}"
-      operator: Equals
-      value: 0
-    - key: "{{ time_diff('{{target.metadata.creationTimestamp}}','{{ time_now_utc() }}') }}"
-      operator: GreaterThan
-      value: "0h0m30s"
-  schedule: "*/1 * * * *"
-
+      - key: '{{ target.spec.replicas }}'
+        operator: Equals
+        value: 0
+      - key: "{{ time_diff('{{target.metadata.creationTimestamp}}','{{ time_now_utc() }}') }}"
+        operator: GreaterThan
+        value: '0h0m30s'
+  schedule: '*/1 * * * *'
 ```

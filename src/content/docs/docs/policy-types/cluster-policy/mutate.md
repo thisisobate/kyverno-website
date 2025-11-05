@@ -35,9 +35,9 @@ spec:
           spec:
             containers:
               # match images which end with :latest
-              - (image): "*:latest"
+              - (image): '*:latest'
                 # set the imagePullPolicy to "IfNotPresent"
-                imagePullPolicy: "IfNotPresent"
+                imagePullPolicy: 'IfNotPresent'
 ```
 
 ## RFC 6902 JSONPatch
@@ -178,7 +178,7 @@ JSON Patch uses [JSON Pointer](http://jsonpatch.com/#json-pointer) to reference 
 ```yaml
 - op: add
   path: /spec/template/metadata/annotations/config.linkerd.io~1skip-outbound-ports
-  value: "8200"
+  value: '8200'
 ```
 
 Some other capabilities of the `patchesJson6902` method include:
@@ -210,7 +210,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              name: "{{request.object.metadata.name}}"
+              name: '{{request.object.metadata.name}}'
           spec:
             containers:
               - name: nginx
@@ -270,7 +270,7 @@ spec:
         patchStrategicMerge:
           subsets:
             - ports:
-                - (name): "secure*"
+                - (name): 'secure*'
                   port: 6443
 ```
 
@@ -352,7 +352,7 @@ spec:
         patchStrategicMerge:
           spec:
             containers:
-              - <(image): "corp.reg.com/*"
+              - <(image): 'corp.reg.com/*'
             imagePullSecrets:
               - name: my-secret
 ```
@@ -409,7 +409,7 @@ spec:
         patchStrategicMerge:
           metadata:
             annotations:
-              +(cluster-autoscaler.kubernetes.io/safe-to-evict): "true"
+              +(cluster-autoscaler.kubernetes.io/safe-to-evict): 'true'
           spec:
             volumes:
               - <(emptyDir): {}
@@ -458,7 +458,7 @@ spec:
           - apiVersion: v1
             kind: Secret
             name: secret-1
-            namespace: "{{ request.object.metadata.namespace }}"
+            namespace: '{{ request.object.metadata.namespace }}'
         patchStrategicMerge:
           metadata:
             labels:
@@ -492,7 +492,7 @@ spec:
           - apiVersion: v1
             kind: Secret
             name: secret-1
-            namespace: "{{ request.object.metadata.namespace }}"
+            namespace: '{{ request.object.metadata.namespace }}'
         # ...
 ```
 
@@ -523,7 +523,7 @@ spec:
             kind: ConfigMap
             selector:
               matchLabels:
-                should-match: "yes"
+                should-match: 'yes'
         patchStrategicMerge:
           metadata:
             labels:
@@ -549,7 +549,7 @@ spec:
                 - Secret
               selector:
                 matchLabels:
-                  kyverno.io/watch: "true"
+                  kyverno.io/watch: 'true'
               operations:
                 - UPDATE
       mutate:
@@ -557,10 +557,10 @@ spec:
         targets:
           - apiVersion: apps/v1
             kind: Deployment
-            namespace: "{{request.namespace}}"
+            namespace: '{{request.namespace}}'
             preconditions:
               all:
-                - key: "{{target.metadata.name}}"
+                - key: '{{target.metadata.name}}'
                   operator: Equals
                   value: testing-*
         patchStrategicMerge:
@@ -574,7 +574,7 @@ spec:
                   - env:
                       - valueFrom:
                           secretKeyRef:
-                            <(name): "{{ request.object.metadata.name }}"
+                            <(name): '{{ request.object.metadata.name }}'
 ```
 
 {{% alert title="Note" color="warning" %}}
@@ -718,7 +718,7 @@ spec:
             namespace: bar
         patchStrategicMerge:
           data:
-            keynew: "{{request.object.data.keyone}}-{{@}}"
+            keynew: '{{request.object.data.keyone}}-{{@}}'
 ```
 
 Once a mutate existing policy is applied successfully, an event can be emitted if `omitEvents` allows it (by default, Kyverno omits success and skipped events):
@@ -781,7 +781,7 @@ spec:
               type: database
           spec:
             (containers):
-              - (image): "*cassandra* | *mongo*"
+              - (image): '*cassandra* | *mongo*'
 ```
 
 Also, assume that for certain application types a backup strategy needs to be defined. For those applications where `type=database`, this would be designated with an additional label with the key name of `backup-needed` and value of either `yes` or `no`. The label would only be added if not already specified since operators can choose if they want protection or not. This policy would be defined like the following.
@@ -806,7 +806,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              +(backup-needed): "yes"
+              +(backup-needed): 'yes'
 ```
 
 In such a case, Kyverno is able to perform cascading mutations whereby an incoming Pod that matched in the first rule and was mutated would potentially be further mutated by the second rule. In these cases, the rules must be ordered from top to bottom in the order of their dependencies and stored within the same policy. The resulting policy definition would look like the following:
@@ -831,7 +831,7 @@ spec:
               type: database
           spec:
             (containers):
-              - (image): "*cassandra* | *mongo*"
+              - (image): '*cassandra* | *mongo*'
     - name: assign-backup-database
       match:
         any:
@@ -845,7 +845,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              +(backup-needed): "yes"
+              +(backup-needed): 'yes'
 ```
 
 Test the cascading mutation policy by creating a Pod using the Cassandra image.
@@ -913,7 +913,7 @@ spec:
         apiVersion: v1
         kind: Secret
         name: regcred
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: true
         clone:
           namespace: default
@@ -956,12 +956,12 @@ spec:
         apiVersion: v1
         kind: ConfigMap
         name: somecustomcm
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: false
         data:
           metadata:
             labels:
-              custom/related-namespace: "{{request.object.metadata.name}}"
+              custom/related-namespace: '{{request.object.metadata.name}}'
           data:
             key: value
     - name: demo-mutate-existing
@@ -973,7 +973,7 @@ spec:
                 - ConfigMap
               selector:
                 matchLabels:
-                  custom/related-namespace: "?*"
+                  custom/related-namespace: '?*'
       mutate:
         mutateExistingOnPolicyUpdate: false
         targets:
@@ -983,7 +983,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              custom/namespace-ready: "true"
+              custom/namespace-ready: 'true'
 ```
 
 ## foreach
@@ -1030,7 +1030,7 @@ spec:
                 - CREATE
       mutate:
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             patchesJson6902: |-
               - path: /spec/containers/{{elementIndex}}/securityContext
                 op: add
@@ -1059,11 +1059,11 @@ spec:
                 - UPDATE
       mutate:
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             patchStrategicMerge:
               spec:
                 containers:
-                  - name: "{{ element.name }}"
+                  - name: '{{ element.name }}'
                     image: registry.io/{{ images.containers."{{element.name}}".name}}:{{images.containers."{{element.name}}".tag}}
 ```
 
@@ -1086,11 +1086,11 @@ spec:
                 - Pod
       mutate:
         foreach:
-          - list: "request.object.spec.containers[]"
+          - list: 'request.object.spec.containers[]'
             patchStrategicMerge:
               spec:
                 containers:
-                  - (name): "{{ element.name }}"
+                  - (name): '{{ element.name }}'
                     securityContext:
                       +(allowPrivilegeEscalation): false
 ```
@@ -1119,15 +1119,15 @@ spec:
               - UPDATE
       mutate:
         foreach:
-          - list: "request.object.spec.containers[]"
+          - list: 'request.object.spec.containers[]'
             patchStrategicMerge:
               spec:
                 containers:
-                  - (name): "{{element.name}}"
+                  - (name): '{{element.name}}'
                     resources:
                       requests:
-                        +(memory): "100Mi"
-                        +(cpu): "100m"
+                        +(memory): '100Mi'
+                        +(cpu): '100m'
 ```
 
 It is important to understand internally how Kyverno treats `foreach` rules. Some general statements to keep in mind:
@@ -1190,7 +1190,7 @@ spec:
           - list: request.object.spec.tls[]
             as: element0 # Outer loop element (tls array)
             foreach:
-              - list: "element.hosts"
+              - list: 'element.hosts'
                 as: element1 # Inner loop element (hosts array)
                 patchesJson6902: |-
                   - path: /spec/tls/{{elementIndex0}}/hosts/{{elementIndex1}}

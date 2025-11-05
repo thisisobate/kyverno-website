@@ -1,5 +1,5 @@
 ---
-title: "kyverno version"
+title: 'kyverno version'
 sidebar:
   order: 35
 ---

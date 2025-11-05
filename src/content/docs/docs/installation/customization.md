@@ -267,7 +267,7 @@ kind: ClusterRole
 metadata:
   name: kyverno:create-deployments
   labels:
-    rbac.kyverno.io/aggregate-to-background-controller: "true"
+    rbac.kyverno.io/aggregate-to-background-controller: 'true'
 rules:
   - apiGroups:
       - apps
@@ -292,7 +292,7 @@ kind: ClusterRole
 metadata:
   name: kyverno:crontab:edit
   labels:
-    rbac.kyverno.io/aggregate-to-background-controller: "true"
+    rbac.kyverno.io/aggregate-to-background-controller: 'true'
 rules:
   - apiGroups:
       - stable.example.com
@@ -306,8 +306,8 @@ kind: ClusterRole
 metadata:
   name: kyverno:crontab:view
   labels:
-    rbac.kyverno.io/aggregate-to-background-controller: "true"
-    rbac.kyverno.io/aggregate-to-reports-controller: "true"
+    rbac.kyverno.io/aggregate-to-background-controller: 'true'
+    rbac.kyverno.io/aggregate-to-reports-controller: 'true'
 rules:
   - apiGroups:
       - stable.example.com
@@ -329,7 +329,7 @@ kind: ClusterRole
 metadata:
   name: kyverno:generate-validatingadmissionpolicy
   labels:
-    rbac.kyverno.io/aggregate-to-admission-controller: "true"
+    rbac.kyverno.io/aggregate-to-admission-controller: 'true'
 rules:
   - apiGroups:
       - admissionregistration.k8s.io
@@ -522,7 +522,7 @@ spec:
   webhookConfiguration:
     matchConditions:
       # Match requests made by non-node users.
-      - name: "exclude-kubelet-requests"
+      - name: 'exclude-kubelet-requests'
         expression: '!("system:nodes" in request.userInfo.groups)'
 ```
 
@@ -552,8 +552,8 @@ metadata:
 data:
   # resource types to be skipped by Kyverno
   resourceFilters:
-    "[*/*,kyverno,*] [Event,*,*] [*/*,kube-system,*] [*/*,kube-public,*]
-    [*/*,kube-node-lease,*] [Node,*,*] [Node/*,*,*] <snip>"
+    '[*/*,kyverno,*] [Event,*,*] [*/*,kube-system,*] [*/*,kube-public,*]
+    [*/*,kube-node-lease,*] [Node,*,*] [Node/*,*,*] <snip>'
 ```
 
 Changes to the ConfigMap are read dynamically during runtime. Resource filters may also be configured at installation time via a Helm value.

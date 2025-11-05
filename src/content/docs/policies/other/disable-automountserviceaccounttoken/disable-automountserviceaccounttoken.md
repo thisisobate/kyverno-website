@@ -1,14 +1,15 @@
 ---
-title: "Disable automountServiceAccountToken"
+title: 'Disable automountServiceAccountToken'
 category: Other, EKS Best Practices
 version: 1.6.0
 subject: ServiceAccount
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    A new ServiceAccount called `default` is created whenever a new Namespace is created. Pods spawned in that Namespace, unless otherwise set, will be assigned this ServiceAccount. This policy mutates any new `default` ServiceAccounts to disable auto-mounting of the token into Pods obviating the need to do so individually.
+  A new ServiceAccount called `default` is created whenever a new Namespace is created. Pods spawned in that Namespace, unless otherwise set, will be assigned this ServiceAccount. This policy mutates any new `default` ServiceAccounts to disable auto-mounting of the token into Pods obviating the need to do so individually.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/disable-automountserviceaccounttoken/disable-automountserviceaccounttoken.yaml" target="-blank">/other/disable-automountserviceaccounttoken/disable-automountserviceaccounttoken.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: ServiceAccount
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.21"
+    kyverno.io/kubernetes-version: '1.21'
     policies.kyverno.io/description: >-
       A new ServiceAccount called `default` is created whenever a new Namespace is created.
       Pods spawned in that Namespace, unless otherwise set, will be assigned this ServiceAccount.
@@ -31,16 +32,15 @@ metadata:
       into Pods obviating the need to do so individually.
 spec:
   rules:
-  - name: disable-automountserviceaccounttoken
-    match:
-      any:
-      - resources:
-          kinds:
-          - ServiceAccount
-          names:
-          - default
-    mutate:
-      patchStrategicMerge:
-        automountServiceAccountToken: false
-
+    - name: disable-automountserviceaccounttoken
+      match:
+        any:
+          - resources:
+              kinds:
+                - ServiceAccount
+              names:
+                - default
+      mutate:
+        patchStrategicMerge:
+          automountServiceAccountToken: false
 ```

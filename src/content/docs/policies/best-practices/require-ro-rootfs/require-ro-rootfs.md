@@ -1,14 +1,15 @@
 ---
-title: "Require Read-Only Root Filesystem"
+title: 'Require Read-Only Root Filesystem'
 category: Best Practices, EKS Best Practices, PSP Migration
 version: 1.6.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    A read-only root file system helps to enforce an immutable infrastructure strategy; the container only needs to write on the mounted volume that persists the state. An immutable root filesystem can also prevent malicious binaries from writing to the host system. This policy validates that containers define a securityContext with `readOnlyRootFilesystem: true`.
+  A read-only root file system helps to enforce an immutable infrastructure strategy; the container only needs to write on the mounted volume that persists the state. An immutable root filesystem can also prevent malicious binaries from writing to the host system. This policy validates that containers define a securityContext with `readOnlyRootFilesystem: true`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//best-practices/require-ro-rootfs/require-ro-rootfs.yaml" target="-blank">/best-practices/require-ro-rootfs/require-ro-rootfs.yaml</a>
 
 ```yaml
@@ -32,17 +33,17 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: validate-readOnlyRootFilesystem
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "Root filesystem must be read-only."
-      pattern:
-        spec:
-          containers:
-          - securityContext:
-              readOnlyRootFilesystem: true
+    - name: validate-readOnlyRootFilesystem
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: 'Root filesystem must be read-only.'
+        pattern:
+          spec:
+            containers:
+              - securityContext:
+                  readOnlyRootFilesystem: true
 ```

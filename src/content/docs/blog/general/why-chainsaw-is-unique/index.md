@@ -76,11 +76,11 @@ Now that we covered the basic assertions we can look at their limitations and ho
 Basic assertions cover the simple cases but:
 
 - Working with arrays is not easy
-    - How are we supposed to compare arrays with different sizes?
-    - How can we check a specific item in an array is present?
+  - How are we supposed to compare arrays with different sizes?
+  - How can we check a specific item in an array is present?
 - Matching exact values is not always what we want
-    - How can we verify the number of replicas is above a certain number (not exactly this number)?
-    - How can we apply a regex to a label?
+  - How can we verify the number of replicas is above a certain number (not exactly this number)?
+  - How can we apply a regex to a label?
 
 While the examples above are the most obvious ones, they demonstrate that an assertion model needs to be more rich and more flexible than simple comparisons.
 

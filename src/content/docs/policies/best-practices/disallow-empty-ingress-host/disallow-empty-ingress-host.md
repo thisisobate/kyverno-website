@@ -1,14 +1,15 @@
 ---
-title: "Disallow empty Ingress host"
+title: 'Disallow empty Ingress host'
 category: Best Practices
 version: 1.6.0
 subject: Ingress
-policyType: "validate"
+policyType: 'validate'
 description: >
-    An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.
+  An ingress resource needs to define an actual host name in order to be valid. This policy ensures that there is a hostname for each rule defined.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow-empty-ingress-host/disallow-empty-ingress-host.yaml" target="-blank">/best-practices/disallow-empty-ingress-host/disallow-empty-ingress-host.yaml</a>
 
 ```yaml
@@ -33,15 +34,15 @@ spec:
     - name: disallow-empty-ingress-host
       match:
         any:
-        - resources:
-            kinds:
-              - Ingress
+          - resources:
+              kinds:
+                - Ingress
       validate:
-        message: "The Ingress host name must be defined, not empty."
+        message: 'The Ingress host name must be defined, not empty.'
         deny:
           conditions:
             all:
-            - key: "{{ request.object.spec.rules[].host || `[]` | length(@) }}"
-              operator: NotEquals
-              value: "{{ request.object.spec.rules[].http || `[]` | length(@) }}"
+              - key: '{{ request.object.spec.rules[].host || `[]` | length(@) }}'
+                operator: NotEquals
+                value: '{{ request.object.spec.rules[].http || `[]` | length(@) }}'
 ```

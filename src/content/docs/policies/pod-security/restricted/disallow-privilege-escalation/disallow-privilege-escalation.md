@@ -1,14 +1,15 @@
 ---
-title: "Disallow Privilege Escalation"
+title: 'Disallow Privilege Escalation'
 category: Pod Security Standards (Restricted)
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the `allowPrivilegeEscalation` field is set to `false`.
+  Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the `allowPrivilegeEscalation` field is set to `false`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security/restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml" target="-blank">/pod-security/restricted/disallow-privilege-escalation/disallow-privilege-escalation.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.22-1.23"
+    kyverno.io/kubernetes-version: '1.22-1.23'
     policies.kyverno.io/description: >-
       Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed.
       This policy ensures the `allowPrivilegeEscalation` field is set to `false`.
@@ -33,9 +34,9 @@ spec:
     - name: privilege-escalation
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
         message: >-
           Privilege escalation is disallowed. The fields
@@ -46,13 +47,12 @@ spec:
         pattern:
           spec:
             =(ephemeralContainers):
-            - securityContext:
-                allowPrivilegeEscalation: "false"
+              - securityContext:
+                  allowPrivilegeEscalation: 'false'
             =(initContainers):
-            - securityContext:
-                allowPrivilegeEscalation: "false"
+              - securityContext:
+                  allowPrivilegeEscalation: 'false'
             containers:
-            - securityContext:
-                allowPrivilegeEscalation: "false"
-
+              - securityContext:
+                  allowPrivilegeEscalation: 'false'
 ```

@@ -54,7 +54,6 @@ As already mentioned, Kubernetes provides some admission controllers "out of the
 Dynamic admission controllers are those which are implemented as part of the [MutatingAdmissionWebhook](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook) and [ValidatingAdmissionWebhook](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#validatingadmissionwebhook) admission controllers and contain two parts, a webhook and a controller.
 
 - **Webhook**: A Kubernetes resource which contains a set of directives intended for the API server. Those directives consist of several parts:
-
   1. What resources to send
   2. Where they should be sent
   3. What the response behavior should be
@@ -149,7 +148,7 @@ what a dynamic admission controller may see if it requested to be informed about
 apiVersion: v1
 kind: Pod
 metadata:
-  creationTimestamp: "2024-02-11T00:53:09Z"
+  creationTimestamp: '2024-02-11T00:53:09Z'
   managedFields:
     - apiVersion: v1
       fieldsType: FieldsV1
@@ -182,7 +181,7 @@ metadata:
           f:terminationGracePeriodSeconds: {}
       manager: kubectl-create
       operation: Update
-      time: "2024-02-11T00:53:09Z"
+      time: '2024-02-11T00:53:09Z'
   name: mypod
   namespace: default
   uid: 49fee716-d086-4806-9c87-9796f5d3f7aa

@@ -1,14 +1,15 @@
 ---
-title: "Require Multiple Replicas in CEL expressions"
+title: 'Require Multiple Replicas in CEL expressions'
 category: Sample in CEL
 version: 1.11.0
 subject: Deployment
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.
+  Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other-cel/require-deployments-have-multiple-replicas/require-deployments-have-multiple-replicas.yaml" target="-blank">/other-cel/require-deployments-have-multiple-replicas/require-deployments-have-multiple-replicas.yaml</a>
 
 ```yaml
@@ -18,11 +19,11 @@ metadata:
   name: deployment-has-multiple-replicas
   annotations:
     policies.kyverno.io/title: Require Multiple Replicas in CEL expressions
-    policies.kyverno.io/category: Sample in CEL 
+    policies.kyverno.io/category: Sample in CEL
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment
     policies.kyverno.io/minversion: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/description: >-
       Deployments with a single replica cannot be highly available and thus the application
       may suffer downtime if that one replica goes down. This policy validates that Deployments
@@ -34,17 +35,15 @@ spec:
     - name: deployment-has-multiple-replicas
       match:
         any:
-        - resources:
-            kinds:
-            - Deployment
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Deployment
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
-            - expression: "object.spec.replicas > 1"
-              message: "Deployments should have more than one replica to ensure availability."
-
-
+            - expression: 'object.spec.replicas > 1'
+              message: 'Deployments should have more than one replica to ensure availability.'
 ```

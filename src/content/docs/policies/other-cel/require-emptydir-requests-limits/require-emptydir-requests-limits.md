@@ -1,14 +1,15 @@
 ---
-title: "Require Requests and Limits for emptyDir in CEL expressions"
+title: 'Require Requests and Limits for emptyDir in CEL expressions'
 category: Other in CEL
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Pods which mount emptyDir volumes may be allowed to potentially overrun the medium backing the emptyDir volume. This sample ensures that any initContainers or containers mounting an emptyDir volume have ephemeral-storage requests and limits set. Policy will be skipped if the volume has already a sizeLimit set.
+  Pods which mount emptyDir volumes may be allowed to potentially overrun the medium backing the emptyDir volume. This sample ensures that any initContainers or containers mounting an emptyDir volume have ephemeral-storage requests and limits set. Policy will be skipped if the volume has already a sizeLimit set.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other-cel/require-emptydir-requests-limits/require-emptydir-requests-limits.yaml" target="-blank">/other-cel/require-emptydir-requests-limits/require-emptydir-requests-limits.yaml</a>
 
 ```yaml
@@ -18,10 +19,10 @@ metadata:
   name: require-emptydir-requests-and-limits
   annotations:
     policies.kyverno.io/title: Require Requests and Limits for emptyDir in CEL expressions
-    policies.kyverno.io/category: Other in CEL 
+    policies.kyverno.io/category: Other in CEL
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.12.1
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Pods which mount emptyDir volumes may be allowed to potentially overrun
@@ -40,16 +41,16 @@ spec:
               kinds:
                 - Pod
               operations:
-              - CREATE
-              - UPDATE
+                - CREATE
+                - UPDATE
       celPreconditions:
-        - name: "has-emptydir-volume"
-          expression: "object.spec.?volumes.orValue([]).exists(volume, has(volume.emptyDir))"
+        - name: 'has-emptydir-volume'
+          expression: 'object.spec.?volumes.orValue([]).exists(volume, has(volume.emptyDir))'
       validate:
         cel:
           variables:
             - name: containers
-              expression: "object.spec.containers + object.spec.?initContainers.orValue([])"
+              expression: 'object.spec.containers + object.spec.?initContainers.orValue([])'
             - name: emptydirnames
               expression: >-
                 has(object.spec.volumes) ? 
@@ -61,6 +62,4 @@ spec:
                 container.resources.?requests[?'ephemeral-storage'].hasValue() &&
                 container.resources.?limits[?'ephemeral-storage'].hasValue())
               message: Containers mounting emptyDir volumes must specify requests and limits for ephemeral-storage.
-
-
 ```

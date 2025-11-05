@@ -25,28 +25,28 @@ apiVersion: machine.openshift.io/v1beta1
 kind: MachineSet
 metadata:
   labels:
-    machine.openshift.io/cluster-api-cluster: <infrastructure_id> 
-    machine.openshift.io/cluster-api-machine-role: infra 
-    machine.openshift.io/cluster-api-machine-type: infra 
-  name: <infrastructure_id>-infra 
+    machine.openshift.io/cluster-api-cluster: <infrastructure_id>
+    machine.openshift.io/cluster-api-machine-role: infra
+    machine.openshift.io/cluster-api-machine-type: infra
+  name: <infrastructure_id>-infra
   namespace: openshift-machine-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      machine.openshift.io/cluster-api-cluster: <infrastructure_id> 
-      machine.openshift.io/cluster-api-machineset: <infrastructure_id>-infra 
+      machine.openshift.io/cluster-api-cluster: <infrastructure_id>
+      machine.openshift.io/cluster-api-machineset: <infrastructure_id>-infra
   template:
     metadata:
       labels:
-        machine.openshift.io/cluster-api-cluster: <infrastructure_id> 
-        machine.openshift.io/cluster-api-machine-role: infra 
+        machine.openshift.io/cluster-api-cluster: <infrastructure_id>
+        machine.openshift.io/cluster-api-machine-role: infra
         machine.openshift.io/cluster-api-machine-type: infra
         machine.openshift.io/cluster-api-machineset: <infrastructure_id>-infra
     spec:
       metadata:
         labels:
-          node-role.kubernetes.io/infra: ""
+          node-role.kubernetes.io/infra: ''
       providerSpec:
         # Provider specific implementation
         ...
@@ -112,7 +112,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/minversion: 1.10.0
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/subject: MachineSet
     policies.kyverno.io/description: >-
       A required component of a MachineSet is the infrastructure name which is a random string
@@ -121,31 +121,31 @@ metadata:
       Cluster resource and replaces all instances of TEMPLATE in a MachineSet with that name.
 spec:
   rules:
-  - name: replace-template
-    match:
-      any:
-      - resources:
-          kinds:
-          - machine.openshift.io/v1beta1/MachineSet
-          operations:
-          - CREATE
-    context:
-    - name: cluster
-      apiCall:
-        urlPath: /apis/config.openshift.io/v1/infrastructures/cluster
-    - name: infraid
-      variable:
-        jmesPath: cluster.status.infrastructureName
-    mutate:
-      patchesJson6902: |-
-        - op: replace
-          path: /metadata
-          value: {{ replace_all(to_string(request.object.metadata),'TEMPLATE', infraid) }}
-        - op: replace
-          path: /spec
-          value: {{ replace_all(to_string(request.object.spec),'TEMPLATE', infraid) }}
+    - name: replace-template
+      match:
+        any:
+          - resources:
+              kinds:
+                - machine.openshift.io/v1beta1/MachineSet
+              operations:
+                - CREATE
+      context:
+        - name: cluster
+          apiCall:
+            urlPath: /apis/config.openshift.io/v1/infrastructures/cluster
+        - name: infraid
+          variable:
+            jmesPath: cluster.status.infrastructureName
+      mutate:
+        patchesJson6902: |-
+          - op: replace
+            path: /metadata
+            value: {{ replace_all(to_string(request.object.metadata),'TEMPLATE', infraid) }}
+          - op: replace
+            path: /spec
+            value: {{ replace_all(to_string(request.object.spec),'TEMPLATE', infraid) }}
 ```
 
-Assuming Kyverno is deployed to your OpenShift cluster, the ClusterPolicy can be added to enable the desired MachineSet functionality. All that needs to be done now is to update your existing MachineSet manifests that you have specified declaratively, such as in a GitOps repository, and replace the hard-coded Infrastructure ID with the word TEMPLATE. You are free to choose a word other than TEMPLATE to represent the value that should be replaced by the Infrastructure ID. When doing so, be sure to update the value in the ClusterPolicy and in the MachineSet definition. 
+Assuming Kyverno is deployed to your OpenShift cluster, the ClusterPolicy can be added to enable the desired MachineSet functionality. All that needs to be done now is to update your existing MachineSet manifests that you have specified declaratively, such as in a GitOps repository, and replace the hard-coded Infrastructure ID with the word TEMPLATE. You are free to choose a word other than TEMPLATE to represent the value that should be replaced by the Infrastructure ID. When doing so, be sure to update the value in the ClusterPolicy and in the MachineSet definition.
 
 MachineSets offer the advantage of defining and managing a set of OpenShift Machine profiles, but require that the Cluster ID represented as the Infrastructure ID be present within the definition. Thanks to the dynamic set of capabilities provided by Kyverno, managing MachineSets within OpenShift just got a whole lot easier. The ClusterPolicy shown previously is also available on [Artifact Hub](https://artifacthub.io/packages/kyverno/kyverno-policies/inject-infrastructurename) and the [policy library](/content/en/policies/openshift/inject-infrastructurename/inject-infrastructurename.md) for easy reference and consumption.

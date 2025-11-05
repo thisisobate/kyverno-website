@@ -1,14 +1,15 @@
 ---
-title: "Ensure Deployment Replicas Higher Than PodDisruptionBudget"
+title: 'Ensure Deployment Replicas Higher Than PodDisruptionBudget'
 category: Other
-version: 
+version:
 subject: PodDisruptionBudget, Deployment
-policyType: "validate"
+policyType: 'validate'
 description: >
-    PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. Introducing a PDB where there are already matching Pod controllers may pose a problem if the author is unaware of the existing replica count. This policy ensures that the minAvailable value is not greater not equal to the replica count of any matching existing Deployment. If other Pod controllers should also be included in this check, additional rules may be added to the policy which match those controllers.
+  PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times. Introducing a PDB where there are already matching Pod controllers may pose a problem if the author is unaware of the existing replica count. This policy ensures that the minAvailable value is not greater not equal to the replica count of any matching existing Deployment. If other Pod controllers should also be included in this check, additional rules may be added to the policy which match those controllers.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/deployment-replicas-higher-than-pdb/deployment-replicas-higher-than-pdb.yaml" target="-blank">/other/deployment-replicas-higher-than-pdb/deployment-replicas-higher-than-pdb.yaml</a>
 
 ```yaml
@@ -21,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: PodDisruptionBudget, Deployment
     kyverno.io/kyverno-version: 1.11.4
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/description: >-
       PodDisruptionBudget resources are useful to ensuring minimum availability is maintained at all times.
       Introducing a PDB where there are already matching Pod controllers may pose a problem if the author
@@ -33,41 +34,40 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: deployment-replicas-greater-minAvailable
-    match:
-      any:
-      - resources:
-          kinds:
-          - PodDisruptionBudget
-          operations:
-          - CREATE
-          - UPDATE
-    context:
-    - name: deploymentreplicas
-      apiCall:
-        jmesPath: items[?label_match(`{{ request.object.spec.selector.matchLabels }}`, spec.template.metadata.labels)] || `[]`
-        urlPath: /apis/apps/v1/namespaces/{{request.namespace}}/deployments 
-    preconditions:
-      all:
-      - key: '{{ regex_match(''^[0-9]+$'', ''{{ request.object.spec.minAvailable || ''''}}'') }}'
-        operator: Equals
-        value: true
-      - key: '{{ length(deploymentreplicas) }}'
-        operator: GreaterThan
-        value: 0
-    validate:
-      message: >-
-        PodDisruption budget minAvailable ({{ request.object.spec.minAvailable }}) cannot be
-        greater than or equal to the replica count of any matching existing Deployment.
-        There are {{ length(deploymentreplicas) }} Deployments which match this labelSelector
-        having {{ deploymentreplicas[*].spec.replicas }} replicas.
-      foreach:
-        - list: deploymentreplicas
-          deny:
-            conditions:
-              all:
-              - key: "{{ request.object.spec.minAvailable }}"
-                operator: GreaterThanOrEquals
-                value: "{{ element.spec.replicas }}"
-
+    - name: deployment-replicas-greater-minAvailable
+      match:
+        any:
+          - resources:
+              kinds:
+                - PodDisruptionBudget
+              operations:
+                - CREATE
+                - UPDATE
+      context:
+        - name: deploymentreplicas
+          apiCall:
+            jmesPath: items[?label_match(`{{ request.object.spec.selector.matchLabels }}`, spec.template.metadata.labels)] || `[]`
+            urlPath: /apis/apps/v1/namespaces/{{request.namespace}}/deployments
+      preconditions:
+        all:
+          - key: "{{ regex_match('^[0-9]+$', '{{ request.object.spec.minAvailable || ''}}') }}"
+            operator: Equals
+            value: true
+          - key: '{{ length(deploymentreplicas) }}'
+            operator: GreaterThan
+            value: 0
+      validate:
+        message: >-
+          PodDisruption budget minAvailable ({{ request.object.spec.minAvailable }}) cannot be
+          greater than or equal to the replica count of any matching existing Deployment.
+          There are {{ length(deploymentreplicas) }} Deployments which match this labelSelector
+          having {{ deploymentreplicas[*].spec.replicas }} replicas.
+        foreach:
+          - list: deploymentreplicas
+            deny:
+              conditions:
+                all:
+                  - key: '{{ request.object.spec.minAvailable }}'
+                    operator: GreaterThanOrEquals
+                    value: '{{ element.spec.replicas }}'
 ```

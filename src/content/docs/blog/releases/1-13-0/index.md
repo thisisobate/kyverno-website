@@ -24,50 +24,49 @@ Here is an example policy:
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
- name: sigstore-image-verification
+  name: sigstore-image-verification
 spec:
- validationFailureAction: Enforce
- webhookTimeoutSeconds: 30
- rules:
- - match:
-     any:
-     - resources:
-         kinds:
-         - Pod
-   name: sigstore-image-verification
-   verifyImages:
-   - imageReferences:
-     - "*"
-     type: SigstoreBundle
-     attestations:
-     - type: https://slsa.dev/provenance/v1
-       attestors:
-       - entries:
-         - keyless:
-             issuer: https://token.actions.githubusercontent.com
-             subject: https://github.com/nirmata/github-signing-demo/.github/workflows/build-attested-image.yaml@refs/heads/main
-             rekor:
-                 url: https://rekor.sigstore.dev
-             additionalExtensions:
-               githubWorkflowTrigger: push
-               githubWorkflowName: build-attested-image
-               githubWorkflowRepository: nirmata/github-signing-demo
-       conditions:
-       - all:
-         - key: "{{ buildDefinition.buildType }}"
-           operator: Equals
-           value: "https://actions.github.io/buildtypes/workflow/v1"
-         - key: "{{ buildDefinition.externalParameters.workflow.repository }}"
-           operator: Equals
-           value: "https://github.com/nirmata/github-signing-demo"
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  rules:
+    - match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      name: sigstore-image-verification
+      verifyImages:
+        - imageReferences:
+            - '*'
+          type: SigstoreBundle
+          attestations:
+            - type: https://slsa.dev/provenance/v1
+              attestors:
+                - entries:
+                    - keyless:
+                        issuer: https://token.actions.githubusercontent.com
+                        subject: https://github.com/nirmata/github-signing-demo/.github/workflows/build-attested-image.yaml@refs/heads/main
+                        rekor:
+                          url: https://rekor.sigstore.dev
+                        additionalExtensions:
+                          githubWorkflowTrigger: push
+                          githubWorkflowName: build-attested-image
+                          githubWorkflowRepository: nirmata/github-signing-demo
+              conditions:
+                - all:
+                    - key: '{{ buildDefinition.buildType }}'
+                      operator: Equals
+                      value: 'https://actions.github.io/buildtypes/workflow/v1'
+                    - key: '{{ buildDefinition.externalParameters.workflow.repository }}'
+                      operator: Equals
+                      value: 'https://github.com/nirmata/github-signing-demo'
 ```
 
-The demo repository is available at: https://github.com/nirmata/github-signing-demo. 
-
+The demo repository is available at: https://github.com/nirmata/github-signing-demo.
 
 ### Exceptions for ValidatingAdmissionPolicies
 
-Kyverno 1.13 introduces the ability to leverage PolicyException declarations while auto-generating Kubernetes ValidatingAdmissionPolicies directly from Kyverno policies that use the `validate.cel` subrule. 
+Kyverno 1.13 introduces the ability to leverage PolicyException declarations while auto-generating Kubernetes ValidatingAdmissionPolicies directly from Kyverno policies that use the `validate.cel` subrule.
 
 The resources specified within the PolicyException are then used to populate the `matchConstraints.excludeResourceRules` field of the generated ValidatingAdmissionPolicy, effectively creating exclusions for those resources. This functionality is illustrated below with an example of a Kyverno ClusterPolicy and a PolicyException, along with the resulting ValidatingAdmissionPolicy.
 
@@ -84,25 +83,25 @@ spec:
     - name: host-path
       match:
         any:
-        - resources:
-            kinds:
-            - Deployment
-            - StatefulSet
-            operations:
-            - CREATE
-            - UPDATE
-            namespaceSelector:
-              matchExpressions:
-                - key: type 
-                  operator: In
-                  values: 
-                  - connector
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
+              operations:
+                - CREATE
+                - UPDATE
+              namespaceSelector:
+                matchExpressions:
+                  - key: type
+                    operator: In
+                    values:
+                      - connector
       validate:
         failureAction: Audit
         cel:
           expressions:
-            - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
-              message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+            - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))'
+              message: 'HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset.'
 ```
 
 PolicyException:
@@ -114,19 +113,19 @@ metadata:
   name: policy-exception
 spec:
   exceptions:
-  - policyName: disallow-host-path
-    ruleNames:
-    - host-path
+    - policyName: disallow-host-path
+      ruleNames:
+        - host-path
   match:
     any:
-    - resources:
-        kinds:
-        - Deployment
-        names:
-        - important-tool
-        operations:
-        - CREATE
-        - UPDATE
+      - resources:
+          kinds:
+            - Deployment
+          names:
+            - important-tool
+          operations:
+            - CREATE
+            - UPDATE
 ```
 
 The generated ValidatingAdmissionPolicy and its binding are as follows:
@@ -139,46 +138,48 @@ metadata:
     app.kubernetes.io/managed-by: kyverno
   name: disallow-host-path
   ownerReferences:
-  - apiVersion: kyverno.io/v1
-    kind: ClusterPolicy
-    name: disallow-host-path
+    - apiVersion: kyverno.io/v1
+      kind: ClusterPolicy
+      name: disallow-host-path
 spec:
   failurePolicy: Fail
   matchConstraints:
     resourceRules:
-    - apiGroups:
-      - apps
-      apiVersions:
-      - v1
-      operations:
-      - CREATE
-      - UPDATE
-      resources:
-      - deployments
-      - statefulsets
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - statefulsets
     namespaceSelector:
       matchExpressions:
-      - key: type
-        operator: In
-        values:
-        - connector
+        - key: type
+          operator: In
+          values:
+            - connector
     excludeResourceRules:
-    - apiGroups:
-      - apps
-      apiVersions:
-      - v1
-      operations:
-      - CREATE
-      - UPDATE
-      resourceNames:
-      - important-tool
-      resources:
-      - deployments
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resourceNames:
+          - important-tool
+        resources:
+          - deployments
   validations:
-  - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
-      !has(volume.hostPath))'
-    message: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
-      must be unset.
+    - expression:
+        '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
+        !has(volume.hostPath))'
+      message:
+        HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
+        must be unset.
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
@@ -187,9 +188,9 @@ metadata:
     app.kubernetes.io/managed-by: kyverno
   name: disallow-host-path-binding
   ownerReferences:
-  - apiVersion: kyverno.io/v1
-    kind: ClusterPolicy
-    name: disallow-host-path
+    - apiVersion: kyverno.io/v1
+      kind: ClusterPolicy
+      name: disallow-host-path
 spec:
   policyName: disallow-host-path
   validationActions: [Audit, Warn]
@@ -202,15 +203,15 @@ Policy snippet:
 ```yaml
 match:
   any:
-  - resources:
-      kinds:
-      - Deployment
-      operations:
-      - CREATE
-      - UPDATE
-      namespaces:
-      - production
-      - staging
+    - resources:
+        kinds:
+          - Deployment
+        operations:
+          - CREATE
+          - UPDATE
+        namespaces:
+          - production
+          - staging
 ```
 
 The generated ValidatingAdmissionPolicy:
@@ -219,21 +220,21 @@ The generated ValidatingAdmissionPolicy:
 matchConstraints:
   namespaceSelector:
     matchExpressions:
-    - key: kubernetes.io/metadata.name
-      operator: In
-      values:
-      - production
-      - staging
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values:
+          - production
+          - staging
   resourceRules:
-  - apiGroups:
-    - apps
-    apiVersions:
-    - v1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - deployments
+    - apiGroups:
+        - apps
+      apiVersions:
+        - v1
+      operations:
+        - CREATE
+        - UPDATE
+      resources:
+        - deployments
 ```
 
 ### Validation Rules with Assertion Trees
@@ -248,25 +249,25 @@ Here is an example of a policy that uses an assertion tree to deny pods from usi
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
- name: disallow-default-sa
+  name: disallow-default-sa
 spec:
- validationFailureAction: Enforce
- rules:
- - match:
-     any:
-     - resources:
-         kinds:
-         - Pod
-   name: disallow-default-sa
-   validate:
-     message: default ServiceAccount should not be used
-     assert:
-       object:
-         spec:
-           (serviceAccountName == ‘default’): false
+  validationFailureAction: Enforce
+  rules:
+    - match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      name: disallow-default-sa
+      validate:
+        message: default ServiceAccount should not be used
+        assert:
+          object:
+            spec:
+              (serviceAccountName == ‘default’): false
 ```
 
-## Other Features and Enhancements 
+## Other Features and Enhancements
 
 ### Generate Changes
 
@@ -278,36 +279,36 @@ Here is an example of creating networkpolicies for a list of Namespaces, the nam
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
- name: foreach-generate-data
+  name: foreach-generate-data
 spec:
- rules:
- - match:
-     any:
-     - resources:
-         kinds:
-         - ConfigMap
-   name: k-kafka-address
-   generate:
-     generateExisting: false
-     synchronize: true
-     orphanDownstreamOnPolicyDelete: false
-     foreach:
-       - list: request.object.data.namespaces | split(@, ‘,’)
-         apiVersion: networking.k8s.io/v1
-         kind: NetworkPolicy
-         name: my-networkpolicy-{{element}}-{{ elementIndex }}
-         namespace: ‘{{ element }}’
-         data:
-           metadata:
-             labels:
-               request.namespace: ‘{{ request.object.metadata.name }}’
-               element: ‘{{ element }}’
-               elementIndex: ‘{{ elementIndex }}’
-           spec:
-             podSelector: {}
-             policyTypes:
-             - Ingress
-             - Egress
+  rules:
+    - match:
+        any:
+          - resources:
+              kinds:
+                - ConfigMap
+      name: k-kafka-address
+      generate:
+        generateExisting: false
+        synchronize: true
+        orphanDownstreamOnPolicyDelete: false
+        foreach:
+          - list: request.object.data.namespaces | split(@, ‘,’)
+            apiVersion: networking.k8s.io/v1
+            kind: NetworkPolicy
+            name: my-networkpolicy-{{element}}-{{ elementIndex }}
+            namespace: ‘{{ element }}’
+            data:
+              metadata:
+                labels:
+                  request.namespace: ‘{{ request.object.metadata.name }}’
+                  element: ‘{{ element }}’
+                  elementIndex: ‘{{ elementIndex }}’
+              spec:
+                podSelector: {}
+                policyTypes:
+                  - Ingress
+                  - Egress
 ```
 
 The triggering ConfigMap is defined as follows, the data contains a namespaces field that defines multiple namespaces.
@@ -353,7 +354,6 @@ spec:
             name: source-secret
 ```
 
-
 In addition, each `foreach` declaration supports the following declarations: Context and Preconditions. For more information please see [Kyverno documentation](../../../docs/policy-types/cluster-policy/generate.md#foreach).
 
 This release also allows updates to the generate rule pattern. In addition to deletion, if the triggering resource is altered in a way such that it no longer matches the definition in the rule, that too will cause the removal of the downstream resource.
@@ -362,39 +362,40 @@ This release also allows updates to the generate rule pattern. In addition to de
 
 #### Default Values
 
-In the case where the API server returns an error, `apiCall.default` can be used to provide a fallback value for the API call context entry. 
+In the case where the API server returns an error, `apiCall.default` can be used to provide a fallback value for the API call context entry.
 
 The following example shows how to add default value to context entries:
 
 ```yaml
-    context:
-    - name: currentnamespace
-      apiCall:
-        urlPath: “/api/v1/namespaces/{{ request.namespace }}”
-        jmesPath: metadata.name
-        default: default
+context:
+  - name: currentnamespace
+    apiCall:
+      urlPath: “/api/v1/namespaces/{{ request.namespace }}”
+      jmesPath: metadata.name
+      default: default
 ```
+
 #### Custom Headers
 
-Kyverno Service API calls now also support custom headers. This can be useful for authentication or adding other  HTTP request headers. Here is an example of adding a token in the HTTP Authorization header:
+Kyverno Service API calls now also support custom headers. This can be useful for authentication or adding other HTTP request headers. Here is an example of adding a token in the HTTP Authorization header:
 
 ```yaml
-     context:
-        - name: result
-          apiCall:
-            method: POST
-            data:
-              - key: foo
-                value: bar
-              - key: namespace
-                value: "{{ `{{ request.namespace }}` }}"
-            service:
-              url: http://my-service.svc.cluster.local/validation
-              headers:
-                - key: "UserAgent"
-                  value: "Kyverno Policy XYZ"
-                - key: "Authorization"
-                  value: "Bearer {{ MY_SECRET }}"
+context:
+  - name: result
+    apiCall:
+      method: POST
+      data:
+        - key: foo
+          value: bar
+        - key: namespace
+          value: '{{ `{{ request.namespace }}` }}'
+      service:
+        url: http://my-service.svc.cluster.local/validation
+        headers:
+          - key: 'UserAgent'
+            value: 'Kyverno Policy XYZ'
+          - key: 'Authorization'
+            value: 'Bearer {{ MY_SECRET }}'
 ```
 
 ### Policy Report Enhancements
@@ -413,18 +414,17 @@ metadata:
     app.kubernetes.io/managed-by: kyverno
   namespace: default
 results:
-- message: mutated Pod/good-pod in namespace default
-  policy: add-labels
-  result: pass
-  rule: add-labels
-  scored: true
-  source: kyverno
+  - message: mutated Pod/good-pod in namespace default
+    policy: add-labels
+    result: pass
+    rule: add-labels
+    scored: true
+    source: kyverno
 scope:
   apiVersion: v1
   kind: Pod
   name: good-pod
   namespace: default
-...
 ```
 
 Note that the proper permissions need to be granted to the reports controller, a warning message will be returned upon policy admission if no RBAC permission is configured.
@@ -441,26 +441,26 @@ metadata:
 spec:
   background: false
   rules:
-  - match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    name: check-owner
-    context:
-    - name: objName
-      variable:
-        jmesPath: request.object.metadata.name
-    reportProperties:
-      operation: ‘{{ request.operation }}’
-      objName: ‘{{ objName }}’
-    validate:
-      validationFailureAction: Audit
-      message: The `owner` label is required for all Namespaces.
-      pattern:
-        metadata:
-          labels:
-            owner: ?*
+    - match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      name: check-owner
+      context:
+        - name: objName
+          variable:
+            jmesPath: request.object.metadata.name
+      reportProperties:
+        operation: ‘{{ request.operation }}’
+        objName: ‘{{ objName }}’
+      validate:
+        validationFailureAction: Audit
+        message: The `owner` label is required for all Namespaces.
+        pattern:
+          metadata:
+            labels:
+              owner: ?*
 ```
 
 You can find the two custom entries added to `results.properties`:
@@ -470,19 +470,19 @@ apiVersion: wgpolicyk8s.io/v1alpha2
 kind: ClusterPolicyReport
 metadata:
   ownerReferences:
-  - apiVersion: v1
-    kind: Namespace
-    name: bar
+    - apiVersion: v1
+      kind: Namespace
+      name: bar
 results:
-- message: validation rule ‘check-owner’ passed.
-  policy: require-owner
-  result: pass
-  rule: check-owner
-  scored: true
-  source: kyverno
-  properties:
-    objName: bar
-    operation: CREATE
+  - message: validation rule ‘check-owner’ passed.
+    policy: require-owner
+    result: pass
+    rule: check-owner
+    scored: true
+    source: kyverno
+    properties:
+      objName: bar
+      operation: CREATE
 scope:
   apiVersion: v1
   kind: Namespace
@@ -493,7 +493,7 @@ scope:
 
 #### API Call Retry
 
-Kyverno’s GlobalContextEntry provides a powerful mechanism to fetch external data and use it within policies. When leveraging the apiCall feature to retrieve data from an API, transient network issues can sometimes hinder successful retrieval. 
+Kyverno’s GlobalContextEntry provides a powerful mechanism to fetch external data and use it within policies. When leveraging the apiCall feature to retrieve data from an API, transient network issues can sometimes hinder successful retrieval.
 
 To address this, Kyverno now offers built-in retry logic for API calls within GlobalContextEntry. You can now optionally specify a retryLimit for your API calls:
 
@@ -504,7 +504,7 @@ metadata:
   name: gctxentry-apicall-correct
 spec:
   apiCall:
-    urlPath: "/apis/apps/v1/namespaces/test-globalcontext-apicall-correct/deployments"
+    urlPath: '/apis/apps/v1/namespaces/test-globalcontext-apicall-correct/deployments'
     refreshInterval: 1h
     retryLimit: 3
 ```
@@ -548,11 +548,11 @@ This change does not impact policy behaviors during admission controls, but may 
 
 #### Removal of insecure configuration for exceptions
 
-In prior versions, policy exceptions were allowed in all namespaces. This creates a potential security issue, as any user with permission to create a policy exception can bypass policies, even in other namespaces. See [CVE-2024-48921](https://github.com/kyverno/kyverno/security/advisories/GHSA-qjvc-p88j-j9rm) for more details. 
+In prior versions, policy exceptions were allowed in all namespaces. This creates a potential security issue, as any user with permission to create a policy exception can bypass policies, even in other namespaces. See [CVE-2024-48921](https://github.com/kyverno/kyverno/security/advisories/GHSA-qjvc-p88j-j9rm) for more details.
 
 This release changes the defaults to disable the policy exceptions and only allows exceptions to be created in a specified namespace. To maintain backward compatibility follow the [upgrade guidance](https://main.kyverno.io/docs/installation/upgrading/#upgrading-to-kyverno-v113).
 
-### Warnings for Policy Violations and Mutations 
+### Warnings for Policy Violations and Mutations
 
 A warning message can now be returned along with admission responses by the policy setting `spec.emitWarning`, this can be used to report policy violations as well as mutations upon admission events.
 
@@ -613,9 +613,9 @@ spec:
     name: vault-injector-config-blue-to-green-auth-backend
 ```
 
-### Improved ArgoCD Integration  
+### Improved ArgoCD Integration
 
-Kyverno-managed webhook configurations are auto-cleaned up upon uninstallation. This behavior could be broken if Kyverno loses RBAC permissions to do so given the random resources deletion order. This release introduces a finalizer-based cleanup solution to ensure webhooks are removed successfully. 
+Kyverno-managed webhook configurations are auto-cleaned up upon uninstallation. This behavior could be broken if Kyverno loses RBAC permissions to do so given the random resources deletion order. This release introduces a finalizer-based cleanup solution to ensure webhooks are removed successfully.
 
 This feature is in [beta stage](https://main.kyverno.io/docs/installation/uninstallation/#clean-up-webhooks) and will be used as the default cleanup strategy in the future.
 
@@ -623,19 +623,19 @@ This feature is in [beta stage](https://main.kyverno.io/docs/installation/uninst
 
 Kyverno 1.13 introduces new changes in the policy CRDs:
 
-* Both Policy Exceptions and Cleanup Policies have graduated to a stable version (v2).
-* Several policy settings are deprecated:
-  * spec.validationFailureAction
-  * spec.validationFailureActionOverrides
-  * spec.mutateExistingOnPolicyUpdate
-  * spec.generateExisting
+- Both Policy Exceptions and Cleanup Policies have graduated to a stable version (v2).
+- Several policy settings are deprecated:
+  - spec.validationFailureAction
+  - spec.validationFailureActionOverrides
+  - spec.mutateExistingOnPolicyUpdate
+  - spec.generateExisting
 
-* These are replaced by more granular controls within the rule itself: 
-  * spec.rules[*].validate.failureAction
-  * spec.rules[*].validate.failureActionOverrides
-  * spec.rules[*].verifyImages[*].failureAction
-  * spec.rules[*].mutate.mutateExisting
-  * spec.rules[*].generate.generateExisting
+- These are replaced by more granular controls within the rule itself:
+  - spec.rules[*].validate.failureAction
+  - spec.rules[*].validate.failureActionOverrides
+  - spec.rules[*].verifyImages[*].failureAction
+  - spec.rules[*].mutate.mutateExisting
+  - spec.rules[*].generate.generateExisting
 
 Note that the deprecated fields will be removed in a future release, so migration to the new settings is recommended.
 

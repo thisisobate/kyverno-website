@@ -1,5 +1,5 @@
 ---
-title: "kyverno completion fish"
+title: 'kyverno completion fish'
 sidebar:
   order: 35
 ---

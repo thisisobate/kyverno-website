@@ -1,14 +1,15 @@
 ---
-title: "Disallow Localhost ExternalName Services"
+title: 'Disallow Localhost ExternalName Services'
 category: Sample
 version: 1.6.0
 subject: Service
-policyType: "validate"
+policyType: 'validate'
 description: >
-    A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This policy audits Services of type ExternalName if the externalName field refers to localhost.
+  A Service of type ExternalName which points back to localhost can potentially be used to exploit vulnerabilities in some Ingress controllers. This policy audits Services of type ExternalName if the externalName field refers to localhost.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/disallow-localhost-services/disallow-localhost-services.yaml" target="-blank">/other/disallow-localhost-services/disallow-localhost-services.yaml</a>
 
 ```yaml
@@ -30,16 +31,16 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: no-localhost-service
-    match:
-      any:
-      - resources:
-          kinds:
-          - Service
-    validate:
-      message: "Service of type ExternalName cannot point to localhost."
-      pattern:
-        spec:
-          (type): ExternalName
-          externalName: "!localhost"
+    - name: no-localhost-service
+      match:
+        any:
+          - resources:
+              kinds:
+                - Service
+      validate:
+        message: 'Service of type ExternalName cannot point to localhost.'
+        pattern:
+          spec:
+            (type): ExternalName
+            externalName: '!localhost'
 ```

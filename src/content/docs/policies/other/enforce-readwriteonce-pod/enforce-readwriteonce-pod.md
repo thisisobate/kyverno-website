@@ -1,14 +1,15 @@
 ---
-title: "Enforce ReadWriteOncePod"
+title: 'Enforce ReadWriteOncePod'
 category: Sample
-version: 
+version:
 subject: PersistentVolumeClaim
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Some stateful workloads with multiple replicas only allow a single Pod to write to a given volume at a time. Beginning in Kubernetes 1.22 and enabled by default in 1.27, a new setting called ReadWriteOncePod, available for CSI volumes only, allows volumes to be writable from only a single Pod. For more information see the blog https://kubernetes.io/blog/2023/04/20/read-write-once-pod-access-mode-beta/. This policy enforces that the accessModes for a PersistentVolumeClaim be set to ReadWriteOncePod.
+  Some stateful workloads with multiple replicas only allow a single Pod to write to a given volume at a time. Beginning in Kubernetes 1.22 and enabled by default in 1.27, a new setting called ReadWriteOncePod, available for CSI volumes only, allows volumes to be writable from only a single Pod. For more information see the blog https://kubernetes.io/blog/2023/04/20/read-write-once-pod-access-mode-beta/. This policy enforces that the accessModes for a PersistentVolumeClaim be set to ReadWriteOncePod.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/enforce-readwriteonce-pod/enforce-readwriteonce-pod.yaml" target="-blank">/other/enforce-readwriteonce-pod/enforce-readwriteonce-pod.yaml</a>
 
 ```yaml
@@ -31,18 +32,16 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: readwrite-pvc-single-pod
-    match:
-      any:
-      - resources:
-          kinds:
-          - PersistentVolumeClaim
-    validate:
-      message: "The accessMode must be set to ReadWriteOncePod."
-      pattern:
-        spec:
-          accessModes:
-          - ReadWriteOncePod
-
-          
+    - name: readwrite-pvc-single-pod
+      match:
+        any:
+          - resources:
+              kinds:
+                - PersistentVolumeClaim
+      validate:
+        message: 'The accessMode must be set to ReadWriteOncePod.'
+        pattern:
+          spec:
+            accessModes:
+              - ReadWriteOncePod
 ```

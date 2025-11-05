@@ -1,14 +1,15 @@
 ---
-title: "Metadata Matches Regex"
+title: 'Metadata Matches Regex'
 category: Other
-version: 
+version:
 subject: Pod, Label
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Rather than a simple check to see if given metadata such as labels and annotations are present, in some cases they need to be present and the values match a specified regular expression. This policy illustrates how to ensure a label with key `corp.org/version` is both present and matches a given regex, in this case ensuring semver is met.
+  Rather than a simple check to see if given metadata such as labels and annotations are present, in some cases they need to be present and the values match a specified regular expression. This policy illustrates how to ensure a label with key `corp.org/version` is both present and matches a given regex, in this case ensuring semver is met.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/metadata-match-regex/metadata-match-regex.yaml" target="-blank">/other/metadata-match-regex/metadata-match-regex.yaml</a>
 
 ```yaml
@@ -30,20 +31,19 @@ spec:
   validationFailureAction: Audit
   background: false
   rules:
-  - name: check-for-regex
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: >-
-        The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$
-      deny:
-        conditions:
-          all:
-          - key: "{{ regex_match('^v[0-9].[0-9].[0-9]$','{{request.object.metadata.labels.\"corp.org/version\" || 'empty'}}') }}"
-            operator: Equals
-            value: false
-
+    - name: check-for-regex
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          The label `corp.org/version` is required and must match the specified regex: ^v[0-9].[0-9].[0-9]$
+        deny:
+          conditions:
+            all:
+              - key: '{{ regex_match(''^v[0-9].[0-9].[0-9]$'',''{{request.object.metadata.labels."corp.org/version" || ''empty''}}'') }}'
+                operator: Equals
+                value: false
 ```

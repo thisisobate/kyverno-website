@@ -12,16 +12,16 @@ We are excited to announce the release of Kyverno 1.14.0, marking a significant 
 
 ## TL;DR
 
-* Two new specialized policy types: `ValidatingPolicy` and `ImageValidatingPolicy`
-* Streamlined validation with improved Common Expression Language (CEL) support and performance
-* Enhanced supply chain security with dedicated image verification
-* Policy exceptions now support CEL expressions for fine-grained control
-* CLI improvements for shift-left validation of any JSON payload
-* Community milestone: 744 changes with 60+ contributors (40 first-time!)
+- Two new specialized policy types: `ValidatingPolicy` and `ImageValidatingPolicy`
+- Streamlined validation with improved Common Expression Language (CEL) support and performance
+- Enhanced supply chain security with dedicated image verification
+- Policy exceptions now support CEL expressions for fine-grained control
+- CLI improvements for shift-left validation of any JSON payload
+- Community milestone: 744 changes with 60+ contributors (40 first-time!)
 
 ## Why New Policy Types?
 
-Kyverno's evolution has led to a proliferation of overlapping rule types (`validate.pattern`, `validate.cel`, `validate.deny`, etc.) within the `ClusterPolicy` Custom Resource Definition (CRD), creating unnecessary complexity for users. Meanwhile, Kubernetes has introduced its own `ValidatingAdmissionPolicies` and `MutatingAdmissionPolicies` using CEL expressions, presenting an opportunity for closer alignment. 
+Kyverno's evolution has led to a proliferation of overlapping rule types (`validate.pattern`, `validate.cel`, `validate.deny`, etc.) within the `ClusterPolicy` Custom Resource Definition (CRD), creating unnecessary complexity for users. Meanwhile, Kubernetes has introduced its own `ValidatingAdmissionPolicies` and `MutatingAdmissionPolicies` using CEL expressions, presenting an opportunity for closer alignment.
 
 The new policy types address these challenges by migrating each rule type into its own dedicated CRD. This modular approach streamlines the user experience, standardizes on CEL for better Kubernetes compatibility, simplifies maintenance for the project, and provides a clearer, more focused way to define policies according to their specific functions.
 
@@ -33,10 +33,10 @@ Kyverno 1.14.0 begins a new chapter for Kyverno with the introduction of special
 
 The new `ValidatingPolicy` CRD simplifies how you write validation rules by centralizing all validation logic into a dedicated resource type. This approach offers several advantages:
 
-* Simplified structure: A clean, focused structure that makes policies easier to write and understand
-* CEL-first approach: `ValidatingPolicy` uses CEL as the primary validation method, aligning with Kubernetes' own trajectory for policy management
-* Native compatibility: Works seamlessly with Kubernetes `ValidatingAdmissionPolicy`
-* Improved performance: Optimized for faster validation checks with reduced overhead
+- Simplified structure: A clean, focused structure that makes policies easier to write and understand
+- CEL-first approach: `ValidatingPolicy` uses CEL as the primary validation method, aligning with Kubernetes' own trajectory for policy management
+- Native compatibility: Works seamlessly with Kubernetes `ValidatingAdmissionPolicy`
+- Improved performance: Optimized for faster validation checks with reduced overhead
 
 Here is an example of validating deployment replicas (ensuring deployments don't exceed a maximum replica count).
 
@@ -56,10 +56,10 @@ spec:
           kinds:
             - Deployment
       validate:
-        message: "The number of replicas must not exceed 5"
+        message: 'The number of replicas must not exceed 5'
         pattern:
           spec:
-            replicas: "<= 5"
+            replicas: '<= 5'
 ```
 
 New `ValidatingPolicy` approach:
@@ -71,13 +71,13 @@ metadata:
   name: check-deployment-replicas
 spec:
   validations:
-    - expression: "object.spec.replicas <= 5"
-      message: "The number of replicas must not exceed 5"
+    - expression: 'object.spec.replicas <= 5'
+      message: 'The number of replicas must not exceed 5'
   matchConstraints:
     resourceRules:
-      - apiGroups: ["apps"]
-        apiVersions: ["v1"]
-        resources: ["deployments"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        resources: ['deployments']
 ```
 
 #### ValidatingAdmissionPolicy Generation
@@ -86,20 +86,20 @@ This release enhances policy flexibility with the ability to automatically gener
 
 #### Comparison with ValidatingAdmissionPolicy
 
-| Feature | K8s ValidatingAdmissionPolicy | Kyverno ValidatingPolicy |
-|---------|-------------------------------|--------------------------|
-| Enforcement | Admission | Admission, Background, Pipelines, … |
-| Payloads | Kubernetes | Kubernetes, Any JSON or YAML |
-| Distribution | Kubernetes API server | Helm, CLI, Web Service, API, SDK |
-| CEL Library | Basic | Extended |
-| Bindings | Manual | Automatic |
-| Auto-generation | ⛔ | Pod Controllers, ValidatingAdmissionPolicy |
-| External Data | ⛔ | Kubernetes resources or API calls |
-| Caching | ⛔ | Global Context, image verification results |
-| Background scans | ⛔ | Periodic, On policy creation or updates |
-| Exceptions | ⛔ | Fine-grained exclusions |
-| Reporting | ⛔ | Policy WG Reports, Policy Reporter, etcd offload |
-| Testing | ⛔ | Kyverno CLI (unit), Chainsaw (e2e) |
+| Feature          | K8s ValidatingAdmissionPolicy | Kyverno ValidatingPolicy                         |
+| ---------------- | ----------------------------- | ------------------------------------------------ |
+| Enforcement      | Admission                     | Admission, Background, Pipelines, …              |
+| Payloads         | Kubernetes                    | Kubernetes, Any JSON or YAML                     |
+| Distribution     | Kubernetes API server         | Helm, CLI, Web Service, API, SDK                 |
+| CEL Library      | Basic                         | Extended                                         |
+| Bindings         | Manual                        | Automatic                                        |
+| Auto-generation  | ⛔                            | Pod Controllers, ValidatingAdmissionPolicy       |
+| External Data    | ⛔                            | Kubernetes resources or API calls                |
+| Caching          | ⛔                            | Global Context, image verification results       |
+| Background scans | ⛔                            | Periodic, On policy creation or updates          |
+| Exceptions       | ⛔                            | Fine-grained exclusions                          |
+| Reporting        | ⛔                            | Policy WG Reports, Policy Reporter, etcd offload |
+| Testing          | ⛔                            | Kyverno CLI (unit), Chainsaw (e2e)               |
 
 For more details of ValidatingPolicy, check the official document [here](https://main.kyverno.io/docs/policy-types/validating-policy/).
 
@@ -109,9 +109,9 @@ The `ImageValidatingPolicy` is a dedicated policy type that focuses exclusively 
 
 Key features include:
 
-* Comprehensive Image Verification: Verify signatures, Software Bill of Materials (SBOMs), attestations, and other artifacts to ensure the integrity and authenticity of container images.
-* Flexible Matching: Match images using glob patterns or powerful CEL expressions, providing versatility in defining verification criteria.
-* Enhanced CEL Functions: Leverages specialized CEL functions for verifying image signatures and attestations, making complex validation logic easier to implement.
+- Comprehensive Image Verification: Verify signatures, Software Bill of Materials (SBOMs), attestations, and other artifacts to ensure the integrity and authenticity of container images.
+- Flexible Matching: Match images using glob patterns or powerful CEL expressions, providing versatility in defining verification criteria.
+- Enhanced CEL Functions: Leverages specialized CEL functions for verifying image signatures and attestations, making complex validation logic easier to implement.
 
 The following `ImageValidatingPolicy` verifies that all container images from ghcr.io meet strict supply chain security requirements before pods are created, ensuring all images are properly signed.
 
@@ -128,10 +128,10 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   matchImageReferences:
     - glob: ghcr.io/*
   attestors:
@@ -163,10 +163,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   variables:
     - name: cm
       expression: >-
@@ -194,10 +194,10 @@ Kyverno 1.14.0 extends the powerful [PolicyException](https://kyverno.io/docs/ex
 
 Policy exceptions enable teams to:
 
-* Create targeted exemptions for specific workloads or resources
-* Define precise conditions under which policies should not be applied
-* Balance strict security controls with practical operational needs
-* Support migration paths and special use cases
+- Create targeted exemptions for specific workloads or resources
+- Define precise conditions under which policies should not be applied
+- Balance strict security controls with practical operational needs
+- Support migration paths and special use cases
 
 For example, you can create an exception that excludes a specific deployment from an `ImageValidatingPolicy`:
 
@@ -208,10 +208,10 @@ metadata:
   name: exclude-skipped-deployment
 spec:
   policyRefs:
-  - name: "ivpol-report-background-sample"
-    kind: ImageValidatingPolicy
+    - name: 'ivpol-report-background-sample'
+      kind: ImageValidatingPolicy
   matchConditions:
-    - name: "check-name"
+    - name: 'check-name'
       expression: "object.metadata.name == 'skipped-deployment'"
 ```
 
@@ -284,8 +284,8 @@ For example, you can validate a Dockerfile (represented as JSON) against securit
 
 ```yaml
 validations:
-  - message: "curl is not allowed"
-    expression: >- 
+  - message: 'curl is not allowed'
+    expression: >-
       !object.Stages.exists(s, 
         s.Commands.exists(c, 
           has(c.CmdLine) && c.CmdLine.exists(cmd, string(cmd).contains('curl'))
@@ -302,19 +302,19 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: kyverno
   ownerReferences:
-  - apiVersion: apps/v1
-    kind: Deployment
-    name: test-deployment
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: test-deployment
 scope:
   apiVersion: apps/v1
   kind: Deployment
   name: test-deployment
 results:
-- message: failed to verify image with notary cert
-  policy: ivpol-report-admission-sample
-  result: fail
-  scored: true
-  source: KyvernoImageValidatingPolicy
+  - message: failed to verify image with notary cert
+    policy: ivpol-report-admission-sample
+    result: fail
+    scored: true
+    source: KyvernoImageValidatingPolicy
 ```
 
 The new policy types are also fully supported in Kyverno [Playground](https://playground.kyverno.io/next/#/), allowing users to experiment with and test these policies in a web interface before deploying them to production environments. [Policy Reporter](https://github.com/kyverno/policy-reporter) has also been enhanced to visualize and manage the specialized reports generated by these policy types, providing intuitive dashboards and alerts that help teams monitor image verification status and validation results across their clusters.
@@ -336,7 +336,7 @@ Kyverno 1.14 maintains full backward compatibility with existing `ClusterPolicy`
 
 ## Roadmap
 
-The introduction of `ValidatingPolicy` and `ImageValidatingPolicy` is just the beginning of our vision to make policy management in Kubernetes more modular, streamlined, and powerful. Looking ahead, we plan to complete the policy family with dedicated `MutatingPolicy` for targeted resource modifications, `GeneratingPolicy` for creating dependent resources, and `DeletingPolicy` for controlled resource cleanup - each designed to excel at specific functions while maintaining a consistent user experience.  This modular approach will simplify policy definition and management, reducing complexity while expanding capabilities. We're also enhancing cross-cutting features, such as event generation, to provide detailed audit trails of policy actions and comprehensive metrics support, giving operators visibility into policy performance and effectiveness.
+The introduction of `ValidatingPolicy` and `ImageValidatingPolicy` is just the beginning of our vision to make policy management in Kubernetes more modular, streamlined, and powerful. Looking ahead, we plan to complete the policy family with dedicated `MutatingPolicy` for targeted resource modifications, `GeneratingPolicy` for creating dependent resources, and `DeletingPolicy` for controlled resource cleanup - each designed to excel at specific functions while maintaining a consistent user experience. This modular approach will simplify policy definition and management, reducing complexity while expanding capabilities. We're also enhancing cross-cutting features, such as event generation, to provide detailed audit trails of policy actions and comprehensive metrics support, giving operators visibility into policy performance and effectiveness.
 
 ## Conclusion
 

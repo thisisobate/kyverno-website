@@ -1,14 +1,15 @@
 ---
-title: "Always Pull Images"
+title: 'Always Pull Images'
 category: Sample
 version: 1.6.0
 subject: Pod
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    By default, images that have already been pulled can be accessed by other Pods without re-pulling them if the name and tag are known. In multi-tenant scenarios, this may be undesirable. This policy mutates all incoming Pods to set their imagePullPolicy to Always. An alternative to the Kubernetes admission controller AlwaysPullImages.
+  By default, images that have already been pulled can be accessed by other Pods without re-pulling them if the name and tag are known. In multi-tenant scenarios, this may be undesirable. This policy mutates all incoming Pods to set their imagePullPolicy to Always. An alternative to the Kubernetes admission controller AlwaysPullImages.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/always-pull-images/always-pull-images.yaml" target="-blank">/other/always-pull-images/always-pull-images.yaml</a>
 
 ```yaml
@@ -30,16 +31,16 @@ metadata:
       AlwaysPullImages.
 spec:
   rules:
-  - name: always-pull-images
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    mutate:
-      patchStrategicMerge:
-        spec:
-          containers:
-          - (name): "?*"
-            imagePullPolicy: Always
+    - name: always-pull-images
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        patchStrategicMerge:
+          spec:
+            containers:
+              - (name): '?*'
+                imagePullPolicy: Always
 ```

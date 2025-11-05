@@ -5,11 +5,13 @@ linkTitle: Using CEL Expressions in Kyverno Policies
 author: Mariam Fahmy
 description: Using CEL Expressions in Kyverno Policies
 ---
+
 Kyverno, in simple terms, is a policy engine for Kubernetes that can be used to describe policies and validate resource requests against those policies. It allows us to create policies for our Kubernetes cluster on different levels. It enables us to validate, change, and create resources based on our defined policies.
 
 A Kyverno policy is a collection of rules. Whenever we receive an API request to our Kubernetes cluster, we validate it with a set of rules.
 
 A policy consists of different clauses, such as:
+
 - Match: It selects the resources to be included in a rule.
 - Exclude: It selects a subset of the resources from the match block which should be excluded from a rule.
 
@@ -92,9 +94,9 @@ EOF
 We can see that our policy is enforced. Great!
 
 ```
-Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-resource Deployment/default/nginx was blocked due to the following policies 
+resource Deployment/default/nginx was blocked due to the following policies
 
 disallow-host-path:
   host-path: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
@@ -156,9 +158,9 @@ EOF
 As expected, the Statefulset creation is blocked because it violates the rule
 
 ```
-Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-resource StatefulSet/default/bad-statefulset was blocked due to the following policies 
+resource StatefulSet/default/bad-statefulset was blocked due to the following policies
 
 check-statefulset-namespace:
   statefulset-namespace: The StatefulSet must be created in the 'production' namespace.
@@ -195,9 +197,10 @@ The StatefulSet is successfully created. Great!
 statefulset.apps/good-statefulset created
 ```
 
-In the previous two examples, we have used `object` in CEL expressions which refers to the incoming object and `namespaceObject` which refers to the Namespace that the incoming object belongs to. 
+In the previous two examples, we have used `object` in CEL expressions which refers to the incoming object and `namespaceObject` which refers to the Namespace that the incoming object belongs to.
 
 Some other useful variables that we can use in CEL expressions are
+
 1. oldObject: The existing object. The value is null for CREATE requests.
 2. authorizer: It can be used to perform authorization checks.
 3. authorizer.requestResource: A shortcut for an authorization check configured with the request resource (group, resource, (subresource), namespace, name).
@@ -280,9 +283,9 @@ EOF
 Since the new Pod satisfies the celPreconditions, the validation rule will be applied. As a result, the creation of the Pod will be blocked as it violates the rule.
 
 ```
-Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-resource Pod/default/nginx was blocked due to the following policies 
+resource Pod/default/nginx was blocked due to the following policies
 
 disallow-host-port-range:
   host-port-range: The only permitted hostPorts are in the range 5000-6000.
@@ -310,7 +313,7 @@ spec:
               - Deployment
       validate:
         cel:
-          paramKind: 
+          paramKind:
             apiVersion: rules.example.com/v1
             kind: ReplicaLimit
           paramRef:
@@ -396,9 +399,9 @@ EOF
 As expected, the deployment creation will be blocked because it violates the rule.
 
 ```
-Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-resource Deployment/default/nginx was blocked due to the following policies 
+resource Deployment/default/nginx was blocked due to the following policies
 
 check-deployment-replicas:
   deployment-replicas: Deployment spec.replicas must be less than 3
@@ -440,7 +443,7 @@ If an expression grows too complicated, or part of the expression is reusable an
 
 The order of variables is important because a variable can refer to other variables defined before it. This ordering prevents circular references.
 
-The below policy enforces that image repo names match the environment defined in its Namespace. It enforces that all containers of deployment have the image repo match the environment label of its Namespace except for "exempt" deployments or any containers that do not belong to the "example.com" organization (e.g., common sidecars). For example, if the Namespace has a label of {"environment": "staging"}, all container images must be either staging.example.com/* or do not contain "example.com" at all, unless the deployment has {"exempt": "true"} label.
+The below policy enforces that image repo names match the environment defined in its Namespace. It enforces that all containers of deployment have the image repo match the environment label of its Namespace except for "exempt" deployments or any containers that do not belong to the "example.com" organization (e.g., common sidecars). For example, if the Namespace has a label of {"environment": "staging"}, all container images must be either staging.example.com/\* or do not contain "example.com" at all, unless the deployment has {"exempt": "true"} label.
 
 ```yaml
 kubectl apply -f - <<EOF
@@ -583,48 +586,49 @@ Once the policy is created, these other resources can be shown in auto-generated
 status:
   autogen:
     rules:
-    - exclude:
-        resources: {}
-      generate:
-        clone: {}
-        cloneList: {}
-      match:
-        any:
-        - resources:
-            kinds:
-            - DaemonSet
-            - Deployment
-            - Job
-            - StatefulSet
-            - ReplicaSet
-            - ReplicationController
-        resources: {}
-      mutate: {}
-      name: autogen-disallow-latest-tag
-      validate:
-        cel:
-          expressions:
-          - expression: object.spec.template.spec.containers.all(container, !container.image.contains('latest'))
-            message: Using a mutable image tag e.g. 'latest' is not allowed.
-    - exclude:
-        resources: {}
-      generate:
-        clone: {}
-        cloneList: {}
-      match:
-        any:
-        - resources:
-            kinds:
-            - CronJob
-        resources: {}
-      mutate: {}
-      name: autogen-cronjob-disallow-latest-tag
-      validate:
-        cel:
-          expressions:
-          - expression: object.spec.jobTemplate.spec.template.spec.containers.all(container,
-              !container.image.contains('latest'))
-            message: Using a mutable image tag e.g. 'latest' is not allowed.
+      - exclude:
+          resources: {}
+        generate:
+          clone: {}
+          cloneList: {}
+        match:
+          any:
+            - resources:
+                kinds:
+                  - DaemonSet
+                  - Deployment
+                  - Job
+                  - StatefulSet
+                  - ReplicaSet
+                  - ReplicationController
+          resources: {}
+        mutate: {}
+        name: autogen-disallow-latest-tag
+        validate:
+          cel:
+            expressions:
+              - expression: object.spec.template.spec.containers.all(container, !container.image.contains('latest'))
+                message: Using a mutable image tag e.g. 'latest' is not allowed.
+      - exclude:
+          resources: {}
+        generate:
+          clone: {}
+          cloneList: {}
+        match:
+          any:
+            - resources:
+                kinds:
+                  - CronJob
+          resources: {}
+        mutate: {}
+        name: autogen-cronjob-disallow-latest-tag
+        validate:
+          cel:
+            expressions:
+              - expression:
+                  object.spec.jobTemplate.spec.template.spec.containers.all(container,
+                  !container.image.contains('latest'))
+                message: Using a mutable image tag e.g. 'latest' is not allowed.
 ```
 
 Let's try creating an nginx deployment with the latest tag.
@@ -656,15 +660,15 @@ EOF
 As expected the deployment creation is blocked.
 
 ```
-Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "STDIN": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-resource Deployment/default/nginx-deployment was blocked due to the following policies 
+resource Deployment/default/nginx-deployment was blocked due to the following policies
 
 disallow-latest-tag:
   autogen-disallow-latest-tag: Using a mutable image tag e.g. 'latest' is not allowed.
 ```
 
-## Conclusion 
+## Conclusion
 
-This blog post explains how to use CEL expressions in Kyverno policies to validate resources covering all the features introduced in Kubernetes ValidatingAdmissionPolicies. 
+This blog post explains how to use CEL expressions in Kyverno policies to validate resources covering all the features introduced in Kubernetes ValidatingAdmissionPolicies.
 Stay tuned for our next post, where we'll show you how to generate Kubernetes ValidatingAdmissionPolicies from Kyverno policies.

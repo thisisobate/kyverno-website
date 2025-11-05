@@ -1,14 +1,15 @@
 ---
-title: "Require Non-Root Groups in CEL expressions"
+title: 'Require Non-Root Groups in CEL expressions'
 category: Sample, EKS Best Practices in CEL
 version: 1.11.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Containers should be forbidden from running with a root primary or supplementary GID. This policy ensures the `runAsGroup`, `supplementalGroups`, and `fsGroup` fields are set to a number greater than zero (i.e., non root). A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
+  Containers should be forbidden from running with a root primary or supplementary GID. This policy ensures the `runAsGroup`, `supplementalGroups`, and `fsGroup` fields are set to a number greater than zero (i.e., non root). A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other-cel/require-non-root-groups/require-non-root-groups.yaml" target="-blank">/other-cel/require-non-root-groups/require-non-root-groups.yaml</a>
 
 ```yaml
@@ -18,11 +19,11 @@ metadata:
   name: require-non-root-groups
   annotations:
     policies.kyverno.io/title: Require Non-Root Groups in CEL expressions
-    policies.kyverno.io/category: Sample, EKS Best Practices in CEL 
+    policies.kyverno.io/category: Sample, EKS Best Practices in CEL
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kyverno-version: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Containers should be forbidden from running with a root primary or supplementary GID.
@@ -36,17 +37,17 @@ spec:
     - name: check-runasgroup
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           variables:
             - name: allContainers
-              expression: "object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])"
+              expression: 'object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])'
           expressions:
             - expression: >-
                 (
@@ -65,12 +66,12 @@ spec:
     - name: check-supplementalgroups
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
@@ -83,12 +84,12 @@ spec:
     - name: check-fsgroup
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
@@ -97,6 +98,4 @@ spec:
               message: >-
                 Containers cannot run with a root primary or supplementary GID. The field
                 spec.securityContext.fsGroup must be unset or set to a value greater than zero.
-
-
 ```

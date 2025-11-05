@@ -18,10 +18,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
@@ -147,10 +147,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE']
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
@@ -174,10 +174,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE', 'UPDATE']
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
@@ -244,10 +244,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE', 'UPDATE']
   mutations:
     - patchType: JSONPatch
       jsonPatch:
@@ -389,10 +389,10 @@ spec:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["namespaces"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['namespaces']
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
@@ -428,20 +428,20 @@ spec:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["namespaces"]
-        resourceNames: ["test-namespace"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['namespaces']
+        resourceNames: ['test-namespace']
   targetMatchConstraints:
   namespaceSelector:
     matchLabels:
-      test: "enabled"
+      test: 'enabled'
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['configmaps']
   mutations:
     - patchType: ApplyConfiguration
       applyConfiguration:
@@ -478,10 +478,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE']
   mutations:
     # First mutation
     - patchType: ApplyConfiguration

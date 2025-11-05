@@ -18,7 +18,7 @@ Something we've heard for a while now from the community was that they love the 
 
 A [PolicyException](/docs/policy-types/cluster-policy/exceptions.md) is a new type of policy and Custom Resource in Kyverno 1.9 which allows you to create an exception to any existing Kyverno policy in a way which is decoupled from the policy itself and so doesn't involve modifying the policy.
 
-Here's what it would look like to allow a special exception to one of the [Pod Security Standard](/policies/pod-security/) [policies](/policies/?policytypes=Pod%2520Security%2520Standards%2520(Baseline)%2BPod%2520Security%2520Standards%2520(Restricted)) but only for a very specific resource named `important-tool`.
+Here's what it would look like to allow a special exception to one of the [Pod Security Standard](/policies/pod-security/) [policies](</policies/?policytypes=Pod%2520Security%2520Standards%2520(Baseline)%2BPod%2520Security%2520Standards%2520(Restricted)>) but only for a very specific resource named `important-tool`.
 
 ```yaml
 apiVersion: kyverno.io/v2alpha1
@@ -28,20 +28,20 @@ metadata:
   namespace: delta
 spec:
   exceptions:
-  - policyName: disallow-host-namespaces
-    ruleNames:
-    - host-namespaces
-    - autogen-host-namespaces
+    - policyName: disallow-host-namespaces
+      ruleNames:
+        - host-namespaces
+        - autogen-host-namespaces
   match:
     any:
-    - resources:
-        kinds:
-        - Pod
-        - Deployment
-        namespaces:
-        - delta
-        names:
-        - important-tool*
+      - resources:
+          kinds:
+            - Pod
+            - Deployment
+          namespaces:
+            - delta
+          names:
+            - important-tool*
 ```
 
 Once a PolicyException is created, a resource which is selected by the exception and also applies to the policy and rule combo named in the exception will be allowed to circumvent the policy. As shown, it'll be quite useful, we think, for users who want those one-time exceptions to validate rules which are in `Enforce` mode although it works for other situations and rules as well. Access to creating PolicyExceptions can be controlled through a combination of Kubernetes RBAC, your own GitOps review processes, [YAML signing](/docs/policy-types/cluster-policy/validate.md#manifest-validation) for integrity and tamper-prevention checks, and even Kyverno validate policies.
@@ -62,15 +62,15 @@ metadata:
 spec:
   match:
     any:
-    - resources:
-        kinds:
-          - Pod
+      - resources:
+          kinds:
+            - Pod
   conditions:
     all:
-    - key: "{{ target.metadata.ownerReferences[] || `[]` }}"
-      operator: Equals
-      value: []
-  schedule: "0 0 * * *"
+      - key: '{{ target.metadata.ownerReferences[] || `[]` }}'
+        operator: Equals
+        value: []
+  schedule: '0 0 * * *'
 ```
 
 Here is a ClusterCleanupPolicy which, as you might have guessed, applies cluster-wide, and which will find and remove Pods with no ownerReferences every day at midnight. Cleanup policies like these can be super helpful to keep clutter to a minimum and fit nicely into existing automation workflows.
@@ -100,9 +100,9 @@ spec:
     - name: advertise-dongle
       match:
         any:
-        - resources:
-            kinds:
-            - Node/status
+          - resources:
+              kinds:
+                - Node/status
       mutate:
         patchStrategicMerge:
           status:

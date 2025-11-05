@@ -1,14 +1,15 @@
 ---
-title: "Baseline Pod Security Standards"
+title: 'Baseline Pod Security Standards'
 category: Pod Security, EKS Best Practices
 version: 1.8.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The baseline profile of the Pod Security Standards is a collection of the most basic and important steps that can be taken to secure Pods. Beginning with Kyverno 1.8, an entire profile may be assigned to the cluster through a single rule. This policy configures the baseline profile through the latest version of the Pod Security Standards cluster wide.
+  The baseline profile of the Pod Security Standards is a collection of the most basic and important steps that can be taken to secure Pods. Beginning with Kyverno 1.8, an entire profile may be assigned to the cluster through a single rule. This policy configures the baseline profile through the latest version of the Pod Security Standards cluster wide.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security/subrule/podsecurity-subrule-baseline/podsecurity-subrule-baseline.yaml" target="-blank">/pod-security/subrule/podsecurity-subrule-baseline/podsecurity-subrule-baseline.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.8.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       The baseline profile of the Pod Security Standards is a collection of the
@@ -34,14 +35,14 @@ spec:
   background: true
   validationFailureAction: Audit
   rules:
-  - name: baseline
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      podSecurity:
-        level: baseline
-        version: latest
+    - name: baseline
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        podSecurity:
+          level: baseline
+          version: latest
 ```

@@ -1,14 +1,15 @@
 ---
-title: "Restrict Seccomp in ValidatingPolicy"
+title: 'Restrict Seccomp in ValidatingPolicy'
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The seccomp profile must not be explicitly set to Unconfined. This policy,  requiring Kubernetes v1.30 or later, ensures that seccomp is unset or  set to `RuntimeDefault` or `Localhost`.
+  The seccomp profile must not be explicitly set to Unconfined. This policy,  requiring Kubernetes v1.30 or later, ensures that seccomp is unset or  set to `RuntimeDefault` or `Localhost`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-vpol/baseline/restrict-seccomp/restrict-seccomp.yaml" target="-blank">/pod-security-vpol/baseline/restrict-seccomp/restrict-seccomp.yaml</a>
 
 ```yaml
@@ -23,44 +24,43 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.14.0
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: "1.30+"
+    kyverno.io/kubernetes-version: '1.30+'
     policies.kyverno.io/description: >-
       The seccomp profile must not be explicitly set to Unconfined. This policy, 
       requiring Kubernetes v1.30 or later, ensures that seccomp is unset or 
       set to `RuntimeDefault` or `Localhost`.
 spec:
   validationActions:
-     - Audit
+    - Audit
   evaluation:
     background:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups:   [""]
-        apiVersions: ["v1"]
-        operations:  ["CREATE", "UPDATE"]
-        resources:   ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
-  - name: allContainers
-    expression: >-
-      object.spec.containers + 
-      object.spec.?initContainers.orValue([]) + 
-      object.spec.?ephemeralContainers.orValue([])
+    - name: allContainers
+      expression: >-
+        object.spec.containers + 
+        object.spec.?initContainers.orValue([]) + 
+        object.spec.?ephemeralContainers.orValue([])
 
-  - name: allowedProfileTypes
-    expression: "['RuntimeDefault', 'Localhost']"
+    - name: allowedProfileTypes
+      expression: "['RuntimeDefault', 'Localhost']"
 
-  - name: hasValidSeccompProfile
-    expression: >-
-      object.spec.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes
+    - name: hasValidSeccompProfile
+      expression: >-
+        object.spec.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes
 
   validations:
-  - expression: >-
-      variables.hasValidSeccompProfile &&
-      variables.allContainers.all(container, 
-        container.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes)
-    message: >-
-      Use of custom Seccomp profiles is disallowed. The field 
-      `securityContext.seccompProfile.type` must be unset or set to `RuntimeDefault` or `Localhost`.
-
+    - expression: >-
+        variables.hasValidSeccompProfile &&
+        variables.allContainers.all(container, 
+          container.?securityContext.?seccompProfile.?type.orValue('Localhost') in variables.allowedProfileTypes)
+      message: >-
+        Use of custom Seccomp profiles is disallowed. The field 
+        `securityContext.seccompProfile.type` must be unset or set to `RuntimeDefault` or `Localhost`.
 ```

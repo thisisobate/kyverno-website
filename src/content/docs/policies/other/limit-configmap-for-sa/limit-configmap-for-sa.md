@@ -1,14 +1,15 @@
 ---
-title: "Limit ConfigMap to ServiceAccounts for a User"
+title: 'Limit ConfigMap to ServiceAccounts for a User'
 category: Other
-version: 
+version:
 subject: ConfigMap, ServiceAccount
-policyType: "validate"
+policyType: 'validate'
 description: >
-    This policy shows how to restrict certain operations on specific ConfigMaps by ServiceAccounts.
+  This policy shows how to restrict certain operations on specific ConfigMaps by ServiceAccounts.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/limit-configmap-for-sa/limit-configmap-for-sa.yaml" target="-blank">/other/limit-configmap-for-sa/limit-configmap-for-sa.yaml</a>
 
 ```yaml
@@ -21,51 +22,50 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.20-1.23"
+    kyverno.io/kubernetes-version: '1.20-1.23'
     policies.kyverno.io/subject: ConfigMap, ServiceAccount
     policies.kyverno.io/description: This policy shows how to restrict certain operations on specific ConfigMaps by ServiceAccounts.
 spec:
   background: false
   validationFailureAction: Audit
   rules:
-  - name: limit-configmap-for-sa-developer
-    match:
-      any:
-      - resources:
-          kinds:
-          - ConfigMap
-        # subjects:
-        # - kind: ServiceAccount
-        #   name: developer
-        #   namespace: kube-system
-      - resources:
-          kinds:
-          - ConfigMap
-        subjects:
-        - kind: ServiceAccount
-          name: another-developer
-          namespace: another-namespace
-    preconditions:
-      all:
-      - key: "{{request.object.metadata.namespace}}"
-        operator: AnyIn
-        value:
-        - "any-namespace"
-        - "another-namespace"
-      - key: "{{request.object.metadata.name}}"
-        operator: AnyIn
-        value:
-        - "any-configmap-name-good"
-        - "another-configmap-name"
-    validate:
-      message: "{{request.object.metadata.namespace}}/{{request.object.kind}}/{{request.object.metadata.name}} resource is protected. Admin or allowed users can change the resource"
-      deny:
-        conditions:
-          all:
-          - key: "{{request.operation || 'BACKGROUND'}}"
+    - name: limit-configmap-for-sa-developer
+      match:
+        any:
+          - resources:
+              kinds:
+                - ConfigMap
+            # subjects:
+            # - kind: ServiceAccount
+            #   name: developer
+            #   namespace: kube-system
+          - resources:
+              kinds:
+                - ConfigMap
+            subjects:
+              - kind: ServiceAccount
+                name: another-developer
+                namespace: another-namespace
+      preconditions:
+        all:
+          - key: '{{request.object.metadata.namespace}}'
             operator: AnyIn
             value:
-            - UPDATE
-            - CREATE
-
+              - 'any-namespace'
+              - 'another-namespace'
+          - key: '{{request.object.metadata.name}}'
+            operator: AnyIn
+            value:
+              - 'any-configmap-name-good'
+              - 'another-configmap-name'
+      validate:
+        message: '{{request.object.metadata.namespace}}/{{request.object.kind}}/{{request.object.metadata.name}} resource is protected. Admin or allowed users can change the resource'
+        deny:
+          conditions:
+            all:
+              - key: "{{request.operation || 'BACKGROUND'}}"
+                operator: AnyIn
+                value:
+                  - UPDATE
+                  - CREATE
 ```

@@ -18,14 +18,14 @@ Ada Logics found 10 security issues during the manual code auditing goal. Four o
 
 In total, 6 CVEs were assigned during the audit for the following components:
 
-| CVE ID | Vulnerable Kyverno Component | CVE Severity |
-| ------ | ---------------------------- | ------------ |
-| CVE-2023-42816 | Notary verifier | Moderate |
-| CVE-2023-42815 | Notary verifier | Low |
-| CVE-2023-42813 | Notary verifier | Moderate |
-| CVE-2023-42814 | Notary verifier | Low |
-| CVE-2023-47630 | Kyverno Engine Image Loader | High |
-| CVE-2023-46737 | Cosign (upstream) | Low |
+| CVE ID         | Vulnerable Kyverno Component | CVE Severity |
+| -------------- | ---------------------------- | ------------ |
+| CVE-2023-42816 | Notary verifier              | Moderate     |
+| CVE-2023-42815 | Notary verifier              | Low          |
+| CVE-2023-42813 | Notary verifier              | Moderate     |
+| CVE-2023-42814 | Notary verifier              | Low          |
+| CVE-2023-47630 | Kyverno Engine Image Loader  | High         |
+| CVE-2023-46737 | Cosign (upstream)            | Low          |
 
 Users consuming Kyverno from official releases have not been affected by the four CVE’s in the Notary verifier, since the Notary verifier has never been part of a public release, before Ada Logics reported the findings during the security audit. Only users building Kyverno from the main branch would be affected by these, however, building from main is highly discouraged.
 

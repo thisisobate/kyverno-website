@@ -1,14 +1,15 @@
 ---
-title: "Require runAsNonRoot in ValidatingPolicy"
+title: 'Require runAsNonRoot in ValidatingPolicy'
 category: Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Containers must be required to run as non-root. This policy ensures `runAsNonRoot` is set to true.
+  Containers must be required to run as non-root. This policy ensures `runAsNonRoot` is set to true.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-vpol/restricted/require-run-as-nonroot/require-run-as-nonroot.yaml" target="-blank">/pod-security-vpol/restricted/require-run-as-nonroot/require-run-as-nonroot.yaml</a>
 
 ```yaml
@@ -23,37 +24,36 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.14.0
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: "1.30+"
+    kyverno.io/kubernetes-version: '1.30+'
     policies.kyverno.io/description: >-
       Containers must be required to run as non-root. This policy ensures
       `runAsNonRoot` is set to true.
 spec:
   validationActions:
-     - Audit
+    - Audit
   evaluation:
     background:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups:   [""]
-        apiVersions: ["v1"]
-        operations:  ["CREATE", "UPDATE"]
-        resources:   ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
-   - name: ctnrs
-     expression: >-
-      object.spec.containers + 
-      object.spec.?initContainers.orValue([]) + 
-      object.spec.?ephemeralContainers.orValue([])
+    - name: ctnrs
+      expression: >-
+        object.spec.containers + 
+        object.spec.?initContainers.orValue([]) + 
+        object.spec.?ephemeralContainers.orValue([])
 
   validations:
-       - expression: >-
-            (object.spec.?securityContext.?runAsNonRoot.orValue(false) == true
-             && variables.ctnrs.all(c, c.?securityContext.?runAsNonRoot.orValue(true) == true))
-             || variables.ctnrs.all(c, c.?securityContext.?runAsNonRoot.orValue(false) == true)
-         message: >-
-            Running as root is not allowed. Either spec.securityContext.runAsNonRoot 
-            must be set to true, or all containers (spec.containers[*], spec.initContainers[*], 
-            spec.ephemeralContainers[*]) must have securityContext.runAsNonRoot set to true.
-
+    - expression: >-
+        (object.spec.?securityContext.?runAsNonRoot.orValue(false) == true
+         && variables.ctnrs.all(c, c.?securityContext.?runAsNonRoot.orValue(true) == true))
+         || variables.ctnrs.all(c, c.?securityContext.?runAsNonRoot.orValue(false) == true)
+      message: >-
+        Running as root is not allowed. Either spec.securityContext.runAsNonRoot 
+        must be set to true, or all containers (spec.containers[*], spec.initContainers[*], 
+        spec.ephemeralContainers[*]) must have securityContext.runAsNonRoot set to true.
 ```

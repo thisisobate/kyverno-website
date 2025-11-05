@@ -24,11 +24,11 @@ spec:
                 - Pod
       validate:
         failureAction: Enforce
-        message: "Images may only come from our internal enterprise registry."
+        message: 'Images may only come from our internal enterprise registry.'
         pattern:
           spec:
             containers:
-              - image: "registry.domain.com/*"
+              - image: 'registry.domain.com/*'
 ```
 
 Once the policy is created, these other resources can be shown in auto-generated rules which Kyverno adds to the policy under the `status` object.
@@ -111,7 +111,7 @@ When disabling auto-generation rules for select Pod controllers, or when auto-ge
 ```yaml
 - key: Job
   operator: AnyNotIn
-  value: "{{ request.object.metadata.ownerReferences[].kind }}"
+  value: '{{ request.object.metadata.ownerReferences[].kind }}'
 ```
 
 ## Exclusion by Metadata
@@ -156,16 +156,16 @@ spec:
             value: skip
       validate:
         failureAction: Enforce
-        message: "CPU and memory resource requests and limits are required."
+        message: 'CPU and memory resource requests and limits are required.'
         pattern:
           spec:
             containers:
               - resources:
                   requests:
-                    memory: "?*"
-                    cpu: "?*"
+                    memory: '?*'
+                    cpu: '?*'
                   limits:
-                    memory: "?*"
+                    memory: '?*'
 ```
 
 The result will have the same effect as the first snippet which uses an `exclude` block and have the benefit of auto-generation coverage.
@@ -175,7 +175,7 @@ Similar to the automatic translation of expressions beginning with `request.obje
 ```yaml
 pattern:
   metadata:
-    namespace: "!default"
+    namespace: '!default'
 ```
 
 With auto-gen set to its default, this will get translated in the case of Deployments and others to the following below which is not the desire when expressing such a rule as the `namespace` field is not defined under the Pod template when using a Pod controller. This auto-generated pattern will therefore cause all applicable Pod controllers to be in violation of the translated pattern.
@@ -185,7 +185,7 @@ pattern:
   spec:
     template:
       metadata:
-        namespace: "!default"
+        namespace: '!default'
 ```
 
 In such cases, auto-gen should be disabled as described above and one or more rules written to explicitly control the matching resources and the patterns/expressions used against them.

@@ -42,7 +42,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              appns: "{{request.namespace}}"
+              appns: '{{request.namespace}}'
 ```
 
 JMESPath expressions in most places in Kyverno must be enclosed in double curly braces like `{{request.namespace}}`. If an expression is used as the value of a field and contains nothing else, the expression needs to be wrapped in quotes: `appns: "{{request.namespace}}"`. If the value field contains other text outside of the expression, then it can be unquoted and treated as a string but this isn't strictly required: `message: The namespace name is {{request.namespace}}`.
@@ -187,7 +187,7 @@ Paths in a JMESPath expression may also need escaping or literal quoting dependi
 spec:
   hard:
     limits.memory: 3750Mi
-    requests.cpu: "5"
+    requests.cpu: '5'
 ```
 
 To represent the `limits.memory` field in a JMESPath expression requires literal quoting of the key in order to avoid being interpreted as child nodes `limits` and `memory`. The expression would then be `{{ spec.hard.\"limits.memory\" }}`. A similar approach is needed when individual keys contain special characters, for example a dash (`-`). Quoting and then escaping is similarly needed there, ex., `{{ images.containers.\"my-container\".tag }}`.
@@ -299,7 +299,7 @@ deny:
     any:
       - key: busybox
         operator: AnyIn
-        value: "{{request.object.spec.[initContainers, containers][].image}}"
+        value: '{{request.object.spec.[initContainers, containers][].image}}'
 ```
 
 ### Non-Existence Checks
@@ -329,9 +329,9 @@ spec:
                 - Ingress
       validate:
         failureAction: Enforce
-        message: "Wildcards are not permitted as hosts."
+        message: 'Wildcards are not permitted as hosts.'
         foreach:
-          - list: "request.object.spec.rules"
+          - list: 'request.object.spec.rules'
             deny:
               conditions:
                 any:
@@ -397,9 +397,9 @@ spec:
                 - UPDATE
       validate:
         failureAction: Enforce
-        message: "The total memory defined in requests and limits must not exceed 200Mi."
+        message: 'The total memory defined in requests and limits must not exceed 200Mi.'
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             deny:
               conditions:
                 any:
@@ -451,23 +451,23 @@ spec:
           - key: "{{ request.object.spec.[containers, initContainers, ephemeralContainers][].env[].valueFrom.secretKeyRef || '' | length(@) }}"
             operator: GreaterThanOrEquals
             value: 1
-          - key: "{{request.operation}}"
+          - key: '{{request.operation}}'
             operator: NotEquals
             value: DELETE
       validate:
         failureAction: Enforce
         message: This license key may not be consumed by a Secret.
         foreach:
-          - list: "request.object.spec.[containers, initContainers, ephemeralContainers][].env[].valueFrom.secretKeyRef"
+          - list: 'request.object.spec.[containers, initContainers, ephemeralContainers][].env[].valueFrom.secretKeyRef'
             context:
               - name: status
                 apiCall:
-                  jmesPath: "data.license"
-                  urlPath: "/api/v1/namespaces/{{request.namespace}}/secrets/{{element.name}}"
+                  jmesPath: 'data.license'
+                  urlPath: '/api/v1/namespaces/{{request.namespace}}/secrets/{{element.name}}'
             deny:
               conditions:
                 any:
-                  - key: "{{ status | base64_decode(@) }}"
+                  - key: '{{ status | base64_decode(@) }}'
                     operator: Equals
                     value: W0247-4RXD3-6TW0F-0FD63-64EFD-38180
 ```
@@ -505,7 +505,7 @@ spec:
         apiVersion: v1
         kind: Secret
         name: sup-key
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: false
         data:
           data:
@@ -551,7 +551,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              dictionary: "{{request.object.metadata.annotations.foo}}-{{request.object.metadata.annotations.bar}}"
+              dictionary: '{{request.object.metadata.annotations.foo}}-{{request.object.metadata.annotations.bar}}'
 ```
 
 </p>
@@ -602,7 +602,7 @@ spec:
         failureAction: Enforce
         message: Limits may not exceed 2.5x the requests.
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             deny:
               conditions:
                 any:
@@ -690,11 +690,11 @@ spec:
                 - Pod
       mutate:
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             patchStrategicMerge:
               spec:
                 containers:
-                  - name: "{{ element.name }}"
+                  - name: '{{ element.name }}'
                     image: "{{ regex_replace_all('^docker.io/(.*)$', image_normalize('{{element.image}}'), 'harbor.corp.org/$1' )}}"
 ```
 
@@ -826,7 +826,7 @@ spec:
             jmesPath: items(metadata.labels,'key','value')
       mutate:
         foreach:
-          - list: "nslabels"
+          - list: 'nslabels'
             patchesJson6902: |-
               - path: "/spec/forProvider/tagging/tagSet/-1"
                 op: add
@@ -864,7 +864,7 @@ spec:
       status: Enabled
     notificationConfiguration:
       lambdaFunctionConfigurations:
-        - events: ["s3:ObjectCreated:*"]
+        - events: ['s3:ObjectCreated:*']
           lambdaFunctionArn: arn:aws:lambda:eu-central-1:255932642927:function:lambda
     paymentConfiguration:
       payer: BucketOwner
@@ -986,15 +986,15 @@ spec:
       context:
         - name: pdb_count
           apiCall:
-            urlPath: "/apis/policy/v1beta1/namespaces/{{request.namespace}}/poddisruptionbudgets"
-            jmesPath: "items[?label_match(spec.selector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)] | length(@)"
+            urlPath: '/apis/policy/v1beta1/namespaces/{{request.namespace}}/poddisruptionbudgets'
+            jmesPath: 'items[?label_match(spec.selector.matchLabels, `{{request.object.spec.template.metadata.labels}}`)] | length(@)'
       validate:
         failureAction: Audit
-        message: "There is no corresponding PodDisruptionBudget found for this Deployment."
+        message: 'There is no corresponding PodDisruptionBudget found for this Deployment.'
         deny:
           conditions:
             any:
-              - key: "{{pdb_count}}"
+              - key: '{{pdb_count}}'
                 operator: LessThan
                 value: 1
 ```
@@ -1023,10 +1023,10 @@ While the JMESPath language allows lookups with constant keys/indexes only, the 
 
 Examples:
 
-| Expression                                                       | Result     |
-| ---------------------------------------------------------------- | ---------- |
-| `` lookup( `{"key1": "value1", "key2": "value2"}`, `"key2"` ) `` | `"value2"` |
-| `` lookup( `["item0", "item1", "item2"]`, `1` ) ``               | `"item1"`  |
+| Expression                                                     | Result     |
+| -------------------------------------------------------------- | ---------- |
+| ``lookup( `{"key1": "value1", "key2": "value2"}`, `"key2"` )`` | `"value2"` |
+| ``lookup( `["item0", "item1", "item2"]`, `1` )``               | `"item1"`  |
 
 **Example object lookup**
 
@@ -1115,7 +1115,7 @@ spec:
       mutate:
         patchStrategicMerge:
           metadata:
-            name: "{{ md5(request.object.metadata.name) }}"
+            name: '{{ md5(request.object.metadata.name) }}'
 ```
 
 </p>
@@ -1166,7 +1166,7 @@ spec:
         failureAction: Audit
         message: Limits must be evenly divisible by the requests.
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             deny:
               conditions:
                 any:
@@ -1227,12 +1227,12 @@ spec:
       context:
         - name: nodecount
           apiCall:
-            urlPath: "/api/v1/nodes"
-            jmesPath: "items[] | length(@)"
+            urlPath: '/api/v1/nodes'
+            jmesPath: 'items[] | length(@)'
       mutate:
         patchStrategicMerge:
           spec:
-            replicas: "{{ multiply( `{{nodecount}}`,`2`) }}"
+            replicas: '{{ multiply( `{{nodecount}}`,`2`) }}'
 ```
 
 </p>
@@ -1260,9 +1260,9 @@ spec:
       image: containerimage:01
       env:
         - name: KEY
-          value: "123-456-789"
+          value: '123-456-789'
         - name: endpoint
-          value: "licensing.corp.org"
+          value: 'licensing.corp.org'
 ```
 
 you may want to convert the `spec.containers[].env[]` array of objects into a map where each entry in the map sets the key to the `name` and the value to the `value` fields. Running this through the `object_from_lists()` filter will produce a map containing those entries.
@@ -1309,7 +1309,7 @@ spec:
       mutate:
         patchStrategicMerge:
           metadata:
-            labels: "{{envs_to_labels}}"
+            labels: '{{envs_to_labels}}'
 ```
 
 Given an incoming Pod that looks like the following
@@ -1327,14 +1327,14 @@ spec:
       image: containerimage:01
       env:
         - name: KEY
-          value: "123-456-789"
+          value: '123-456-789'
         - name: ENDPOINT
-          value: "licensing.corp.org"
+          value: 'licensing.corp.org'
     - name: containername02
       image: containerimage:02
       env:
         - name: ZONE
-          value: "fl-west-03"
+          value: 'fl-west-03'
 ```
 
 after applying the policy the resulting label set on the Pod appears as shown below.
@@ -1434,10 +1434,10 @@ spec:
                 - Pod
       validate:
         failureAction: Enforce
-        message: "Only good bois allowed."
+        message: 'Only good bois allowed.'
         deny:
           conditions:
-            - key: "{{request.object.metadata.annotations.pets | parse_yaml(@).species.isGoodBoi }}"
+            - key: '{{request.object.metadata.annotations.pets | parse_yaml(@).species.isGoodBoi }}'
               operator: NotEquals
               value: true
 ```
@@ -1502,13 +1502,13 @@ spec:
       validate:
         failureAction: Enforce
         foreach:
-          - list: "request.object.spec.volumes[]"
+          - list: 'request.object.spec.volumes[]'
             deny:
               conditions:
                 any:
-                  - key: "{{ path_canonicalize(element.hostPath.path) }}"
+                  - key: '{{ path_canonicalize(element.hostPath.path) }}'
                     operator: Equals
-                    value: "/var/run/containerd/containerd.sock"
+                    value: '/var/run/containerd/containerd.sock'
 ```
 
 </p>
@@ -1746,11 +1746,11 @@ spec:
                 - Pod
       mutate:
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             patchStrategicMerge:
               spec:
                 containers:
-                  - name: "{{ element.name }}"
+                  - name: '{{ element.name }}'
                     image: "{{ regex_replace_all_literal('^[^/]+', '{{element.image}}', 'myregistry.corp.com' )}}"
 ```
 
@@ -1790,7 +1790,7 @@ spec:
                 - Ingress
       mutate:
         foreach:
-          - list: "request.object.spec.rules[].http.paths[]"
+          - list: 'request.object.spec.rules[].http.paths[]'
             patchStrategicMerge:
               spec:
                 rules:
@@ -1841,7 +1841,7 @@ spec:
             template:
               spec:
                 containers:
-                  - (name): "*"
+                  - (name): '*'
                     workingDir: '{{ replace_all(''{{@}}'', ''release-name---'', ''{{request.object.metadata.annotations."meta.helm.sh/release-name"}}'') }}'
 ```
 
@@ -1853,7 +1853,7 @@ spec:
 <details><summary>Expand</summary>
 <p>
 
-The `round()` filter is used to round a number to a desired set of places. It can be useful when working with values such as currencies or measurements. For example, the expression `` round(`10.125`,`2`) `` would result in rounding the number `10.125` to two decimal places resulting in the value `10.13`. When using this filter, it may be necessary to convert inputs to the necessary type (number), most commonly string. JMESPath has a built-in filter called `to_number()` which can be used for this purpose. See the documentation [here](https://jmespath.org/specification.html#to-number) for more details.
+The `round()` filter is used to round a number to a desired set of places. It can be useful when working with values such as currencies or measurements. For example, the expression ``round(`10.125`,`2`)`` would result in rounding the number `10.125` to two decimal places resulting in the value `10.13`. When using this filter, it may be necessary to convert inputs to the necessary type (number), most commonly string. JMESPath has a built-in filter called `to_number()` which can be used for this purpose. See the documentation [here](https://jmespath.org/specification.html#to-number) for more details.
 
 | Input 1 | Input 2 | Output |
 | ------- | ------- | ------ |
@@ -1915,7 +1915,7 @@ spec:
               kinds:
                 - Pod
       verifyImages:
-        - image: "ghcr.io/kyverno/test-verify-image*"
+        - image: 'ghcr.io/kyverno/test-verify-image*'
           failureAction: Enforce
           key: |-
             -----BEGIN PUBLIC KEY-----
@@ -1928,7 +1928,7 @@ spec:
                 - all:
                     - key: "{{ components[?name == 'commons-logging'].version | [0] }}"
                       operator: GreaterThanOrEquals
-                      value: "1.2.0"
+                      value: '1.2.0'
                     - key: "{{ semver_compare( {{ components[?name == 'httpclient'].version | [0] }}, '>4.5.0') }}"
                       operator: Equals
                       value: true
@@ -1966,7 +1966,7 @@ spec:
       mutate:
         patchStrategicMerge:
           metadata:
-            name: "{{ sha1(request.object.metadata.name) }}"
+            name: '{{ sha1(request.object.metadata.name) }}'
 ```
 
 </p>
@@ -2001,7 +2001,7 @@ spec:
       mutate:
         patchStrategicMerge:
           metadata:
-            name: "{{ sha256(request.object.metadata.name) }}"
+            name: '{{ sha256(request.object.metadata.name) }}'
 ```
 
 </p>
@@ -2040,13 +2040,13 @@ spec:
         # Looks up the Ingress paths across the whole cluster.
         - name: allpaths
           apiCall:
-            urlPath: "/apis/networking.k8s.io/v1/ingresses"
-            jmesPath: "items[].spec.rules[].http.paths[].path"
+            urlPath: '/apis/networking.k8s.io/v1/ingresses'
+            jmesPath: 'items[].spec.rules[].http.paths[].path'
         # Looks up the Ingress paths in the same Namespace where the incoming request is targeted.
         - name: nspath
           apiCall:
-            urlPath: "/apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.namespace}}/ingresses"
-            jmesPath: "items[].spec.rules[].http.paths[].path"
+            urlPath: '/apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.namespace}}/ingresses'
+            jmesPath: 'items[].spec.rules[].http.paths[].path'
       validate:
         failureAction: Audit
         message: >-
@@ -2058,10 +2058,10 @@ spec:
               # Deny if the root path of the request exists somewhere else in the cluster other than the same Namespace.
               - key: /{{request.object.spec.rules[].http.paths[].path | to_string(@) | split(@, '/') | [1]}}/
                 operator: In
-                value: "{{allpaths}}"
+                value: '{{allpaths}}'
               - key: /{{request.object.spec.rules[].http.paths[].path | to_string(@) | split(@, '/') | [1]}}/
                 operator: NotIn
-                value: "{{nspath}}"
+                value: '{{nspath}}'
 ```
 
 </p>
@@ -2106,7 +2106,7 @@ spec:
                 - Deployment
       preconditions:
         any:
-          - key: "{{ request.object.spec.replicas }}"
+          - key: '{{ request.object.spec.replicas }}'
             operator: GreaterThan
             value: 2
       mutate:
@@ -2161,7 +2161,7 @@ spec:
         deny:
           conditions:
             all:
-              - key: "{{ sum(request.object.spec.containers[].resources.requests.memory) }}"
+              - key: '{{ sum(request.object.spec.containers[].resources.requests.memory) }}'
                 operator: GreaterThan
                 value: 1Gi
 ```
@@ -2208,7 +2208,7 @@ spec:
         data:
           metadata:
             labels:
-              kyverno.io/automated: "true"
+              kyverno.io/automated: 'true'
           spec:
             schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
             match:
@@ -2217,9 +2217,9 @@ spec:
                     kinds:
                       - PolicyException
                     namespaces:
-                      - "{{ request.namespace }}"
+                      - '{{ request.namespace }}'
                     names:
-                      - "{{ request.object.metadata.name }}"
+                      - '{{ request.object.metadata.name }}'
 ```
 
 </p>
@@ -2256,7 +2256,7 @@ spec:
                 - ConfigMap
       validate:
         failureAction: Enforce
-        message: "This cluster is being decommissioned and no further resources may be created after January 12th."
+        message: 'This cluster is being decommissioned and no further resources may be created after January 12th.'
         deny:
           conditions:
             all:
@@ -2304,11 +2304,11 @@ spec:
             value: true
       validate:
         failureAction: Enforce
-        message: "The foo label must be set."
+        message: 'The foo label must be set.'
         pattern:
           metadata:
             labels:
-              foo: "?*"
+              foo: '?*'
 ```
 
 </p>
@@ -2350,11 +2350,11 @@ spec:
             value: true
       validate:
         failureAction: Enforce
-        message: "The foo label must be set."
+        message: 'The foo label must be set.'
         pattern:
           metadata:
             labels:
-              foo: "?*"
+              foo: '?*'
 ```
 
 </p>
@@ -2393,22 +2393,22 @@ spec:
                 - Pod
       verifyImages:
         - imageReferences:
-            - "ghcr.io/myorg/myrepo:*"
+            - 'ghcr.io/myorg/myrepo:*'
           failureAction: Enforce
           attestations:
             - predicateType: cosign.sigstore.dev/attestation/vuln/v1
               attestors:
                 - entries:
                     - keyless:
-                        subject: "https://github.com/myorg/myrepo/.github/workflows/*"
-                        issuer: "https://token.actions.githubusercontent.com"
+                        subject: 'https://github.com/myorg/myrepo/.github/workflows/*'
+                        issuer: 'https://token.actions.githubusercontent.com'
                         rekor:
                           url: https://rekor.sigstore.dev
               conditions:
                 - all:
                     - key: "{{ time_diff('{{metadata.scanFinishedOn}}','{{ time_now_utc() }}') }}"
                       operator: LessThanOrEquals
-                      value: "24h"
+                      value: '24h'
 ```
 
 </p>
@@ -2453,7 +2453,7 @@ spec:
         data:
           metadata:
             labels:
-              kyverno.io/automated: "true"
+              kyverno.io/automated: 'true'
           spec:
             schedule: "{{ time_add('{{ time_now() }}','4h') | time_to_cron(@) }}"
             match:
@@ -2462,9 +2462,9 @@ spec:
                     kinds:
                       - PolicyException
                     namespaces:
-                      - "{{ request.namespace }}"
+                      - '{{ request.namespace }}'
                     names:
-                      - "{{ request.object.metadata.name }}"
+                      - '{{ request.object.metadata.name }}'
 ```
 
 </p>
@@ -2509,7 +2509,7 @@ spec:
         data:
           metadata:
             labels:
-              kyverno.io/automated: "true"
+              kyverno.io/automated: 'true'
           spec:
             schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
             match:
@@ -2518,9 +2518,9 @@ spec:
                     kinds:
                       - PolicyException
                     namespaces:
-                      - "{{ request.namespace }}"
+                      - '{{ request.namespace }}'
                     names:
-                      - "{{ request.object.metadata.name }}"
+                      - '{{ request.object.metadata.name }}'
 ```
 
 </p>
@@ -2598,13 +2598,13 @@ spec:
                 - Pod
       validate:
         failureAction: Audit
-        message: "Images built more than 6 months ago are prohibited."
+        message: 'Images built more than 6 months ago are prohibited.'
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             context:
               - name: imageData
                 imageRegistry:
-                  reference: "{{ element.image }}"
+                  reference: '{{ element.image }}'
             deny:
               conditions:
                 all:
@@ -2655,7 +2655,7 @@ spec:
         data:
           metadata:
             labels:
-              kyverno.io/automated: "true"
+              kyverno.io/automated: 'true'
           spec:
             schedule: "{{ time_add('{{ time_now_utc() }}','4h') | time_to_cron(@) }}"
             match:
@@ -2664,9 +2664,9 @@ spec:
                     kinds:
                       - PolicyException
                     namespaces:
-                      - "{{ request.namespace }}"
+                      - '{{ request.namespace }}'
                     names:
-                      - "{{ request.object.metadata.name }}"
+                      - '{{ request.object.metadata.name }}'
 ```
 
 </p>
@@ -2778,11 +2778,11 @@ spec:
                 - Pod
               selector:
                 matchLabels:
-                  canuseIPC: "true"
+                  canuseIPC: 'true'
       mutate:
         patchStrategicMerge:
           spec:
-            hostIPC: "{{ to_boolean (request.object.metadata.labels.canuseIPC) }}"
+            hostIPC: '{{ to_boolean (request.object.metadata.labels.canuseIPC) }}'
 ```
 
 </p>
@@ -2933,7 +2933,7 @@ spec:
             jmesPath: "trim_prefix(@, 'docker://')"
       verifyImages:
         - imageReferences:
-            - "*"
+            - '*'
           failureAction: Enforce
           mutateDigest: true
           verifyDigest: true
@@ -3117,7 +3117,7 @@ spec:
                 - MutatingWebhookConfiguration
       validate:
         failureAction: Audit
-        message: "Certificate will expire in less than a week."
+        message: 'Certificate will expire in less than a week.'
         deny:
           conditions:
             any:

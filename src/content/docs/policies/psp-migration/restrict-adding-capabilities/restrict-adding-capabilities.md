@@ -1,14 +1,15 @@
 ---
-title: "Restrict Adding Capabilities"
+title: 'Restrict Adding Capabilities'
 category: PSP Migration
 version: 1.6.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Adding capabilities is a way for containers in a Pod to request higher levels of ability than those with which they may be provisioned. Many capabilities allow system-level control and should be prevented. Pod Security Policies (PSP) allowed a list of "good" capabilities to be added. This policy checks ephemeralContainers, initContainers, and containers to ensure the only capabilities that can be added are either NET_BIND_SERVICE or CAP_CHOWN.
+  Adding capabilities is a way for containers in a Pod to request higher levels of ability than those with which they may be provisioned. Many capabilities allow system-level control and should be prevented. Pod Security Policies (PSP) allowed a list of "good" capabilities to be added. This policy checks ephemeralContainers, initContainers, and containers to ensure the only capabilities that can be added are either NET_BIND_SERVICE or CAP_CHOWN.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//psp-migration/restrict-adding-capabilities/restrict-adding-capabilities.yaml" target="-blank">/psp-migration/restrict-adding-capabilities/restrict-adding-capabilities.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Adding capabilities is a way for containers in a Pod to request higher levels
@@ -38,14 +39,14 @@ spec:
     - name: allowed-capabilities
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: NotEquals
-          value: DELETE
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         message: >-
           Any capabilities added other than NET_BIND_SERVICE or CAP_CHOWN are disallowed.
@@ -54,10 +55,10 @@ spec:
             deny:
               conditions:
                 all:
-                - key: "{{ element.securityContext.capabilities.add[] || '' }}"
-                  operator: AnyNotIn
-                  value:
-                  - NET_BIND_SERVICE
-                  - CAP_CHOWN
-                  - ''
+                  - key: "{{ element.securityContext.capabilities.add[] || '' }}"
+                    operator: AnyNotIn
+                    value:
+                      - NET_BIND_SERVICE
+                      - CAP_CHOWN
+                      - ''
 ```

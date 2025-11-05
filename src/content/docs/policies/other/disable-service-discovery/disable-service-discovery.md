@@ -1,14 +1,15 @@
 ---
-title: "Disable Service Discovery"
+title: 'Disable Service Discovery'
 category: Other, EKS Best Practices
 version: 1.6.0
 subject: Pod
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Not all Pods require communicating with other Pods or resolving in-cluster Services. For those, disabling service discovery can increase security as the Pods are limited to what they can see. This policy mutates Pods to set dnsPolicy to `Default` and enableServiceLinks to `false`.
+  Not all Pods require communicating with other Pods or resolving in-cluster Services. For those, disabling service discovery can increase security as the Pods are limited to what they can see. This policy mutates Pods to set dnsPolicy to `Default` and enableServiceLinks to `false`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/disable-service-discovery/disable-service-discovery.yaml" target="-blank">/other/disable-service-discovery/disable-service-discovery.yaml</a>
 
 ```yaml
@@ -21,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Other, EKS Best Practices
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.8.0-rc2
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       Not all Pods require communicating with other Pods or resolving in-cluster Services.
@@ -30,15 +31,15 @@ metadata:
       enableServiceLinks to `false`.
 spec:
   rules:
-  - name: example-configmap-lookup
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    mutate:
-      patchStrategicMerge:
-        spec:
-          dnsPolicy: Default
-          enableServiceLinks: false
+    - name: example-configmap-lookup
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        patchStrategicMerge:
+          spec:
+            dnsPolicy: Default
+            enableServiceLinks: false
 ```

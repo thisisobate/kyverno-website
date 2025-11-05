@@ -27,14 +27,14 @@ spec:
                 - Pod
       validate:
         failureAction: Audit
-        message: "Secrets must be mounted as volumes, not as environment variables."
+        message: 'Secrets must be mounted as volumes, not as environment variables.'
         pattern:
           spec:
             containers:
-              - name: "*"
+              - name: '*'
                 =(env):
                   - =(valueFrom):
-                      X(secretKeyRef): "null"
+                      X(secretKeyRef): 'null'
 ```
 
 Creating a Pod in this Namespace which does not use any Secrets (and thereby does not violate the `secrets-not-from-env-vars` rule in the ClusterPolicy) will generate the first entry in the PolicyReport, but listed as a `PASS`.

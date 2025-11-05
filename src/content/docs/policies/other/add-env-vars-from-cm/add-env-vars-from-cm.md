@@ -1,14 +1,15 @@
 ---
-title: "Add Environment Variables from ConfigMap"
+title: 'Add Environment Variables from ConfigMap'
 category: Other
 version: 1.6.0
 subject: Pod
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Instead of defining a common set of environment variables multiple times either in manifests or separate policies, Pods can reference entire collections stored in a ConfigMap. This policy mutates all initContainers (if present) and containers in a Pod with environment variables defined in a ConfigMap named `nsenvvars` that must exist in the destination Namespace.     
+  Instead of defining a common set of environment variables multiple times either in manifests or separate policies, Pods can reference entire collections stored in a ConfigMap. This policy mutates all initContainers (if present) and containers in a Pod with environment variables defined in a ConfigMap named `nsenvvars` that must exist in the destination Namespace.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/add-env-vars-from-cm/add-env-vars-from-cm.yaml" target="-blank">/other/add-env-vars-from-cm/add-env-vars-from-cm.yaml</a>
 
 ```yaml
@@ -27,27 +28,26 @@ metadata:
       entire collections stored in a ConfigMap. This policy mutates all
       initContainers (if present) and containers in a Pod with environment
       variables defined in a ConfigMap named `nsenvvars` that must exist
-      in the destination Namespace.     
+      in the destination Namespace.
 spec:
   rules:
-  - name: add-env-vars-from-cm
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    mutate:
-      patchStrategicMerge:
-        spec:
-          initContainers:
-            - (name): "*"
-              envFrom:
-              - configMapRef:
-                  name: nsenvvars
-          containers:
-            - (name): "*"
-              envFrom:
-              - configMapRef:
-                  name: nsenvvars
-
+    - name: add-env-vars-from-cm
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        patchStrategicMerge:
+          spec:
+            initContainers:
+              - (name): '*'
+                envFrom:
+                  - configMapRef:
+                      name: nsenvvars
+            containers:
+              - (name): '*'
+                envFrom:
+                  - configMapRef:
+                      name: nsenvvars
 ```

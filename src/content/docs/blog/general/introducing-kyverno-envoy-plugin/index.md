@@ -1,6 +1,6 @@
 ---
 date: 2024-06-04
-title: Kyverno-Envoy-Plugin - Kyverno policies based authorization plugin for Envoy 
+title: Kyverno-Envoy-Plugin - Kyverno policies based authorization plugin for Envoy
 linkTitle: Kyverno-Envoy-Plugin - Kyverno policies based authorization plugin for Envoy
 author: Sanskar Gurdasani
 description: Make external authorization easy with Kyverno-Envoy-Plugin.
@@ -26,7 +26,7 @@ In this blog post, we will introduce [Kyverno-Envoy-Plugin](https://github.com/k
 
 In addition to the Envoy sidecar, your application pods will include a Kyverno-Envoy-Plugin component, either as a sidecar or as a separate pod. This Kyverno-Envoy-Plugin will be configured to communicate with the Kyverno-Envoy-Plugin gRPC server. When Envoy receives an API request intended for your microservice, it consults the Kyverno-Envoy-Plugin server to determine whether the request should be permitted.
 
-Here is the architecture when Kyverno-Envoy-Plugin deployed as a sidecar to your application: 
+Here is the architecture when Kyverno-Envoy-Plugin deployed as a sidecar to your application:
 
 ![architecture-sidecar](./arch-pod.png)
 
@@ -57,27 +57,27 @@ minikube start
 Install application with Envoy and Kyverno-Envoy-Plugin as a sidecar container.
 
 ```sh
-$ kubectl apply -f https://raw.githubusercontent.com/kyverno/kyverno-envoy-plugin/main/quick_start.yaml 
+$ kubectl apply -f https://raw.githubusercontent.com/kyverno/kyverno-envoy-plugin/main/quick_start.yaml
 ```
 
 The `applicaition.yaml` manifest defines the following resource:
 
-- The Deployment includes an example Go application that provides information of books in the library books collection and exposes APIs to `get`, `create` and `delete` books collection. Check this out for more information about the [Go test application](https://github.com/Sanskarzz/kyverno-envoy-demos/tree/main/test-application) . 
+- The Deployment includes an example Go application that provides information of books in the library books collection and exposes APIs to `get`, `create` and `delete` books collection. Check this out for more information about the [Go test application](https://github.com/Sanskarzz/kyverno-envoy-demos/tree/main/test-application) .
 
 - The Deployment also includes a Kyverno-Envoy-Plugin sidecar container in addition to the Envoy sidecar container. When Envoy recevies API request destined for the Go test applicaiton, it will check with Kyverno-Envoy-Plugin to decide if the request should be allowed and the Kyverno-Envoy-Plugin sidecar container is configured to query Kyverno-JSON engine for policy decisions on incoming requests.
 
 - A ConfigMap `policy-config` is used to pass the policy to Kyverno-Envoy-Plugin sidecar in the namespace `default` where the application is deployed .
 
-- A ConfigMap `envoy-config` is used to pass an Envoy configuration with an External Authorization Filter to direct authorization checks to the Kyverno-Envoy-Plugin sidecar. 
+- A ConfigMap `envoy-config` is used to pass an Envoy configuration with an External Authorization Filter to direct authorization checks to the Kyverno-Envoy-Plugin sidecar.
 
 - The Deployment also includes an init container that install iptables rules to redirect all container traffic to the Envoy proxy sidecar container , more about init container can be found [here](https://github.com/kyverno/kyverno-envoy-plugin/tree/main/docs/demo/standalone-envoy/envoy_iptables)
 
 ### Make Test application accessible in the cluster
 
-```console 
+```console
 kubectl expose deployment testapp --type=NodePort --name=testapp --port=8080
 ```
- 
+
 ### Set the `SERVICE_URL` environment variable to the service's IP/port
 
 minikube:
@@ -93,7 +93,7 @@ echo $SERVICE_URL
 
 For convenience, we’ll store Alice’s and Bob’s tokens in environment variables (not recommended for production). Here Bob is assigned the `admin` role and Alice is assigned the `guest` role.
 
-```bash 
+```bash
 export ALICE_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIyNDEwODE1MzksIm5iZiI6MTUxNDg1MTEzOSwicm9sZSI6Imd1ZXN0Iiwic3ViIjoiWVd4cFkyVT0ifQ.ja1bgvIt47393ba_WbSBm35NrUhdxM4mOVQN8iXz8lk"
 export BOB_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIyNDEwODE1MzksIm5iZiI6MTUxNDg1MTEzOSwicm9sZSI6ImFkbWluIiwic3ViIjoiWVd4cFkyVT0ifQ.veMeVDYlulTdieeX-jxFZ_tCmqQ_K8rwx2OktUHv5Z0"
 ```
@@ -110,36 +110,36 @@ spec:
     - name: deny-guest-request-at-post
       assert:
         any:
-        - message: "POST method calls at path /book are not allowed to guests users"
-          check:
-            request:
+          - message: 'POST method calls at path /book are not allowed to guests users'
+            check:
+              request:
                 http:
-                    method: POST
-                    headers:
-                        authorization:
-                            (split(@, ' ')[1]):
-                                (jwt_decode(@ , 'secret').payload.role): admin
-                    path: /book                             
-        - message: "GET method call is allowed to both guest and admin users"
-          check:
-            request:
+                  method: POST
+                  headers:
+                    authorization:
+                      (split(@, ' ')[1]):
+                        (jwt_decode(@ , 'secret').payload.role): admin
+                  path: /book
+          - message: 'GET method call is allowed to both guest and admin users'
+            check:
+              request:
                 http:
-                    method: GET
-                    headers:
-                        authorization:
-                            (split(@, ' ')[1]):
-                                (jwt_decode(@ , 'secret').payload.role): admin
-                    path: /book 
-        - message: "GET method call is allowed to both guest and admin users"
-          check:
-            request:
+                  method: GET
+                  headers:
+                    authorization:
+                      (split(@, ' ')[1]):
+                        (jwt_decode(@ , 'secret').payload.role): admin
+                  path: /book
+          - message: 'GET method call is allowed to both guest and admin users'
+            check:
+              request:
                 http:
-                    method: GET
-                    headers:
-                        authorization:
-                            (split(@, ' ')[1]):
-                                (jwt_decode(@ , 'secret').payload.role): guest
-                    path: /book               
+                  method: GET
+                  headers:
+                    authorization:
+                      (split(@, ' ')[1]):
+                        (jwt_decode(@ , 'secret').payload.role): guest
+                  path: /book
 ```
 
 Check for `Alice` which can get book but cannot create book.
@@ -152,7 +152,7 @@ curl -i -H "Authorization: Bearer "$ALICE_TOKEN"" http://$SERVICE_URL/book
 curl -i -H "Authorization: Bearer "$ALICE_TOKEN"" -d '{"bookname":"Harry Potter", "author":"J.K. Rowling"}' -H "Content-Type: application/json" -X POST http://$SERVICE_URL/book
 ```
 
-Check the `Bob` which can get book also create the book 
+Check the `Bob` which can get book also create the book
 
 ```bash
 curl -i -H "Authorization: Bearer "$BOB_TOKEN"" http://$SERVICE_URL/book
@@ -162,7 +162,7 @@ curl -i -H "Authorization: Bearer "$BOB_TOKEN"" http://$SERVICE_URL/book
 curl -i -H "Authorization: Bearer "$BOB_TOKEN"" -d '{"bookname":"Harry Potter", "author":"J.K. Rowling"}' -H "Content-Type: application/json" -X POST http://$SERVICE_URL/book
 ```
 
-Check on logs 
+Check on logs
 
 ```bash
 kubectl logs "$(kubectl get pod -l app=testapp -o jsonpath={.items..metadata.name})" -c kyverno-envoy-plugin -f
@@ -170,7 +170,7 @@ kubectl logs "$(kubectl get pod -l app=testapp -o jsonpath={.items..metadata.nam
 
 First , third and last request is passed but second request is failed.
 
-```console 
+```console
 $ kubectl logs "$(kubectl get pod -l app=testapp -n demo -o jsonpath={.items..metadata.name})" -n demo -c kyverno-envoy-plugin -f
 Starting HTTP server on Port 8000
 Starting GRPC server on Port 9000
@@ -204,10 +204,10 @@ To deploy Kyverno-Envoy-Plugin include the following container in your Kubernete
   volumeMounts:
     - readOnly: true
   args:
-    - "serve"
-    - "--policy=/policies/policy.yaml"
-    - "--address=:9000"
-    - "--healthaddress=:8181"
+    - 'serve'
+    - '--policy=/policies/policy.yaml'
+    - '--address=:9000'
+    - '--healthaddress=:8181'
   livenessProbe:
     httpGet:
       path: /health
@@ -221,7 +221,7 @@ To deploy Kyverno-Envoy-Plugin include the following container in your Kubernete
       scheme: HTTP
       port: 8181
     initialDelaySeconds: 5
-    periodSeconds: 5  
+    periodSeconds: 5
 ```
 
 ## Conclusion

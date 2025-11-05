@@ -1,14 +1,15 @@
 ---
-title: "Restrict Virtual Service Host with Wildcards"
+title: 'Restrict Virtual Service Host with Wildcards'
 category: Istio
 version: 1.6.0
 subject: VirtualService
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Virtual Services optionally accept a wildcard as an alternative to precise matching. In some cases, this may be too permissive as it would direct unintended traffic to the given resource. This policy enforces that any Virtual Service host does not contain a wildcard character and allows for more governance when a single mesh deployment  model is used.
+  Virtual Services optionally accept a wildcard as an alternative to precise matching. In some cases, this may be too permissive as it would direct unintended traffic to the given resource. This policy enforces that any Virtual Service host does not contain a wildcard character and allows for more governance when a single mesh deployment  model is used.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//istio/restrict-virtual-service-wildcard/restrict-virtual-service-wildcard.yaml" target="-blank">/istio/restrict-virtual-service-wildcard/restrict-virtual-service-wildcard.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.4
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: VirtualService
     policies.kyverno.io/description: >-
       Virtual Services optionally accept a wildcard as an alternative
@@ -38,22 +39,22 @@ spec:
     - name: block-virtual-service-wildcard
       match:
         any:
-        - resources:
-            kinds:
-              - VirtualService
+          - resources:
+              kinds:
+                - VirtualService
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: AnyIn
-          value: ["CREATE", "UPDATE"]
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: AnyIn
+            value: ['CREATE', 'UPDATE']
       validate:
-        message: "Wildcards are not permitted as hosts."
+        message: 'Wildcards are not permitted as hosts.'
         foreach:
-        - list: "request.object.spec.hosts"
-          deny:
-            conditions:
-              any:
-              - key: "{{ contains(element, '*') }}"
-                operator: Equals
-                value: true
+          - list: 'request.object.spec.hosts'
+            deny:
+              conditions:
+                any:
+                  - key: "{{ contains(element, '*') }}"
+                    operator: Equals
+                    value: true
 ```

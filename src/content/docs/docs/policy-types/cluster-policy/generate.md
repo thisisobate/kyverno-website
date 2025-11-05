@@ -77,15 +77,15 @@ spec:
         kind: ConfigMap
         name: zk-kafka-address
         # generate the resource in the new namespace
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         data:
           kind: ConfigMap
           metadata:
             labels:
               somekey: somevalue
           data:
-            ZK_ADDRESS: "192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181"
-            KAFKA_ADDRESS: "192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092"
+            ZK_ADDRESS: '192.168.10.10:2181,192.168.10.11:2181,192.168.10.12:2181'
+            KAFKA_ADDRESS: '192.168.10.13:9092,192.168.10.14:9092,192.168.10.15:9092'
 ```
 
 In this example, new Namespaces will receive a NetworkPolicy that denies all inbound and outbound traffic. Similar to the first example, the `generate.data` object is used to define, as an overlay pattern, the `spec` for the NetworkPolicy resource.
@@ -115,7 +115,7 @@ spec:
         kind: NetworkPolicy
         apiVersion: networking.k8s.io/v1
         name: deny-all-traffic
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         data:
           spec:
             # select all pods in the namespace
@@ -173,7 +173,7 @@ spec:
         apiVersion: v1
         kind: Secret
         name: regcred
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: true
         clone:
           namespace: default
@@ -208,7 +208,7 @@ spec:
                 - kube-public
                 - kyverno
       generate:
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: true
         cloneList:
           namespace: staging
@@ -217,7 +217,7 @@ spec:
             - v1/ConfigMap
           selector:
             matchLabels:
-              allowedToBeCloned: "true"
+              allowedToBeCloned: 'true'
 ```
 
 ## foreach
@@ -279,20 +279,20 @@ spec:
                   jmesPath: element
             preconditions:
               any:
-                - key: "{{ ns }}"
+                - key: '{{ ns }}'
                   operator: AnyIn
                   value:
                     - foreach-ns-1
             apiVersion: networking.k8s.io/v1
             kind: NetworkPolicy
             name: my-networkpolicy-{{element}}-{{ elementIndex }}
-            namespace: "{{ element }}"
+            namespace: '{{ element }}'
             data:
               metadata:
                 labels:
-                  request.namespace: "{{ request.object.metadata.name }}"
-                  element: "{{ element }}"
-                  elementIndex: "{{ elementIndex }}"
+                  request.namespace: '{{ request.object.metadata.name }}'
+                  element: '{{ element }}'
+                  elementIndex: '{{ elementIndex }}'
               spec:
                 podSelector: {}
                 policyTypes:
@@ -321,9 +321,9 @@ spec:
             jmesPath: request.object.metadata.namespace
       preconditions:
         any:
-          - key: "{{configmapns}}"
+          - key: '{{configmapns}}'
             operator: Equals
-            value: "default"
+            value: 'default'
       generate:
         generateExisting: false
         synchronize: true
@@ -335,14 +335,14 @@ spec:
                   jmesPath: element
             preconditions:
               any:
-                - key: "{{ ns }}"
+                - key: '{{ ns }}'
                   operator: AnyIn
                   value:
                     - foreach-ns-1
             apiVersion: v1
             kind: Secret
             name: cloned-secret-{{ elementIndex }}-{{ ns }}
-            namespace: "{{ ns }}"
+            namespace: '{{ ns }}'
             clone:
               namespace: default
               name: source-secret
@@ -381,9 +381,9 @@ spec:
             jmesPath: request.object.metadata.namespace
       preconditions:
         any:
-          - key: "{{configmapns}}"
+          - key: '{{configmapns}}'
             operator: Equals
-            value: "{{request.object.metadata.namespace}}"
+            value: '{{request.object.metadata.namespace}}'
       generate:
         generateExisting: false
         synchronize: true
@@ -395,18 +395,18 @@ spec:
                   jmesPath: element
             preconditions:
               any:
-                - key: "{{ ns }}"
+                - key: '{{ ns }}'
                   operator: AnyIn
                   value:
                     - foreach-cpol-clone-list-sync-delete-source-target-ns-1
-            namespace: "{{ ns }}"
+            namespace: '{{ ns }}'
             cloneList:
               kinds:
                 - v1/Secret
               namespace: foreach-cpol-clone-list-sync-delete-source-existing-ns
               selector:
                 matchLabels:
-                  allowedToBeCloned: "true"
+                  allowedToBeCloned: 'true'
 ```
 
 ## Generating Bindings
@@ -451,7 +451,7 @@ spec:
         kind: RoleBinding
         apiVersion: rbac.authorization.k8s.io/v1
         name: steven-rolebinding
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         data:
           subjects:
             - kind: User
@@ -496,16 +496,16 @@ spec:
       generate:
         kind: ConfigMap
         apiVersion: v1
-        name: "{{request.object.metadata.name}}-gen-cm"
-        namespace: "{{request.namespace}}"
+        name: '{{request.object.metadata.name}}-gen-cm'
+        namespace: '{{request.namespace}}'
         synchronize: false
         data:
           metadata:
             ownerReferences:
               - apiVersion: v1
                 kind: Service
-                name: "{{request.object.metadata.name}}"
-                uid: "{{request.object.metadata.uid}}"
+                name: '{{request.object.metadata.name}}'
+                uid: '{{request.object.metadata.uid}}'
           data:
             foo: bar
 ```
@@ -542,7 +542,7 @@ spec:
         kind: NetworkPolicy
         apiVersion: networking.k8s.io/v1
         name: default-deny
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: true
         data:
           metadata:
@@ -578,14 +578,14 @@ spec:
         generateExisting: true
         apiVersion: policy/v1
         kind: PodDisruptionBudget
-        name: "{{request.object.metadata.name}}-default-pdb"
-        namespace: "{{request.object.metadata.namespace}}"
+        name: '{{request.object.metadata.name}}-default-pdb'
+        namespace: '{{request.object.metadata.namespace}}'
         synchronize: true
         data:
           spec:
             minAvailable: 1
             selector:
-              matchLabels: "{{request.object.metadata.labels}}"
+              matchLabels: '{{request.object.metadata.labels}}'
 ```
 
 {{% alert title="Note" color="info" %}}

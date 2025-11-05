@@ -1,14 +1,15 @@
 ---
-title: "Disallow hostPorts"
+title: 'Disallow hostPorts'
 category: Pod Security Standards (Baseline)
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`. 
+  Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security/baseline/disallow-host-ports/disallow-host-ports.yaml" target="-blank">/pod-security/baseline/disallow-host-ports/disallow-host-ports.yaml</a>
 
 ```yaml
@@ -22,11 +23,11 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.22-1.23"
+    kyverno.io/kubernetes-version: '1.22-1.23'
     policies.kyverno.io/description: >-
       Access to host ports allows potential snooping of network traffic and should not be
       allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
-      field is unset or set to `0`. 
+      field is unset or set to `0`.
 spec:
   validationFailureAction: Audit
   background: true
@@ -34,9 +35,9 @@ spec:
     - name: host-ports-none
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
         message: >-
           Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort

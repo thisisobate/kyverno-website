@@ -11,11 +11,11 @@ type: docs
 
 KodeKloud offers specialized training on Kyverno through their [Learn By Doing: Kubernetes Policies with Kyverno](https://kodekloud.com/courses/learn-by-doing-kubernetes-policies-with-kyverno/) course. This practical course covers:
 
-* The importance of Kubernetes Policies
-* Setting up Kyverno in Kubernetes
-* Creating Basic Kyverno Policies
-* Mutating Policies in Kyverno
-* Policy Validation and Testing with Kyverno
+- The importance of Kubernetes Policies
+- Setting up Kyverno in Kubernetes
+- Creating Basic Kyverno Policies
+- Mutating Policies in Kyverno
+- Policy Validation and Testing with Kyverno
 
 Browse all [KodeKloud Kyverno courses](https://learn.kodekloud.com/user/courses?search=kyverno) to find the right training path for your skill level.
 

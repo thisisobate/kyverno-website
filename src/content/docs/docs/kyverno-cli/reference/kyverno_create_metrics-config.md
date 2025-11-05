@@ -1,5 +1,5 @@
 ---
-title: "kyverno create metrics-config"
+title: 'kyverno create metrics-config'
 sidebar:
   order: 35
 ---

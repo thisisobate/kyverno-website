@@ -1,14 +1,15 @@
 ---
-title: "Restrict Pod Controller ServiceAccount Updates in CEL Expressions"
+title: 'Restrict Pod Controller ServiceAccount Updates in CEL Expressions'
 category: Other in CEL
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    ServiceAccounts which have the ability to edit/patch workloads which they created may potentially use that privilege to update to a different ServiceAccount with higher privileges. This policy, intended to be run in `enforce` mode, blocks updates to Pod controllers if those updates modify the serviceAccountName field. Updates to Pods directly for this field are not possible as it is immutable once set.
+  ServiceAccounts which have the ability to edit/patch workloads which they created may potentially use that privilege to update to a different ServiceAccount with higher privileges. This policy, intended to be run in `enforce` mode, blocks updates to Pod controllers if those updates modify the serviceAccountName field. Updates to Pods directly for this field are not possible as it is immutable once set.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other-cel/restrict-pod-controller-serviceaccount-updates/restrict-pod-controller-serviceaccount-updates.yaml" target="-blank">/other-cel/restrict-pod-controller-serviceaccount-updates/restrict-pod-controller-serviceaccount-updates.yaml</a>
 
 ```yaml
@@ -18,11 +19,11 @@ metadata:
   name: restrict-pod-controller-serviceaccount-updates
   annotations:
     policies.kyverno.io/title: Restrict Pod Controller ServiceAccount Updates in CEL Expressions
-    policies.kyverno.io/category: Other in CEL 
+    policies.kyverno.io/category: Other in CEL
     policies.kyverno.io/severity: Medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.12.1
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/description: >-
       ServiceAccounts which have the ability to edit/patch workloads which they created
       may potentially use that privilege to update to a different ServiceAccount with higher
@@ -36,17 +37,17 @@ spec:
     - name: block-serviceaccount-updates
       match:
         any:
-        - resources:
-            kinds:
-            - DaemonSet
-            - Deployment
-            - Job
-            - StatefulSet
-            - ReplicaSet
-            - ReplicationController
-      celPreconditions: 
-      - name: "operation-should-be-update"
-        expression: "request.operation == 'UPDATE'"
+          - resources:
+              kinds:
+                - DaemonSet
+                - Deployment
+                - Job
+                - StatefulSet
+                - ReplicaSet
+                - ReplicationController
+      celPreconditions:
+        - name: 'operation-should-be-update'
+          expression: "request.operation == 'UPDATE'"
       validate:
         cel:
           expressions:
@@ -57,12 +58,12 @@ spec:
     - name: block-serviceaccount-updates-cronjob
       match:
         any:
-        - resources:
-            kinds:
-            - CronJob
-      celPreconditions: 
-      - name: "operation-should-be-update"
-        expression: "request.operation == 'UPDATE'"
+          - resources:
+              kinds:
+                - CronJob
+      celPreconditions:
+        - name: 'operation-should-be-update'
+          expression: "request.operation == 'UPDATE'"
       validate:
         cel:
           expressions:
@@ -70,6 +71,4 @@ spec:
                 object.spec.jobTemplate.spec.template.spec.?serviceAccountName.orValue('empty') == oldObject.spec.jobTemplate.spec.template.spec.?serviceAccountName.orValue('empty')
         message: >-
           The serviceAccountName field may not be changed once created.
-
-
 ```

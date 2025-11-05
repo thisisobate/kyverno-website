@@ -31,13 +31,13 @@ spec:
             - Deployment
           selector:
             matchLabels:
-              canremove: "true"
+              canremove: 'true'
   conditions:
     any:
-      - key: "{{ target.spec.replicas }}"
+      - key: '{{ target.spec.replicas }}'
         operator: LessThan
         value: 2
-  schedule: "*/5 * * * *"
+  schedule: '*/5 * * * *'
 ```
 
 Values from resources to be evaluated during a policy may be referenced with `target.*` similar to [mutate existing rules](/docs/policy-types/cluster-policy/mutate.md#mutate-existing-resources).
@@ -57,7 +57,7 @@ metadata:
   name: kyverno:cleanup-pods
 rules:
   - apiGroups:
-      - ""
+      - ''
     resources:
       - pods
     verbs:
@@ -129,13 +129,13 @@ spec:
             - Deployment
           selector:
             matchLabels:
-              canremove: "true"
+              canremove: 'true'
   conditions:
     any:
-      - key: "{{ target.spec.replicas }}"
+      - key: '{{ target.spec.replicas }}'
         operator: LessThan
         value: 2
-  schedule: "*/5 * * * *"
+  schedule: '*/5 * * * *'
   # use Foreground deletion propagation policy
   deletionPropagationPolicy: Foreground
 ```

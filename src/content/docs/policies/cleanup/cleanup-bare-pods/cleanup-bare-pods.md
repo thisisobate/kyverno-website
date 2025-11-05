@@ -1,14 +1,15 @@
 ---
-title: "Cleanup Bare Pods"
+title: 'Cleanup Bare Pods'
 category: Other
 version: 1.10.0
 subject: Pod
-policyType: "cleanUp"
+policyType: 'cleanUp'
 description: >
-    A bare Pod is any Pod created directly and not owned by a controller such as a Deployment or Job. Bare Pods are often create manually by users in an attempt to troubleshoot an issue. If left in the cluster, they create clutter, increase cost, and can be a security risk. Bare Pods can be cleaned up periodically through use of a policy. This policy finds and removes all bare Pods across the cluster.
+  A bare Pod is any Pod created directly and not owned by a controller such as a Deployment or Job. Bare Pods are often create manually by users in an attempt to troubleshoot an issue. If left in the cluster, they create clutter, increase cost, and can be a security risk. Bare Pods can be cleaned up periodically through use of a policy. This policy finds and removes all bare Pods across the cluster.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//cleanup/cleanup-bare-pods/cleanup-bare-pods.yaml" target="-blank">/cleanup/cleanup-bare-pods/cleanup-bare-pods.yaml</a>
 
 ```yaml
@@ -24,7 +25,7 @@ metadata:
     kyverno.io/kyverno-version: 1.11.1
     policies.kyverno.io/minversion: 1.10.0
     pod-policies.kyverno.io/autogen-controllers: none
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/description: >-
       A bare Pod is any Pod created directly and not owned by a controller such as a
       Deployment or Job. Bare Pods are often create manually by users in an attempt to troubleshoot
@@ -34,14 +35,13 @@ metadata:
 spec:
   match:
     any:
-    - resources:
-        kinds:
-          - Pod
+      - resources:
+          kinds:
+            - Pod
   conditions:
     all:
-    - key: "{{ target.metadata.ownerReferences[] || `[]` }}"
-      operator: Equals
-      value: []
-  schedule: "*/5 * * * *"
-
+      - key: '{{ target.metadata.ownerReferences[] || `[]` }}'
+        operator: Equals
+        value: []
+  schedule: '*/5 * * * *'
 ```

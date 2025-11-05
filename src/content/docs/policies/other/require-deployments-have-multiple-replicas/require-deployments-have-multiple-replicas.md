@@ -1,14 +1,15 @@
 ---
-title: "Require Multiple Replicas"
+title: 'Require Multiple Replicas'
 category: Sample
 version: 1.6.0
 subject: Deployment
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.
+  Deployments with a single replica cannot be highly available and thus the application may suffer downtime if that one replica goes down. This policy validates that Deployments have more than one replica.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/require-deployments-have-multiple-replicas/require-deployments-have-multiple-replicas.yaml" target="-blank">/other/require-deployments-have-multiple-replicas/require-deployments-have-multiple-replicas.yaml</a>
 
 ```yaml
@@ -33,12 +34,12 @@ spec:
     - name: deployment-has-multiple-replicas
       match:
         any:
-        - resources:
-            kinds:
-            - Deployment
+          - resources:
+              kinds:
+                - Deployment
       validate:
-        message: "Deployments should have more than one replica to ensure availability."
+        message: 'Deployments should have more than one replica to ensure availability.'
         pattern:
           spec:
-            replicas: ">1"
+            replicas: '>1'
 ```

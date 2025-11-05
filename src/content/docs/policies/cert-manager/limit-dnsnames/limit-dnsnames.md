@@ -1,14 +1,15 @@
 ---
-title: "Limit dnsNames"
+title: 'Limit dnsNames'
 category: Cert-Manager
 version: 1.6.0
 subject: Certificate
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Some applications will not accept certificates containing more than a single name. This policy ensures that each certificate request contains only one DNS name entry.
+  Some applications will not accept certificates containing more than a single name. This policy ensures that each certificate request contains only one DNS name entry.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//cert-manager/limit-dnsnames/limit-dnsnames.yaml" target="-blank">/cert-manager/limit-dnsnames/limit-dnsnames.yaml</a>
 
 ```yaml
@@ -30,18 +31,18 @@ spec:
   validationFailureAction: Audit
   background: false
   rules:
-  - name: limit-dnsnames
-    match:
-      any:
-      - resources:
-          kinds:
-          - Certificate
-    validate:
-      message: Only one dnsNames entry allowed per certificate request.
-      deny:
-        conditions:
-          all:
-          - key: "{{request.object.spec.dnsNames || `[]` | length(@)}}"
-            operator: GreaterThan
-            value: "1"
+    - name: limit-dnsnames
+      match:
+        any:
+          - resources:
+              kinds:
+                - Certificate
+      validate:
+        message: Only one dnsNames entry allowed per certificate request.
+        deny:
+          conditions:
+            all:
+              - key: '{{request.object.spec.dnsNames || `[]` | length(@)}}'
+                operator: GreaterThan
+                value: '1'
 ```

@@ -208,7 +208,7 @@ spec:
         apiVersion: networking.k8s.io/v1
         kind: NetworkPolicy
         name: default-deny-ingress
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: true
         data:
           spec:
@@ -326,7 +326,7 @@ spec:
         deny:
           conditions:
             any:
-              - key: "{{ request.mode }}"
+              - key: '{{ request.mode }}'
                 operator: NotEquals
                 value: dev
 ```
@@ -426,10 +426,10 @@ spec:
                       - managed
       validate:
         failureAction: Audit
-        message: "The Pod must end with -nginx"
+        message: 'The Pod must end with -nginx'
         pattern:
           metadata:
-            name: "*-nginx"
+            name: '*-nginx'
 ```
 
 Resource manifest (`nginx.yaml`):
@@ -511,7 +511,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              my-environment-name: "{{dictionary.data.env}}"
+              my-environment-name: '{{dictionary.data.env}}'
 ```
 
 `resource1.yaml`
@@ -626,16 +626,16 @@ spec:
                 - Pod
       validate:
         failureAction: Audit
-        message: "CPU and memory resource requests and limits are required"
+        message: 'CPU and memory resource requests and limits are required'
         pattern:
           spec:
             containers:
               - resources:
                   requests:
-                    memory: "?*"
-                    cpu: "?*"
+                    memory: '?*'
+                    cpu: '?*'
                   limits:
-                    memory: "?*"
+                    memory: '?*'
 ```
 
 `resource1.yaml`
@@ -654,11 +654,11 @@ spec:
       imagePullPolicy: IfNotPresent
       resources:
         requests:
-          memory: "64Mi"
-          cpu: "250m"
+          memory: '64Mi'
+          cpu: '250m'
         limits:
-          memory: "128Mi"
-          cpu: "500m"
+          memory: '128Mi'
+          cpu: '500m'
 ```
 
 `resource2.yaml`
@@ -731,7 +731,7 @@ results:
     rule: validate-resources
     scored: true
     status: pass
-  - message: "Validation error: CPU and memory resource requests and limits are required; Validation rule validate-resources failed at path /spec/containers/0/resources/limits/"
+  - message: 'Validation error: CPU and memory resource requests and limits are required; Validation rule validate-resources failed at path /spec/containers/0/resources/limits/'
     policy: require-pod-requests-limits
     resources:
       - apiVersion: v1
@@ -779,11 +779,11 @@ spec:
                 - Pod
       validate:
         failureAction: Enforce
-        message: "A maximum of 2 containers are allowed inside a Pod."
+        message: 'A maximum of 2 containers are allowed inside a Pod.'
         deny:
           conditions:
             any:
-              - key: "{{request.object.spec.containers[] | length(@)}}"
+              - key: '{{request.object.spec.containers[] | length(@)}}'
                 operator: GreaterThan
                 value: 2
 ```
@@ -850,8 +850,8 @@ spec:
           image: busybox:latest
           command:
             [
-              "/bin/sh",
-              "-c",
+              '/bin/sh',
+              '-c',
               "while true; do echo 'Hello from BusyBox'; sleep 10; done",
             ]
 ```
@@ -889,13 +889,13 @@ spec:
   failurePolicy: Fail
   matchConstraints:
     resourceRules:
-      - apiGroups: ["apps"]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["deployments"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
   validations:
-    - expression: "object.spec.replicas <= 3"
-      message: "Replicas must be less than or equal 3"
+    - expression: 'object.spec.replicas <= 3'
+      message: 'Replicas must be less than or equal 3'
 ```
 
 Resource manifest (deployment.yaml):
@@ -942,7 +942,7 @@ Policy manifest (check-deployment-replicas.yaml):
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
-  name: "check-deployment-replicas"
+  name: 'check-deployment-replicas'
 spec:
   matchConstraints:
     resourceRules:
@@ -961,9 +961,9 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: "check-deployment-replicas-binding"
+  name: 'check-deployment-replicas-binding'
 spec:
-  policyName: "check-deployment-replicas"
+  policyName: 'check-deployment-replicas'
   validationActions: [Deny]
   matchResources:
     namespaceSelector:
@@ -1056,18 +1056,18 @@ Policy manifest (add-label-to-configmap.yaml):
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicy
 metadata:
-  name: "add-label-to-configmap"
+  name: 'add-label-to-configmap'
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['configmaps']
   failurePolicy: Fail
   reinvocationPolicy: Never
   mutations:
-    - patchType: "ApplyConfiguration"
+    - patchType: 'ApplyConfiguration'
       applyConfiguration:
         expression: >
           object.metadata.?labels["lfx-mentorship"].hasValue() ? 
@@ -1085,7 +1085,7 @@ metadata:
   labels:
     app: game
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ```
 
 Now, apply the MutatingAdmissionPolicy to the ConfigMap resource:
@@ -1132,18 +1132,18 @@ This file defines a policy to add a label and a binding that restricts it to Nam
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicy
 metadata:
-  name: "add-label-to-configmap"
+  name: 'add-label-to-configmap'
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['configmaps']
   failurePolicy: Fail
   reinvocationPolicy: Never
   mutations:
-    - patchType: "ApplyConfiguration"
+    - patchType: 'ApplyConfiguration'
       applyConfiguration:
         expression: >
           object.metadata.?labels["lfx-mentorship"].hasValue() ? 
@@ -1153,9 +1153,9 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicyBinding
 metadata:
-  name: "add-label-to-configmap-binding"
+  name: 'add-label-to-configmap-binding'
 spec:
-  policyName: "add-label-to-configmap"
+  policyName: 'add-label-to-configmap'
   matchResources:
     namespaceSelector:
       matchExpressions:
@@ -1179,7 +1179,7 @@ metadata:
   labels:
     color: red
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -1189,7 +1189,7 @@ metadata:
   labels:
     color: red
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -1199,7 +1199,7 @@ metadata:
   labels:
     color: blue
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ```
 
 Values file (values.yaml):
@@ -1281,13 +1281,13 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: ["apps"]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["deployments"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
   validations:
-    - expression: "object.spec.replicas <= 2"
-      message: "Deployment replicas must be less than or equal to 2"
+    - expression: 'object.spec.replicas <= 2'
+      message: 'Deployment replicas must be less than or equal to 2'
 ```
 
 Next, we have two `Deployment` manifests. The `good-deployment` is compliant with 2 replicas, while the `bad-deployment` is non-compliant with 3 replicas.
@@ -1416,10 +1416,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
     # This variable uses a Kyverno CEL function to get a ConfigMap from the cluster.
     - name: cm
@@ -1521,7 +1521,7 @@ results:
     timestamp:
       nanos: 0
       seconds: 1752756617
-source: ""
+source: ''
 summary:
   error: 0
   fail: 1
@@ -1554,13 +1554,13 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   validations:
-    - expression: "!has(object.spec.volumes) || object.spec.volumes.all(volume, !has(volume.hostPath))"
-      message: "HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset."
+    - expression: '!has(object.spec.volumes) || object.spec.volumes.all(volume, !has(volume.hostPath))'
+      message: 'HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset.'
 ```
 
 Next, we define a Pod that clearly violates this policy by mounting a `hostPath` volume. Without an exception, this Pod would be blocked.
@@ -1596,7 +1596,7 @@ spec:
     - name: disallow-host-path
       kind: ValidatingPolicy
   matchConditions:
-    - name: "skip-pod-by-name"
+    - name: 'skip-pod-by-name'
       expression: "object.metadata.name == 'pod-with-hostpath'"
 ```
 
@@ -1615,7 +1615,7 @@ metadata:
   creationTimestamp: null
   name: merged
 results:
-  - message: "rule is skipped due to policy exception: exempt-hostpath-pod"
+  - message: 'rule is skipped due to policy exception: exempt-hostpath-pod'
     policy: disallow-host-path
     properties:
       exceptions: exempt-hostpath-pod
@@ -1632,7 +1632,7 @@ results:
     timestamp:
       nanos: 0
       seconds: 1752759828
-source: ""
+source: ''
 summary:
   error: 0
   fail: 0

@@ -1,5 +1,5 @@
 ---
-title: "kyverno create cluster-role"
+title: 'kyverno create cluster-role'
 sidebar:
   order: 35
 ---

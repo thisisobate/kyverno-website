@@ -10,7 +10,7 @@ description: Security or Scalability? Why not both!
 
 Policy Reports are used by Kyverno to store the result of policies and cluster policies that match a resource. Kyverno generates reports during admission request as well as periodically as background scans. They are very helpful in auditing the current state of policy compliance in a cluster.
 
-Kyverno also creates its own custom ephemeral reports which are later aggregated to create the final policy reports or cluster policy reports. Policy reports and ephemeral reports are stored in etcd as Custom Resources. 
+Kyverno also creates its own custom ephemeral reports which are later aggregated to create the final policy reports or cluster policy reports. Policy reports and ephemeral reports are stored in etcd as Custom Resources.
 
 This setup works fine in most cases, but in larger-scale environments the limits of the Kubernetes API server could be reached. During periods of especially heavy reporting, the volume of data being written to and read from etcd can put the API server under severe load which can lead to degraded performance. Additionally, etcd has a maximum capacity limit and therefore has a limited number of resources it may store. This limit can be reached in large clusters with many report producers.
 
@@ -53,19 +53,20 @@ apiserver_storage_objects{resource="policyreports.wgpolicyk8s.io"} 10268
 $ kubectl get polr -A | wc -l
 10269
 ```
+
 `apiserver_storage_objects` metrics show that there are 10000+ policy reports stored in etcd along with other resources.
 
 Total size of etcd:
 
 | Number of Policy Reports | Number of Pods | Total etcd Size |
-| --------------- | --------------- | --------------- |
-| 179             | 139             | 46 MB           |
-| 1199            | 1139            | 71 MB           |
-| 2219            | 2139            | 100 MB          |
-| 4259            | 4139            | 149 MB          |
-| 6299            | 6139            | 167 MB          |
-| 8339            | 8139            | 220 MB          |
-| 10379           | 10139           | 255 MB          |
+| ------------------------ | -------------- | --------------- |
+| 179                      | 139            | 46 MB           |
+| 1199                     | 1139           | 71 MB           |
+| 2219                     | 2139           | 100 MB          |
+| 4259                     | 4139           | 149 MB          |
+| 6299                     | 6139           | 167 MB          |
+| 8339                     | 8139           | 220 MB          |
+| 10379                    | 10139          | 255 MB          |
 
 ### With Reports Server
 
@@ -84,19 +85,20 @@ apiserver_storage_objects{resource="pods"} 8540
 $ kubectl get polr -A | wc -l
 10249
 ```
+
 `apiserver_storage_objects` metric does not find policy reports stored in etcd.
 
 Total size of etcd:
 
 | Number of Policy Reports | Number of Pods | Total etcd Size |
-| --------------- | --------------- | --------------- |
-| 185             | 141             | 38 MB           |
-| 1205            | 1141            | 38 MB           |
-| 2225            | 2141            | 41 MB           |
-| 4265            | 4141            | 55 MB           |
-| 6305            | 6141            | 58 MB           |
-| 8345            | 8141            | 67 MB           |
-| 10385           | 10141           | 76 MB           |
+| ------------------------ | -------------- | --------------- |
+| 185                      | 141            | 38 MB           |
+| 1205                     | 1141           | 38 MB           |
+| 2225                     | 2141           | 41 MB           |
+| 4265                     | 4141           | 55 MB           |
+| 6305                     | 6141           | 58 MB           |
+| 8345                     | 8141           | 67 MB           |
+| 10385                    | 10141          | 76 MB           |
 
 As shown in the benchmark, the size of etcd grows as the number of resources in the cluster grows, but the growth is slower when reports server is installed. As reports server stores policy reports in a separate database, they don't take up any space in etcd. At 10,000 reports, the storage size of etcd is 70.1% smaller compared to when reports server is installed.
 
@@ -106,15 +108,19 @@ To get started using reports server, install the service in your cluster. After 
 
 To install reports server using the YAML manifest, run the following commands:
 Create a namespace for reports server:
+
 ```bash
 kubectl create ns reports-server
 ```
+
 Apply the reports server manifest:
+
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kyverno/reports-server/main/config/install.yaml
 ```
 
 The manifest will install the following components:
+
 1. A deployment and service for the reports server
 2. A Postgres instance
 3. An API service to redirect requests to reports server
@@ -128,4 +134,3 @@ In this short blog post, we demonstrated how reports server can be used to store
 Reports server is a new project from Kyverno that can be helpful for users with large scale reporting needs. This project is maintained by Kyverno and will have future updates and features based on feedback.
 
 🔗 Check out the project on GitHub: https://github.com/kyverno/reports-server
-

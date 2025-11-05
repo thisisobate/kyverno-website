@@ -35,9 +35,9 @@ admissionController:
     clusterRole:
       extraResources:
         - apiGroups:
-            - "*"
+            - '*'
           resources:
-            - "*"
+            - '*'
           verbs:
             - get
             - list
@@ -47,9 +47,9 @@ backgroundController:
     clusterRole:
       extraResources:
         - apiGroups:
-            - "*"
+            - '*'
           resources:
-            - "*"
+            - '*'
           verbs:
             - get
             - list
@@ -59,9 +59,9 @@ reportsController:
     clusterRole:
       extraResources:
         - apiGroups:
-            - "*"
+            - '*'
           resources:
-            - "*"
+            - '*'
           verbs:
             - get
             - list

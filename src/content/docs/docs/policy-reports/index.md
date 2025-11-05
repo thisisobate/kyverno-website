@@ -17,7 +17,7 @@ Kyverno uses a standard and open format published by the [Kubernetes Policy work
 apiVersion: wgpolicyk8s.io/v1alpha2
 kind: PolicyReport
 metadata:
-  creationTimestamp: "2023-12-06T13:19:03Z"
+  creationTimestamp: '2023-12-06T13:19:03Z'
   generation: 2
   labels:
     app.kubernetes.io/managed-by: kyverno
@@ -28,7 +28,7 @@ metadata:
       kind: Pod
       name: kube-apiserver-kind-control-plane
       uid: 487df031-11d8-4ab4-b089-dfc0db1e533e
-  resourceVersion: "720507"
+  resourceVersion: '720507'
   uid: 0ec04a57-4c3d-492d-9278-951cd1929fe3
 results:
   - category: Pod Security Standards (Baseline)
@@ -44,9 +44,9 @@ results:
       seconds: 1701868762
   - category: Pod Security Standards (Baseline)
     message:
-      "validation error: Sharing the host namespaces is disallowed. The fields
+      'validation error: Sharing the host namespaces is disallowed. The fields
       spec.hostNetwork, spec.hostIPC, and spec.hostPID must be unset or set to `false`.
-      rule host-namespaces failed at path /spec/hostNetwork/"
+      rule host-namespaces failed at path /spec/hostNetwork/'
     policy: disallow-host-namespaces
     result: fail
     rule: host-namespaces
@@ -138,12 +138,12 @@ _Example:_ If we have the following policy:
 ```yaml
 spec:
   =(initContainers):
-    - (name): "!istio-init"
+    - (name): '!istio-init'
       =(securityContext):
-        =(runAsUser): ">0"
+        =(runAsUser): '>0'
   =(containers):
     - =(securityContext):
-        =(runAsUser): ">0"
+        =(runAsUser): '>0'
 ```
 
 The following resource would result in pass:
@@ -226,7 +226,7 @@ kubectl get polr 1d491ec4-ca84-4b3a-960a-a2aefa3219ba -o jsonpath='{.results[?(@
 
 ```yaml
 category: Pod Security Standards (Baseline)
-message: "validation error: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.          . rule privileged-containers failed at path /spec/containers/0/securityContext/privileged/"
+message: 'validation error: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.          . rule privileged-containers failed at path /spec/containers/0/securityContext/privileged/'
 policy: disallow-privileged-containers
 result: fail
 rule: privileged-containers
@@ -238,7 +238,7 @@ timestamp:
   seconds: 1.666094801e+09
 ---
 category: Pod Security Standards (Baseline)
-message: "validation error: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.          . rule privileged-containers failed at path /spec/containers/0/securityContext/privileged/"
+message: 'validation error: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged and spec.initContainers[*].securityContext.privileged must be unset or set to `false`.          . rule privileged-containers failed at path /spec/containers/0/securityContext/privileged/'
 policy: disallow-privileged-containers
 result: fail
 rule: privileged-containers
@@ -258,15 +258,15 @@ The `PolicyReport` and `ClusterPolicyReport` are the final resources composed of
 apiVersion: kyverno.io/v1alpha2
 kind: ClusterAdmissionReport
 metadata:
-  creationTimestamp: "2022-10-18T13:15:09Z"
+  creationTimestamp: '2022-10-18T13:15:09Z'
   generation: 1
   labels:
     app.kubernetes.io/managed-by: kyverno
     audit.kyverno.io/resource.hash: a7ec5160f220c5b83c26b5c8f7dc35b6
     audit.kyverno.io/resource.uid: 61946422-14ba-4aa2-94b4-229d38446381
-    cpol.kyverno.io/require-ns-labels: "4773"
+    cpol.kyverno.io/require-ns-labels: '4773'
   name: c0cc7337-9bcd-4d53-abb2-93f7f5555216
-  resourceVersion: "4986"
+  resourceVersion: '4986'
   uid: 10babc6c-9e6e-4386-abed-c13f50091523
 spec:
   owner:
@@ -276,8 +276,8 @@ spec:
     uid: 61946422-14ba-4aa2-94b4-229d38446381
   results:
     - message:
-        "validation error: The label `thisshouldntexist` is required. rule check-for-labels-on-namespace
-        failed at path /metadata/labels/thisshouldntexist/"
+        'validation error: The label `thisshouldntexist` is required. rule check-for-labels-on-namespace
+        failed at path /metadata/labels/thisshouldntexist/'
       policy: require-ns-labels
       result: fail
       rule: check-for-labels-on-namespace

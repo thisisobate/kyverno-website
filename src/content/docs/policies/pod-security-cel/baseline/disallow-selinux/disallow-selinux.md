@@ -1,14 +1,15 @@
 ---
-title: "Disallow SELinux in CEL expressions"
+title: 'Disallow SELinux in CEL expressions'
 category: Pod Security Standards (Baseline) in CEL
 version: 1.11.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    SELinux options can be used to escalate privileges and should not be allowed. This policy ensures that the `seLinuxOptions` field is undefined.
+  SELinux options can be used to escalate privileges and should not be allowed. This policy ensures that the `seLinuxOptions` field is undefined.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-cel/baseline/disallow-selinux/disallow-selinux.yaml" target="-blank">/pod-security-cel/baseline/disallow-selinux/disallow-selinux.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kyverno-version: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/description: >-
       SELinux options can be used to escalate privileges and should not be allowed. This policy
       ensures that the `seLinuxOptions` field is undefined.
@@ -34,17 +35,17 @@ spec:
     - name: selinux-type
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           variables:
             - name: allContainerTypes
-              expression: "(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))"
+              expression: '(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))'
             - name: seLinuxTypes
               expression: "['container_t', 'container_init_t', 'container_kvm_t']"
           expressions:
@@ -63,17 +64,17 @@ spec:
     - name: selinux-user-role
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           variables:
             - name: allContainerTypes
-              expression: "(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))"
+              expression: '(object.spec.containers + (has(object.spec.initContainers) ? object.spec.initContainers : []) + (has(object.spec.ephemeralContainers) ? object.spec.ephemeralContainers : []))'
           expressions:
             - expression: >-
                 (!has(object.spec.securityContext) ||
@@ -85,5 +86,4 @@ spec:
                 (!has(container.securityContext.seLinuxOptions.user) && !has(container.securityContext.seLinuxOptions.role)))
               message: >-
                 Setting the SELinux user or role is forbidden. The fields seLinuxOptions.user and seLinuxOptions.role must be unset.
-          
 ```

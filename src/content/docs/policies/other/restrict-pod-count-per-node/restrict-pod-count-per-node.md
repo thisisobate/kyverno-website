@@ -1,14 +1,15 @@
 ---
-title: "Restrict Pod Count per Node"
+title: 'Restrict Pod Count per Node'
 category: Sample
 version: 1.6.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Sometimes Kubernetes Nodes may have a maximum number of Pods they can accommodate due to resources outside CPU and memory such as licensing, or in some development cases. This policy restricts Pod count on a Node named `minikube` to be no more than 10.
+  Sometimes Kubernetes Nodes may have a maximum number of Pods they can accommodate due to resources outside CPU and memory such as licensing, or in some development cases. This policy restricts Pod count on a Node named `minikube` to be no more than 10.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/restrict-pod-count-per-node/restrict-pod-count-per-node.yaml" target="-blank">/other/restrict-pod-count-per-node/restrict-pod-count-per-node.yaml</a>
 
 ```yaml
@@ -34,25 +35,25 @@ spec:
     - name: restrict-pod-count
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       context:
         - name: podcounts
           apiCall:
-            urlPath: "/api/v1/pods"
+            urlPath: '/api/v1/pods'
             jmesPath: "items[?spec.nodeName=='minikube'] | length(@)"
       preconditions:
         any:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: Equals
-          value: "CREATE"
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: Equals
+            value: 'CREATE'
       validate:
-        message: "A maximum of 10 Pods are allowed on the Node `minikube`"
+        message: 'A maximum of 10 Pods are allowed on the Node `minikube`'
         deny:
           conditions:
             any:
-            - key: "{{ podcounts }}"
-              operator: GreaterThan
-              value: 10
+              - key: '{{ podcounts }}'
+                operator: GreaterThan
+                value: 10
 ```

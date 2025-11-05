@@ -25,16 +25,16 @@ spec:
   background: true
   validationFailureAction: audit
   rules:
-  - name: restricted
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      podSecurity:
-        level: restricted
-        version: latest
+    - name: restricted
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        podSecurity:
+          level: restricted
+          version: latest
 ```
 
 ### YAML Manifest Verification
@@ -53,25 +53,25 @@ spec:
     - name: verify-deployment-allow-replicas
       match:
         any:
-        - resources:
-            kinds:
-              - Deployment
+          - resources:
+              kinds:
+                - Deployment
       validate:
         manifests:
           attestors:
-          - count: 1
-            entries:
-            - keys:
-                publicKeys: |-
-                  -----BEGIN PUBLIC KEY-----
-                  MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEStoX3dPCFYFD2uPgTjZOf1I5UFTa
-                  1tIu7uoGoyTxJqqEq7K2aqU+vy+aK76uQ5mcllc+TymVtcLk10kcKvb3FQ==
-                  -----END PUBLIC KEY-----                  
+            - count: 1
+              entries:
+                - keys:
+                    publicKeys: |-
+                      -----BEGIN PUBLIC KEY-----
+                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEStoX3dPCFYFD2uPgTjZOf1I5UFTa
+                      1tIu7uoGoyTxJqqEq7K2aqU+vy+aK76uQ5mcllc+TymVtcLk10kcKvb3FQ==
+                      -----END PUBLIC KEY-----
           ignoreFields:
-          - objects:
-            - kind: Deployment
-            fields:
-            - spec.replicas
+            - objects:
+                - kind: Deployment
+              fields:
+                - spec.replicas
 ```
 
 Signing of manifests is a great way to bolster the security of your cluster, but it also requires some flexibility. Teams often need to change values and certain fields (in addition to Kubernetes itself needing to sometimes change them). That's why with this new rule type there is an object where you can specify which fields to ignore when verifying those manifests. In the previous policy, it provides an exception for the replicas field of a Deployment allowing only the value of this field to deviate from what was originally signed.
@@ -87,23 +87,23 @@ metadata:
   name: provision-namespaces
 spec:
   rules:
-  - name: sync-secrets-configmaps
-    match:
-      any:
-      - resources:
+    - name: sync-secrets-configmaps
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      generate:
+        namespace: '{{request.object.metadata.name}}'
+        synchronize: true
+        cloneList:
+          namespace: staging
           kinds:
-          - Namespace
-    generate:
-      namespace: "{{request.object.metadata.name}}"
-      synchronize: true
-      cloneList:
-        namespace: staging
-        kinds:
-          - v1/Secret
-          - v1/ConfigMap
-        selector:
-          matchLabels:
-            allowedToBeCloned: "true"
+            - v1/Secret
+            - v1/ConfigMap
+          selector:
+            matchLabels:
+              allowedToBeCloned: 'true'
 ```
 
 ### GitOps Friendly Rule Auto-Generation Is Here To Stay

@@ -24,9 +24,9 @@ Reports Server offers a straightforward solution. It leverages the Extension API
 
 Advantages of Reports Server:
 
-* Scalability: Overcomes etcd's storage constraints, allowing for seamless scalability within Kubernetes clusters.
-* Performance: By storing policy reports in a dedicated database, Reports Server improves cluster performance, particularly during heavy operations.
-* Simplified Querying: Offers enhanced querying capabilities compared to etcd, simplifying access to policy reports.
+- Scalability: Overcomes etcd's storage constraints, allowing for seamless scalability within Kubernetes clusters.
+- Performance: By storing policy reports in a dedicated database, Reports Server improves cluster performance, particularly during heavy operations.
+- Simplified Querying: Offers enhanced querying capabilities compared to etcd, simplifying access to policy reports.
 
 Explore Reports Server and contribute to its development on GitHub: https://github.com/kyverno/reports-server.
 
@@ -72,7 +72,7 @@ metadata:
   name: deployments
 spec:
   apiCall:
-    urlPath: "/apis/apps/v1/namespaces/test-globalcontext/deployments"
+    urlPath: '/apis/apps/v1/namespaces/test-globalcontext/deployments'
     refreshInterval: 10s
 ```
 
@@ -104,19 +104,19 @@ The following illustrates how to use the new `checks` stanza in a Kyverno CLI te
 ```yaml
 # ...
 checks:
-- match:
-    resource:
-      kind: Namespace
-      metadata:
-        name: hello-world-namespace
-    policy:
-      kind: ClusterPolicy
-      metadata:
-        name: sync-secret
-    rule:
-      name: sync-my-secret
-  assert:
-    status: pass
+  - match:
+      resource:
+        kind: Namespace
+        metadata:
+          name: hello-world-namespace
+      policy:
+        kind: ClusterPolicy
+        metadata:
+          name: sync-secret
+      rule:
+        name: sync-my-secret
+    assert:
+      status: pass
 ```
 
 ### Policy Exception Enhancements
@@ -161,19 +161,19 @@ metadata:
   namespace: policy-exception-ns
 spec:
   exceptions:
-  - policyName: psa
-    ruleNames:
-    - restricted
+    - policyName: psa
+      ruleNames:
+        - restricted
   match:
     any:
-    - resources:
-        namespaces:
-        - delta
+      - resources:
+          namespaces:
+            - delta
   podSecurity:
     - controlName: Capabilities
       images:
-          - nginx*
-          - redis*
+        - nginx*
+        - redis*
 ```
 
 Furthermore, Kyverno CLI supports applying PolicyExceptions alongside policies to resources by using the `-e` or `--exceptions` flag to pass the Policy Exception manifest.
@@ -182,8 +182,7 @@ Furthermore, Kyverno CLI supports applying PolicyExceptions alongside policies t
 kyverno apply /path/to/policy.yaml --resource /path/to/resource.yaml --exception /path/to/exception.yaml
 ```
 
-Resources that match the given exception will get a `skip` as a result. 
-
+Resources that match the given exception will get a `skip` as a result.
 
 ### ValidatingAdmissionPolicy in CLI and Reports
 
@@ -248,8 +247,8 @@ spec:
           exclude:
             - controlName: Capabilities
               images:
-                - "*/istio/proxyv2*"
-                - "*/linkerd/proxy-init*"
+                - '*/istio/proxyv2*'
+                - '*/linkerd/proxy-init*'
               restrictedField: spec.initContainers[*].securityContext.capabilities.add
               values:
                 - NET_ADMIN
@@ -272,17 +271,18 @@ Load testing with K6 and profiling with Golang's pprof tool revealed the primary
 
 Armed with these insights, the team implemented targeted optimizations:
 
-* Context Storage: Replacing JSON structures with in-memory Golang maps significantly reduced overhead.
-* JSON Handling: Switching to the lightweight jsoniter library boosted JSON processing efficiency.
-* Event Processing: A custom Watcher function optimized event generation and minimized goroutine overhead.
-* Policy Matching: Restructuring the matching logic prioritized simpler comparisons, leading to faster processing.
-* Webhook Configuration: Fine-grained configuration minimized unnecessary Kyverno invocations.
+- Context Storage: Replacing JSON structures with in-memory Golang maps significantly reduced overhead.
+- JSON Handling: Switching to the lightweight jsoniter library boosted JSON processing efficiency.
+- Event Processing: A custom Watcher function optimized event generation and minimized goroutine overhead.
+- Policy Matching: Restructuring the matching logic prioritized simpler comparisons, leading to faster processing.
+- Webhook Configuration: Fine-grained configuration minimized unnecessary Kyverno invocations.
 
 #### The Performance Leap
 
 These optimizations yielded remarkable results:
-* 8x improvement in average and p95 latency.
-* Stable performance even with high iteration counts.
+
+- 8x improvement in average and p95 latency.
+- Stable performance even with high iteration counts.
 
 ![perfomance-comparison](perfomance-comparison.png)
 
@@ -316,17 +316,17 @@ Custom Boards are a way of extending the UI with customized, application-specifi
 
 #### Additional Features
 
-* OpenIDConnect and OAuth2 authentication support
-* Updated frontend tech stack: Bun, Vue 3.x, Nuxt 3.x, Vuetify 3.x, Vite 5.x
-* Color Blind Themes
-* General performance improvements
+- OpenIDConnect and OAuth2 authentication support
+- Updated frontend tech stack: Bun, Vue 3.x, Nuxt 3.x, Vuetify 3.x, Vite 5.x
+- Color Blind Themes
+- General performance improvements
 
 ### Kyverno Playground
 
 The Kyverno playground with the support of ValidatingAdmissionPolicyBinding is now available for the new 1.12 release. You can check it out today via https://playground.kyverno.io/next/#/.
 
 ## Closing
+
 We have achieved another significant milestone, thanks to the support and contributions from our incredible community. Alongside the highlighted new features, this release includes critical fixes and other important changes. For a comprehensive overview, please refer to the full [release notes](https://github.com/kyverno/kyverno/releases/tag/v1.12.0) on GitHub.
 
 You can find us in the Kyverno channel on [Kubernetes Slack](https://kyverno.io/community/#slack-channel), come and join one of our [community meetings](https://kyverno.io/community/#community-meetings) to discuss your contribution issues, or just catch us on [Twitter](https://twitter.com/kyverno). And if you’re already a Kyverno adopter, sign up to be an official adopter by updating the Adopters form [here](https://github.com/kyverno/kyverno/blob/main/ADOPTERS.md).
-

@@ -64,9 +64,9 @@ Static assets, like favicons, can be placed in the `public/` directory.
 
 All commands are run from the root of the project, from a terminal:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `yarn install`             | Installs dependencies                            |
+| Command                | Action                                           |
+| :--------------------- | :----------------------------------------------- |
+| `yarn install`         | Installs dependencies                            |
 | `yarn dev`             | Starts local dev server at `localhost:4321`      |
 | `yarn build`           | Build your production site to `./dist/`          |
 | `yarn preview`         | Preview your build locally, before deploying     |
@@ -179,4 +179,3 @@ There are several ways to create multiple PRs, but here is one easy flow:
 1. Create a PR for the `main` branch, as usual.
 2. For each additional branch, checkout the branch (`git checkout <branch>`), and then cherry pick the commit(s) to that branch using `git --cherry-pick <commit>`. If using GitHub Desktop, a commit can be cherry picked by setting the source branch where the PR was merged, accessing the History tab, and dragging-and-dropping that commit to the destination branch.
 3. Submit PRs for each release branch.
-

@@ -22,29 +22,29 @@ For example, this policy ensures that deployment replicas are less than 4.
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
- name: check-deployment-replicas
+  name: check-deployment-replicas
 spec:
- validationFailureAction: Enforce
- background: false
- rules:
-   - name: check-deployment-replicas
-     match:
-       any:
-       - resources:
-           kinds:
-             - Deployment
-     validate:
-       cel:
-         expressions:
-           - expression: "object.spec.replicas < 4"
-             message:  "Deployment spec.replicas must be less than 4."
+  validationFailureAction: Enforce
+  background: false
+  rules:
+    - name: check-deployment-replicas
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      validate:
+        cel:
+          expressions:
+            - expression: 'object.spec.replicas < 4'
+              message: 'Deployment spec.replicas must be less than 4.'
 ```
 
 It is possible to generate Kubernetes ValidatingAdmissionPolicies and their bindings from the Kyverno policy mentioned above. With this feature, Kyverno now offers complete policy management for Kubernetes ValidatingAdmissionPolicies. This includes the ability to apply ValidatingAdmissionPolicies to resources using the command-line interface (CLI) and to obtain PolicyReports for them.
 
 ### Policy Report Enhancements
 
-In previous versions of Kyverno, PolicyReports were generated and grouped per namespace per policy. The AdmissionReports and BackgroundScanReports were retained in the cluster for remediation purposes. However, this posed a challenge for large clusters as it led to resource overload in etcd. 
+In previous versions of Kyverno, PolicyReports were generated and grouped per namespace per policy. The AdmissionReports and BackgroundScanReports were retained in the cluster for remediation purposes. However, this posed a challenge for large clusters as it led to resource overload in etcd.
 
 With the introduction of Kyverno 1.11, a PolicyReport is now created for each individual resource and will be automatically removed if the corresponding resource is deleted. To avoid repetition in every result, the scope field in the report is utilized to indicate resource metadata. Additionally, AdmissionReports and BackgroundScanReports are now considered ephemeral resources and are cleaned up once they are aggregated into the final reports. Below is a snippet of a PolicyReport.
 
@@ -90,37 +90,37 @@ metadata:
 spec:
   validationFailureAction: Enforce
   webhookTimeoutSeconds: 30
-  failurePolicy: Fail  
+  failurePolicy: Fail
   rules:
     - name: verify-attestation-notary
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       context:
-      - name: keys
-        configMap:
-          name: keys
-          namespace: kyverno
+        - name: keys
+          configMap:
+            name: keys
+            namespace: kyverno
       verifyImages:
-      - type: Notary
-        imageReferences:
-          - "ghcr.io/kyverno/test-verify-image*"
-        attestations:
-          - type: sbom/cyclone-dx
-            attestors:
-            - entries:
-              - certificates: 
-                  cert: |-
-                    -----BEGIN CERTIFICATE-----
-                    <snip>
-                    -----END CERTIFICATE-----
-            conditions:
-            - all:
-              - key: "{{ components[].licenses[].expression }}"
-                operator: AllIn
-                value: ["GPL-3.0"]
+        - type: Notary
+          imageReferences:
+            - 'ghcr.io/kyverno/test-verify-image*'
+          attestations:
+            - type: sbom/cyclone-dx
+              attestors:
+                - entries:
+                    - certificates:
+                        cert: |-
+                          -----BEGIN CERTIFICATE-----
+                          <snip>
+                          -----END CERTIFICATE-----
+              conditions:
+                - all:
+                    - key: '{{ components[].licenses[].expression }}'
+                      operator: AllIn
+                      value: ['GPL-3.0']
 ```
 
 ### Cosign 2.0 Support
@@ -131,7 +131,7 @@ Full support for private Sigstore deployments has also been added. Private Sigst
 
 ### Image Verification Cache
 
-Image verification requires multiple network calls and can be time consuming. We have also added caching for image verification that will cache successful image verification outcomes. It is a TTL based cache and the size and TTL configuration can be configured in the deployment. 
+Image verification requires multiple network calls and can be time consuming. We have also added caching for image verification that will cache successful image verification outcomes. It is a TTL based cache and the size and TTL configuration can be configured in the deployment.
 
 **Note:** Users upgrading from Kyverno v1.10 to v1.11 who have image verification policies using cosign will have to explicitly disable Tlogs and SCT verification in their policy using the `rekor.ignoreTlogs` and `ctlog.IgnoreSCT` fields if they did not use Rekor while signing the image.
 
@@ -145,16 +145,16 @@ For example, creation of this Pod will cause Kyverno to clean it up after two mi
 apiVersion: v1
 kind: Pod
 metadata:
- labels:
-   cleanup.kyverno.io/ttl: 2m
- name: foo
+  labels:
+    cleanup.kyverno.io/ttl: 2m
+  name: foo
 spec:
- containers:
- - args:
-   - sleep
-   - 1d
-   image: busybox:1.35
-   name: foo
+  containers:
+    - args:
+        - sleep
+        - 1d
+      image: busybox:1.35
+      name: foo
 ```
 
 Because this is a label, there is opportunity to chain other Kyverno functionality around it. For example, it is possible to use a Kyverno mutate rule to assign this label to matching resources. A validate rule could be written prohibiting, for example, users from the `infra-ops` group from assigning the label to resources in certain Namespaces. Or, Kyverno could generate a new resource with this label as part of the resource definition.
@@ -169,14 +169,14 @@ kind: Test
 metadata:
   name: mytest
 policies:
-- policy.yaml
+  - policy.yaml
 resources:
-- pod.yaml
+  - pod.yaml
 results:
-- policy: evil-policy-match-foreign-pods
-  rule: evil-validation
-  resource: nginx
-  status: pass
+  - policy: evil-policy-match-foreign-pods
+    rule: evil-validation
+    resource: nginx
+    status: pass
 ```
 
 ```bash
@@ -196,13 +196,13 @@ The Kyverno CLI can now be installed via a [GitHub Action](https://github.com/ky
 
 ## Kyverno JSON
 
-Although not part of 1.11.0, the Kyverno team launched a new sub-project Kyverno JSON, which extends Kyverno beyond Kubernetes. Now, platform engineering teams can use Kyverno’s declarative policies to validate any JSON payload including Terraform files, Dockerfiles, Cloud configurations and service authorization requests. 
+Although not part of 1.11.0, the Kyverno team launched a new sub-project Kyverno JSON, which extends Kyverno beyond Kubernetes. Now, platform engineering teams can use Kyverno’s declarative policies to validate any JSON payload including Terraform files, Dockerfiles, Cloud configurations and service authorization requests.
 
 Kyverno JSON can be consumed as a CLI, a Golang API, or a web service with a REST API. Read more at: https://www.cncf.io/blog/2023/11/06/kyverno-expands-beyond-kubernetes/.
 
 ## Kyverno Chainsaw
 
-Another sub-project launched was Kyverno Chainsaw, an end-to-end declarative test tool for Kubernetes controllers. Chainsaw emerged from a real need for testing Kyverno controllers and policy behaviors in continuous integration environments. You can learn more about it at: https://kyverno.github.io/chainsaw/.  
+Another sub-project launched was Kyverno Chainsaw, an end-to-end declarative test tool for Kubernetes controllers. Chainsaw emerged from a real need for testing Kyverno controllers and policy behaviors in continuous integration environments. You can learn more about it at: https://kyverno.github.io/chainsaw/.
 
 ## Security Hardening
 

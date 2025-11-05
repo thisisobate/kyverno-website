@@ -1,14 +1,15 @@
 ---
-title: "Disallow procMount in ValidatingPolicy"
+title: 'Disallow procMount in ValidatingPolicy'
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Note that in order for users to deviate from the `Default` procMount requires setting a feature gate at the API server.
+  The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified. Note that in order for users to deviate from the `Default` procMount requires setting a feature gate at the API server.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-vpol/baseline/disallow-proc-mount/disallow-proc-mount.yaml" target="-blank">/pod-security-vpol/baseline/disallow-proc-mount/disallow-proc-mount.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.14.0
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: "1.30+"
+    kyverno.io/kubernetes-version: '1.30+'
     policies.kyverno.io/description: >-
       The default /proc masks are set up to reduce attack surface and should be required. This policy
       ensures nothing but the default procMount can be specified. Note that in order for users
@@ -31,23 +32,23 @@ metadata:
       server.
 spec:
   validationActions:
-     - Audit
+    - Audit
   evaluation:
     background:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups:   [""]
-        apiVersions: ["v1"]
-        operations:  ["CREATE", "UPDATE"]
-        resources:   ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
-      - name: allContainers
-        expression: >-
-          object.spec.containers + 
-            object.spec.?initContainers.orValue([]) + 
-            object.spec.?ephemeralContainers.orValue([])
+    - name: allContainers
+      expression: >-
+        object.spec.containers + 
+          object.spec.?initContainers.orValue([]) + 
+          object.spec.?ephemeralContainers.orValue([])
   validations:
-      - expression: "variables.allContainers.all(container, container.?securityContext.?procMount.orValue('Default') == 'Default')"
-        message: "Changing the proc mount from the default is not allowed."
+    - expression: "variables.allContainers.all(container, container.?securityContext.?procMount.orValue('Default') == 'Default')"
+      message: 'Changing the proc mount from the default is not allowed.'
 ```

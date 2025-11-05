@@ -1,14 +1,15 @@
 ---
-title: "Concatenate ConfigMaps"
+title: 'Concatenate ConfigMaps'
 category: Other
 version: 1.7.0
 subject: ConfigMap
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    In some cases, an update to an existing resource should have downstream effects on a different resource in another Namespace. Rather than overwriting the target, the current state of the source can be concatenated to the target. This policy, triggered by an update to a source ConfigMap, concatenates that value of a target ConfigMap in a different Namespace.
+  In some cases, an update to an existing resource should have downstream effects on a different resource in another Namespace. Rather than overwriting the target, the current state of the source can be concatenated to the target. This policy, triggered by an update to a source ConfigMap, concatenates that value of a target ConfigMap in a different Namespace.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/concatenate-configmaps/concatenate-configmaps.yaml" target="-blank">/other/concatenate-configmaps/concatenate-configmaps.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: ConfigMap
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: >-
       In some cases, an update to an existing resource should have downstream effects
       on a different resource in another Namespace. Rather than overwriting the target,
@@ -33,24 +34,23 @@ metadata:
 spec:
   mutateExistingOnPolicyUpdate: false
   rules:
-  - name: concat-cm
-    match:
-      any:
-      - resources:
-          kinds:
-          - ConfigMap
-          names:
-          - cmone
-          namespaces:
-          - foo
-    mutate:
-      targets:
-        - apiVersion: v1
-          kind: ConfigMap
-          name: cmtwo
-          namespace: bar
-      patchStrategicMerge:
-        data:
-          keytwo: "{{ @ }} plus {{request.object.data.keyone}}"
-
+    - name: concat-cm
+      match:
+        any:
+          - resources:
+              kinds:
+                - ConfigMap
+              names:
+                - cmone
+              namespaces:
+                - foo
+      mutate:
+        targets:
+          - apiVersion: v1
+            kind: ConfigMap
+            name: cmtwo
+            namespace: bar
+        patchStrategicMerge:
+          data:
+            keytwo: '{{ @ }} plus {{request.object.data.keyone}}'
 ```

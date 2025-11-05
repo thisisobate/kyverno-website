@@ -17,7 +17,7 @@ Create a ValidatingAdmissionPolicy that checks the Deployment replicas and a Val
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
-  name: "check-deployment-replicas"
+  name: 'check-deployment-replicas'
 spec:
   matchConstraints:
     resourceRules:
@@ -36,9 +36,9 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: "check-deployment-replicas-binding"
+  name: 'check-deployment-replicas-binding'
 spec:
-  policyName: "check-deployment-replicas"
+  policyName: 'check-deployment-replicas'
   validationActions: [Deny]
   matchResources:
     namespaceSelector:

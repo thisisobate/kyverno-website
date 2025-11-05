@@ -1,14 +1,15 @@
 ---
-title: "Namespace Inventory Check"
+title: 'Namespace Inventory Check'
 category: Other
 version: 1.9.0
 subject: Namespace
-policyType: "validate"
+policyType: 'validate'
 description: >
-    In cases such as multi-tenancy where new Namespaces must be fully provisioned before they can be used, it may not be easy to declare and understand if/when the Namespace is ready. Having a policy which defines all the resources which are required for each Namespace can assist in determining compliance. This policy, expected to be run in background mode only, performs a Namespace inventory check to ensure that all Namespaces have a ResourceQuota and NetworkPolicy. Additional rules may be written to extend the check for your needs. By default, background scans occur every one hour which may be changed with an additional container flag. Please see the installation documentation for details.
+  In cases such as multi-tenancy where new Namespaces must be fully provisioned before they can be used, it may not be easy to declare and understand if/when the Namespace is ready. Having a policy which defines all the resources which are required for each Namespace can assist in determining compliance. This policy, expected to be run in background mode only, performs a Namespace inventory check to ensure that all Namespaces have a ResourceQuota and NetworkPolicy. Additional rules may be written to extend the check for your needs. By default, background scans occur every one hour which may be changed with an additional container flag. Please see the installation documentation for details.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/namespace-inventory-check/namespace-inventory-check.yaml" target="-blank">/other/namespace-inventory-check/namespace-inventory-check.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Namespace
     kyverno.io/kyverno-version: 1.9.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/description: >-
       In cases such as multi-tenancy where new Namespaces must be fully
       provisioned before they can be used, it may not be easy to declare and
@@ -38,56 +39,56 @@ spec:
   background: true
   validationFailureAction: Audit
   rules:
-  - name: resourcequotas
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    exclude:
-      any:
-      - resources:
-          namespaces:
-          - kube-system
-          - kube-public
-          - kube-node-lease
-    context:
     - name: resourcequotas
-      apiCall:
-        urlPath: "/api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas"
-        jmesPath: "items[] | length(@)"
-    validate:
-      message: "Every Namespace must have at least one ResourceQuota."
-      deny:
-        conditions:
-          all:
-          - key: "{{ resourcequotas }}"
-            operator: Equals
-            value: 0
-  - name: networkpolicies
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    exclude:
-      any:
-      - resources:
-          namespaces:
-          - kube-system
-          - kube-public
-          - kube-node-lease
-    context:
-    - name: netpols
-      apiCall:
-        urlPath: "/apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.name}}/networkpolicies"
-        jmesPath: "items[] | length(@)"
-    validate:
-      message: "Every Namespace must have at least one NetworkPolicy."
-      deny:
-        conditions:
-          all:
-          - key: "{{ netpols }}"
-            operator: Equals
-            value: 0
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - kube-public
+                - kube-node-lease
+      context:
+        - name: resourcequotas
+          apiCall:
+            urlPath: '/api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas'
+            jmesPath: 'items[] | length(@)'
+      validate:
+        message: 'Every Namespace must have at least one ResourceQuota.'
+        deny:
+          conditions:
+            all:
+              - key: '{{ resourcequotas }}'
+                operator: Equals
+                value: 0
+    - name: networkpolicies
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - kube-public
+                - kube-node-lease
+      context:
+        - name: netpols
+          apiCall:
+            urlPath: '/apis/networking.k8s.io/v1/namespaces/{{request.object.metadata.name}}/networkpolicies'
+            jmesPath: 'items[] | length(@)'
+      validate:
+        message: 'Every Namespace must have at least one NetworkPolicy.'
+        deny:
+          conditions:
+            all:
+              - key: '{{ netpols }}'
+                operator: Equals
+                value: 0
 ```

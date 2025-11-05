@@ -1,14 +1,15 @@
 ---
-title: "Disallow Host Namespaces in CEL expressions"
+title: 'Disallow Host Namespaces in CEL expressions'
 category: Pod Security Standards (Baseline) in CEL
 version: 1.11.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces. This policy ensures fields which make use of these host namespaces are unset or set to `false`.
+  Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces. This policy ensures fields which make use of these host namespaces are unset or set to `false`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-cel/baseline/disallow-host-namespaces/disallow-host-namespaces.yaml" target="-blank">/pod-security-cel/baseline/disallow-host-namespaces/disallow-host-namespaces.yaml</a>
 
 ```yaml
@@ -21,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline) in CEL
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Host namespaces (Process ID namespace, Inter-Process Communication namespace, and
@@ -35,12 +36,12 @@ spec:
     - name: host-namespaces
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
@@ -51,5 +52,4 @@ spec:
               message: >-
                 Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
                 spec.hostIPC, and spec.hostPID must be unset or set to `false`.
-
 ```

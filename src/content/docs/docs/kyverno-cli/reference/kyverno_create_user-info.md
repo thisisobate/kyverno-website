@@ -1,5 +1,5 @@
 ---
-title: "kyverno create user-info"
+title: 'kyverno create user-info'
 sidebar:
   order: 35
 ---

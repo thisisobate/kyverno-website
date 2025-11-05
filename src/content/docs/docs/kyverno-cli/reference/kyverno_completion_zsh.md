@@ -1,5 +1,5 @@
 ---
-title: "kyverno completion zsh"
+title: 'kyverno completion zsh'
 sidebar:
   order: 35
 ---

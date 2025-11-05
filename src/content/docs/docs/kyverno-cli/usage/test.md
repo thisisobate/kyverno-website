@@ -167,15 +167,15 @@ metadata:
   name: values
 subresources:
   - subresource:
-      name: "deployments/scale"
-      kind: "Scale"
-      group: "autoscaling"
-      version: "v1"
+      name: 'deployments/scale'
+      kind: 'Scale'
+      group: 'autoscaling'
+      version: 'v1'
     parentResource:
-      name: "deployments"
-      kind: "Deployment"
-      group: "apps"
-      version: "v1"
+      name: 'deployments'
+      kind: 'Deployment'
+      group: 'apps'
+      version: 'v1'
 ```
 
 ### Test Against Local Files
@@ -243,11 +243,11 @@ spec:
                 - Pod
       validate:
         failureAction: Audit
-        message: "An image tag is required."
+        message: 'An image tag is required.'
         pattern:
           spec:
             containers:
-              - image: "*:*"
+              - image: '*:*'
     - name: validate-image-tag
       match:
         any:
@@ -260,7 +260,7 @@ spec:
         pattern:
           spec:
             containers:
-              - image: "!*:latest"
+              - image: '!*:latest'
 ```
 
 Resource manifest (`resource.yaml`):
@@ -346,7 +346,7 @@ spec:
                 - Pod
       preconditions:
         any:
-          - key: "{{request.operation}}"
+          - key: '{{request.operation}}'
             operator: AnyIn
             value:
               - CREATE
@@ -355,11 +355,11 @@ spec:
         patchStrategicMerge:
           spec:
             containers:
-              - (name): "*"
+              - (name): '*'
                 resources:
                   requests:
-                    +(memory): "100Mi"
-                    +(cpu): "100m"
+                    +(memory): '100Mi'
+                    +(cpu): '100m'
 ```
 
 Resource manifest (`resource.yaml`):
@@ -384,8 +384,8 @@ spec:
       image: nginx:latest
       resources:
         requests:
-          memory: "200Mi"
-          cpu: "200m"
+          memory: '200Mi'
+          cpu: '200m'
 ```
 
 Variables manifest (`values.yaml`):
@@ -504,7 +504,7 @@ spec:
         targets:
           - apiVersion: v1
             kind: Secret
-            name: "*"
+            name: '*'
             namespace: staging
       name: mutate-secret-on-configmap-create
 ```
@@ -623,7 +623,7 @@ spec:
         apiVersion: networking.k8s.io/v1
         kind: NetworkPolicy
         name: default-deny
-        namespace: "{{request.object.metadata.name}}"
+        namespace: '{{request.object.metadata.name}}'
         synchronize: true
         data:
           spec:
@@ -716,9 +716,9 @@ spec:
           spec.hostIPC, and spec.hostPID must be unset or set to `false`.
         pattern:
           spec:
-            =(hostPID): "false"
-            =(hostIPC): "false"
-            =(hostNetwork): "false"
+            =(hostPID): 'false'
+            =(hostIPC): 'false'
+            =(hostNetwork): 'false'
 ```
 
 Policy Exception manifest (`delta-exception.yaml`):
@@ -773,7 +773,7 @@ spec:
       containers:
         - image: busybox:1.35
           name: busybox
-          command: ["sleep", "1d"]
+          command: ['sleep', '1d']
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -796,7 +796,7 @@ spec:
       containers:
         - image: busybox:1.35
           name: busybox
-          command: ["sleep", "1d"]
+          command: ['sleep', '1d']
 ```
 
 Test manifest (`kyverno-test.yaml`):
@@ -872,13 +872,13 @@ spec:
   failurePolicy: Fail
   matchConstraints:
     resourceRules:
-      - apiGroups: ["apps"]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["deployments"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
   validations:
-    - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
-      message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+    - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))'
+      message: 'HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset.'
 ```
 
 Resource manifest (deployments.yaml):
@@ -989,7 +989,7 @@ Policy manifest (`check-deployment-replicas.yaml`):
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicy
 metadata:
-  name: "check-deployment-replicas"
+  name: 'check-deployment-replicas'
 spec:
   matchConstraints:
     resourceRules:
@@ -1008,9 +1008,9 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingAdmissionPolicyBinding
 metadata:
-  name: "check-deployment-replicas-binding"
+  name: 'check-deployment-replicas-binding'
 spec:
-  policyName: "check-deployment-replicas"
+  policyName: 'check-deployment-replicas'
   validationActions: [Deny]
   matchResources:
     namespaceSelector:
@@ -1255,18 +1255,18 @@ Policy manifest (policy.yaml):
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicy
 metadata:
-  name: "add-label-to-configmap"
+  name: 'add-label-to-configmap'
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['configmaps']
   failurePolicy: Fail
   reinvocationPolicy: Never
   mutations:
-    - patchType: "ApplyConfiguration"
+    - patchType: 'ApplyConfiguration'
       applyConfiguration:
         expression: >
           object.metadata.?labels["lfx-mentorship"].hasValue() ? 
@@ -1284,7 +1284,7 @@ metadata:
   labels:
     app: game
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ```
 
 Patched resource manifest (patched-resource.yaml):
@@ -1300,7 +1300,7 @@ metadata:
     app: game
     lfx-mentorship: kyverno
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ```
 
 Test manifest (kyverno-test.yaml):
@@ -1355,18 +1355,18 @@ Policy manifest (policy.yaml):
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicy
 metadata:
-  name: "add-label-to-configmap"
+  name: 'add-label-to-configmap'
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['configmaps']
   failurePolicy: Fail
   reinvocationPolicy: Never
   mutations:
-    - patchType: "ApplyConfiguration"
+    - patchType: 'ApplyConfiguration'
       applyConfiguration:
         expression: >
           object.metadata.?labels["lfx-mentorship"].hasValue() ? 
@@ -1376,9 +1376,9 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicyBinding
 metadata:
-  name: "add-label-to-configmap-binding"
+  name: 'add-label-to-configmap-binding'
 spec:
-  policyName: "add-label-to-configmap"
+  policyName: 'add-label-to-configmap'
   matchResources:
     namespaceSelector:
       matchExpressions:
@@ -1400,7 +1400,7 @@ metadata:
   labels:
     color: red
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -1410,7 +1410,7 @@ metadata:
   labels:
     color: red
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -1420,7 +1420,7 @@ metadata:
   labels:
     color: blue
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ```
 
 Patched resource manifest (patched-resource.yaml):
@@ -1435,7 +1435,7 @@ metadata:
     color: red
     lfx-mentorship: kyverno
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -1446,7 +1446,7 @@ metadata:
     color: red
     lfx-mentorship: kyverno
 data:
-  player_initial_lives: "3"
+  player_initial_lives: '3'
 ```
 
 Variables manifest (values.yaml):
@@ -1529,13 +1529,13 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: ["apps"]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["deployments"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
   validations:
-    - expression: "object.spec.replicas <= 2"
-      message: "Deployment replicas must be less than or equal to 2"
+    - expression: 'object.spec.replicas <= 2'
+      message: 'Deployment replicas must be less than or equal to 2'
 ```
 
 Resource manifest (deployments.yaml):
@@ -1646,10 +1646,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: ["apps"]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["deployments"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['deployments']
     # This policy only applies to Deployments with the label `app: nginx`
     objectSelector:
       matchLabels:
@@ -1857,10 +1857,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
     # Get the ConfigMap 'policy-cm' from the Pod's namespace.
     - name: cm

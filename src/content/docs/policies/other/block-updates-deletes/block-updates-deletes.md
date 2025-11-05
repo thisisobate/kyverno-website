@@ -1,14 +1,15 @@
 ---
-title: "Block Updates and Deletes"
+title: 'Block Updates and Deletes'
 category: Sample
-version: 
+version:
 subject: RBAC
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Kubernetes RBAC allows for controls on kinds of resources or those with specific names. But it does not have the type of granularity often required in more complex environments. This policy restricts updates and deletes to any Service resource that contains the label `protected=true` unless by a cluster-admin.
+  Kubernetes RBAC allows for controls on kinds of resources or those with specific names. But it does not have the type of granularity often required in more complex environments. This policy restricts updates and deletes to any Service resource that contains the label `protected=true` unless by a cluster-admin.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/block-updates-deletes/block-updates-deletes.yaml" target="-blank">/other/block-updates-deletes/block-updates-deletes.yaml</a>
 
 ```yaml
@@ -30,27 +31,27 @@ spec:
   validationFailureAction: Enforce
   background: false
   rules:
-  - name: block-updates-deletes
-    match:
-      any:
-      - resources:
-          kinds:
-          - Service
-          selector:
-            matchLabels:
-              protected: "true"
-    exclude:
-      any:
-      - clusterRoles:
-        - cluster-admin
-    validate:
-      message: "This resource is protected and changes are not allowed. Please seek a cluster-admin."
-      deny:
-        conditions:
-          any:
-            - key: "{{request.operation || 'BACKGROUND'}}"
-              operator: AnyIn
-              value:
-              - DELETE
-              - UPDATE
+    - name: block-updates-deletes
+      match:
+        any:
+          - resources:
+              kinds:
+                - Service
+              selector:
+                matchLabels:
+                  protected: 'true'
+      exclude:
+        any:
+          - clusterRoles:
+              - cluster-admin
+      validate:
+        message: 'This resource is protected and changes are not allowed. Please seek a cluster-admin.'
+        deny:
+          conditions:
+            any:
+              - key: "{{request.operation || 'BACKGROUND'}}"
+                operator: AnyIn
+                value:
+                  - DELETE
+                  - UPDATE
 ```

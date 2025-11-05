@@ -1,5 +1,5 @@
 ---
-title: "kyverno json"
+title: 'kyverno json'
 sidebar:
   order: 35
 ---

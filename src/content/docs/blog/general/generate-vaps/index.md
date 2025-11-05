@@ -5,6 +5,7 @@ linkTitle: Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Polici
 author: Mariam Fahmy
 description: Generating Kubernetes ValidatingAdmissionPolicies from Kyverno Policies
 ---
+
 In the [previous blog post](../using-cel-expressions-in-kyverno-policies/index.md), we discussed writing [Common Expression Language (CEL)](https://github.com/google/cel-spec) expressions in Kyverno policies for resource validation. CEL was first introduced to Kubernetes for the Validation rules for CustomResourceDefinitions, and then it was used by Kubernetes ValidatingAdmissionPolicies in 1.26.
 
 ValidatingAdmissionPolicies offer a declarative, in-process alternative to validating admission webhooks.
@@ -20,7 +21,7 @@ Generating Kubernetes ValidatingAdmissionPolicies require the following:
 1. A cluster with Kubernetes 1.26 or higher.
 2. Enable the `ValidatingAdmissionPolicy` [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/).
 3. Enable the `admissionregistration.k8s.io/v1beta1` API for v1.28 and v1.29.
-   OR 
+   OR
    Enable the `admissionregistration.k8s.io/v1alpha1` API for v1.26 and v1.27.
 4. Set the `--generateValidatingAdmissionPolicy` flag in the Kyverno admission controller.
 5. Grant the admission controller service account the required permissions to generate ValidatingAdmissionPolicies and their bindings.
@@ -123,7 +124,7 @@ $ kubectl get cpol disallow-host-path -o jsonpath='{.status}'
 
 {
    "autogen":{
-      
+
    },
    "conditions":[
       {
@@ -160,7 +161,7 @@ NAME                                                   POLICYNAME               
 disallow-host-path-binding   disallow-host-path   <unset>      8m30s
 ```
 
-You may notice that the ValidatingAdmissionPolicy and the ValidatingAdmissionPolicyBinding share the same name as the Kyverno policy they originate from, with the binding having a "-binding" suffix. 
+You may notice that the ValidatingAdmissionPolicy and the ValidatingAdmissionPolicyBinding share the same name as the Kyverno policy they originate from, with the binding having a "-binding" suffix.
 
 Let’s have a look at the ValidatingAdmissionPolicy and its binding in detail.
 
@@ -274,10 +275,10 @@ If either the ValidatingAdmissionPolicy or the binding is deleted/updated for so
 Let’s try deleting the ValidatingAdmissionPolicy.
 
 ```bash
-$ kubectl delete validatingadmissionpolicy disallow-host-path 
+$ kubectl delete validatingadmissionpolicy disallow-host-path
 validatingadmissionpolicy.admissionregistration.k8s.io "disallow-host-path" deleted
 
-$ kubectl get validatingadmissionpolicy 
+$ kubectl get validatingadmissionpolicy
 NAME                                  VALIDATIONS   PARAMKIND   AGE
 disallow-host-path    1                        <unset>        11s
 ```
@@ -285,21 +286,22 @@ disallow-host-path    1                        <unset>        11s
 In addition, you can update the Kyverno policy, and the controller will re-generate the ValidatingAdmissionPolicy accordingly. For example, you can change the Kyverno policy to match statefulsets too.
 
 patch.yaml:
+
 ```yaml
 spec:
   rules:
     - name: host-path
       match:
         any:
-        - resources:
-            kinds:
-              - Deployment
-              - StatefulSet
+          - resources:
+              kinds:
+                - Deployment
+                - StatefulSet
       validate:
         cel:
           expressions:
-            - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
-              message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+            - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))'
+              message: 'HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset.'
 ```
 
 ```bash
@@ -312,17 +314,17 @@ The ValidatingAdmissionPolicy will be updated to match StatefulSets too.
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: ValidatingAdmissionPolicy
 metadata:
-  creationTimestamp: "2023-09-12T12:54:48Z"
+  creationTimestamp: '2023-09-12T12:54:48Z'
   generation: 2
   labels:
     app.kubernetes.io/managed-by: kyverno
   name: disallow-host-path
   ownerReferences:
-  - apiVersion: kyverno.io/v1
-    kind: ClusterPolicy
-    name: disallow-host-path
-    uid: e540d96b-c683-4380-a84f-13411384241a
-  resourceVersion: "29208"
+    - apiVersion: kyverno.io/v1
+      kind: ClusterPolicy
+      name: disallow-host-path
+      uid: e540d96b-c683-4380-a84f-13411384241a
+  resourceVersion: '29208'
   uid: 9325e2b7-9131-4ff4-9e56-244129cb625e
 spec:
   failurePolicy: Fail
@@ -331,22 +333,24 @@ spec:
     namespaceSelector: {}
     objectSelector: {}
     resourceRules:
-    - apiGroups:
-      - apps
-      apiVersions:
-      - v1
-      operations:
-      - CREATE
-      - UPDATE
-      resources:
-      - deployments
-      - statefulsets
-      scope: '*'
+      - apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - deployments
+          - statefulsets
+        scope: '*'
   validations:
-  - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
-      !has(volume.hostPath))'
-    message: HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
-      must be unset.
+    - expression:
+        '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
+        !has(volume.hostPath))'
+      message:
+        HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
+        must be unset.
   variables: null
 status:
   observedGeneration: 2

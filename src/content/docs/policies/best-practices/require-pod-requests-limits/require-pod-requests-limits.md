@@ -1,14 +1,15 @@
 ---
-title: "Require Limits and Requests"
+title: 'Require Limits and Requests'
 category: Best Practices, EKS Best Practices
 version: 1.6.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    As application workloads share cluster resources, it is important to limit resources requested and consumed by each Pod. It is recommended to require resource requests and limits per Pod, especially for memory and CPU. If a Namespace level request or limit is specified, defaults will automatically be applied to each Pod based on the LimitRange configuration. This policy validates that all containers have something specified for memory and CPU requests and memory limits.
+  As application workloads share cluster resources, it is important to limit resources requested and consumed by each Pod. It is recommended to require resource requests and limits per Pod, especially for memory and CPU. If a Namespace level request or limit is specified, defaults will automatically be applied to each Pod based on the LimitRange configuration. This policy validates that all containers have something specified for memory and CPU requests and memory limits.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//best-practices/require-pod-requests-limits/require-pod-requests-limits.yaml" target="-blank">/best-practices/require-pod-requests-limits/require-pod-requests-limits.yaml</a>
 
 ```yaml
@@ -33,35 +34,35 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: validate-resources
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "CPU and memory resource requests and memory limits are required for containers."
-      pattern:
-        spec:
-          containers:
+    - name: validate-resources
+      match:
+        any:
           - resources:
-              requests:
-                memory: "?*"
-                cpu: "?*"
-              limits:
-                memory: "?*"
-          =(initContainers):
-          - resources:
-              requests:
-                memory: "?*"
-                cpu: "?*"
-              limits:
-                memory: "?*"
-          =(ephemeralContainers):
-          - resources:
-              requests:
-                memory: "?*"
-                cpu: "?*"
-              limits:
-                memory: "?*"
+              kinds:
+                - Pod
+      validate:
+        message: 'CPU and memory resource requests and memory limits are required for containers.'
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  requests:
+                    memory: '?*'
+                    cpu: '?*'
+                  limits:
+                    memory: '?*'
+            =(initContainers):
+              - resources:
+                  requests:
+                    memory: '?*'
+                    cpu: '?*'
+                  limits:
+                    memory: '?*'
+            =(ephemeralContainers):
+              - resources:
+                  requests:
+                    memory: '?*'
+                    cpu: '?*'
+                  limits:
+                    memory: '?*'
 ```

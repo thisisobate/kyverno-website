@@ -1,14 +1,15 @@
 ---
-title: "Require Encryption with AWS LoadBalancers"
+title: 'Require Encryption with AWS LoadBalancers'
 category: AWS, EKS Best Practices
 version: 1.6.0
 subject: Service
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Services of type LoadBalancer when deployed inside AWS have support for transport encryption if it is enabled via an annotation. This policy requires that Services of type LoadBalancer contain the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert with some value.
+  Services of type LoadBalancer when deployed inside AWS have support for transport encryption if it is enabled via an annotation. This policy requires that Services of type LoadBalancer contain the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert with some value.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//aws/require-encryption-aws-loadbalancers/require-encryption-aws-loadbalancers.yaml" target="-blank">/aws/require-encryption-aws-loadbalancers/require-encryption-aws-loadbalancers.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Service
     kyverno.io/kyverno-version: 1.7.3, 1.8.0-rc2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23-1.24"
+    kyverno.io/kubernetes-version: '1.23-1.24'
     policies.kyverno.io/description: >-
       Services of type LoadBalancer when deployed inside AWS have support for
       transport encryption if it is enabled via an annotation. This policy requires
@@ -33,18 +34,18 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: aws-loadbalancer-has-ssl-cert
-    match:
-      any:
-      - resources:
-          kinds:
-          - Service
-    validate:
-      message: "Service of type LoadBalancer must carry the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert."
-      pattern:
-        metadata:
-          annotations:
-            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "?*"
-        (spec):
-          (type): LoadBalancer
+    - name: aws-loadbalancer-has-ssl-cert
+      match:
+        any:
+          - resources:
+              kinds:
+                - Service
+      validate:
+        message: 'Service of type LoadBalancer must carry the annotation service.beta.kubernetes.io/aws-load-balancer-ssl-cert.'
+        pattern:
+          metadata:
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-ssl-cert: '?*'
+          (spec):
+            (type): LoadBalancer
 ```

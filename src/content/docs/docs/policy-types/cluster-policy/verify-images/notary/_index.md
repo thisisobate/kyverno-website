@@ -91,7 +91,7 @@ spec:
       verifyImages:
         - type: Notary
           imageReferences:
-            - "ghcr.io/kyverno/test-verify-image*"
+            - 'ghcr.io/kyverno/test-verify-image*'
           failureAction: Enforce
           attestors:
             - count: 1
@@ -219,7 +219,7 @@ spec:
       verifyImages:
         - type: Notary
           imageReferences:
-            - "ghcr.io/kyverno/test-verify-image*"
+            - 'ghcr.io/kyverno/test-verify-image*'
           failureAction: Enforce
           attestations:
             - type: sbom/cyclone-dx
@@ -249,9 +249,9 @@ spec:
                           -----END CERTIFICATE-----
               conditions:
                 - all:
-                    - key: "{{ components[].licenses[].expression }}"
+                    - key: '{{ components[].licenses[].expression }}'
                       operator: AllIn
-                      value: ["GPL-3.0"]
+                      value: ['GPL-3.0']
 ```
 
 After this policy is applied, Kyverno will verify the signature on the sbom/cyclone-dx attestation and check if the license version of all the components in the SBOM is `GPL-3.0`.
@@ -299,7 +299,7 @@ spec:
       verifyImages:
         - type: Notary
           imageReferences:
-            - "ghcr.io/kyverno/test-verify-image*"
+            - 'ghcr.io/kyverno/test-verify-image*'
           attestations:
             - type: trivy/vulnerability
               name: trivy
@@ -361,9 +361,9 @@ spec:
             deny:
               conditions:
                 any:
-                  - key: "{{ trivy.Vulnerabilities[*].VulnerabilityID }}"
+                  - key: '{{ trivy.Vulnerabilities[*].VulnerabilityID }}'
                     operator: AnyNotIn
-                    value: "{{ vex.vulnerabilities[*].id }}"
+                    value: '{{ vex.vulnerabilities[*].id }}'
             message: All vulnerabilities in trivy and vex should be same
 ```
 

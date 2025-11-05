@@ -22,10 +22,10 @@ In previous versions of Kyverno, everything except the cleanup controller (intro
 
 The four major components of Kyverno and their primary functions are as follows:
 
-* **Admission Controller**: The heart of Kyverno, the Admission Controller receives and processes webhook requests from the Kubernetes API server and is responsible for validate, mutate, and verifyImages rules along with Policy Exceptions. It also performs most of the validations on policies themselves. This is the only required component of Kyverno which must be installed.
-* **Reports Controller**: Responsible for processing of Kyverno's Policy Reports including performing background reporting scans.
-* **Background Controller**: Not to be confused with background scans, the Background Controller handles all the generate rules and mutate rules when they impact existing resources (which all happen in the background).
-* **Cleanup Controller**: Takes care of all the cleanup tasks according to cleanup policies.
+- **Admission Controller**: The heart of Kyverno, the Admission Controller receives and processes webhook requests from the Kubernetes API server and is responsible for validate, mutate, and verifyImages rules along with Policy Exceptions. It also performs most of the validations on policies themselves. This is the only required component of Kyverno which must be installed.
+- **Reports Controller**: Responsible for processing of Kyverno's Policy Reports including performing background reporting scans.
+- **Background Controller**: Not to be confused with background scans, the Background Controller handles all the generate rules and mutate rules when they impact existing resources (which all happen in the background).
+- **Cleanup Controller**: Takes care of all the cleanup tasks according to cleanup policies.
 
 Because Kyverno is now decomposed into separate controllers, each controller can be scaled independently although they all don't necessarily handle it differently. We recommend reading the [High Availability page](../../../docs/high-availability/_index.md) for more details on the internals of these controllers and how scale and availability are handled per controller.
 
@@ -37,37 +37,37 @@ Kyverno is already able to gather data from external sources as a factor in its 
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: check-namespaces      
+  name: check-namespaces
 spec:
   validationFailureAction: Enforce
   rules:
-  - name: call-extension
-    match:
-      any:
-      - resources:
-          kinds:
-          - ConfigMap
-    context:
-    - name: result
-      apiCall:
-        method: POST
-        data:
-        - key: somekey
-          value: "{{ somevariable }}"
-        service:
-          url: http://sample.myservice/someendpoint
-          caBundle: |-
-            -----BEGIN CERTIFICATE-----
-            <snip>
-            -----END CERTIFICATE-----            
-    validate:
-      message: "This shall not pass due to item {{ fookey}}"
-      deny:
-        conditions:
-          all:
-          - key: "{{ result.allowed }}"
-            operator: Equals
-            value: false
+    - name: call-extension
+      match:
+        any:
+          - resources:
+              kinds:
+                - ConfigMap
+      context:
+        - name: result
+          apiCall:
+            method: POST
+            data:
+              - key: somekey
+                value: '{{ somevariable }}'
+            service:
+              url: http://sample.myservice/someendpoint
+              caBundle: |-
+                -----BEGIN CERTIFICATE-----
+                <snip>
+                -----END CERTIFICATE-----
+      validate:
+        message: 'This shall not pass due to item {{ fookey}}'
+        deny:
+          conditions:
+            all:
+              - key: '{{ result.allowed }}'
+                operator: Equals
+                value: false
 ```
 
 And, by the way, in addition to POST calls to external services, we've also enhanced the existing `apiCall` context variable to be able to POST to the Kubernetes API making it possible to [do things like](/policies/other/check-subjectaccessreview/check-subjectaccessreview/) pass a [SubjectAccessReview](https://kubernetes.io/docs/reference/kubernetes-api/authorization-resources/subject-access-review-v1/) which will make permissions assessments much easier.
@@ -86,26 +86,26 @@ metadata:
 spec:
   validationFailureAction: Enforce
   webhookTimeoutSeconds: 30
-  failurePolicy: Fail  
+  failurePolicy: Fail
   rules:
     - name: verify-signature-notary
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       verifyImages:
-      - type: Notary
-        imageReferences:
-        - "mytest.azurecr.io/user/net-monitor:v1"
-        attestors:
-        - count: 1
-          entries:
-          - certificates:
-              cert: |-
-                -----BEGIN CERTIFICATE-----
-                <snip>
-                -----END CERTIFICATE-----
+        - type: Notary
+          imageReferences:
+            - 'mytest.azurecr.io/user/net-monitor:v1'
+          attestors:
+            - count: 1
+              entries:
+                - certificates:
+                    cert: |-
+                      -----BEGIN CERTIFICATE-----
+                      <snip>
+                      -----END CERTIFICATE-----
 ```
 
 While this addition supports simple Notary verification, if needing to call an external service when using an extension, the external service call feature as shown earlier can be used.
@@ -125,11 +125,11 @@ Operations can now be specified directly in `match` and `exclude` blocks obviati
 ```yaml
 match:
   any:
-  - resources:
-      kinds: 
-      - Service
-      operations:
-      - CREATE
+    - resources:
+        kinds:
+          - Service
+        operations:
+          - CREATE
 ```
 
 Policy Exceptions have been enhanced in 1.10 to add support for background scanning, useful when you consume a Policy Report and want to see that fail result to go away, and wildcards in the `ruleNames[]` field. The latter will assist when you might have several rules in a policy which begin with the same prefix.

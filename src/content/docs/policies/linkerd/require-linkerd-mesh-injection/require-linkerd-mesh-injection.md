@@ -1,14 +1,15 @@
 ---
-title: "Require Linkerd Mesh Injection"
+title: 'Require Linkerd Mesh Injection'
 category: Linkerd
-version: 
+version:
 subject: Namespace, Annotation
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. This policy enforces that all Namespaces contain the annotation `linkerd.io/inject` set to `enabled`.
+  Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. This policy enforces that all Namespaces contain the annotation `linkerd.io/inject` set to `enabled`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//linkerd/require-linkerd-mesh-injection/require-linkerd-mesh-injection.yaml" target="-blank">/linkerd/require-linkerd-mesh-injection/require-linkerd-mesh-injection.yaml</a>
 
 ```yaml
@@ -29,16 +30,16 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: require-mesh-annotation
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    validate:
-      message: "All Namespaces must set the annotation `linkerd.io/inject` to `enabled`."
-      pattern:
-        metadata:
-          annotations:
-            linkerd.io/inject: enabled
+    - name: require-mesh-annotation
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      validate:
+        message: 'All Namespaces must set the annotation `linkerd.io/inject` to `enabled`.'
+        pattern:
+          metadata:
+            annotations:
+              linkerd.io/inject: enabled
 ```

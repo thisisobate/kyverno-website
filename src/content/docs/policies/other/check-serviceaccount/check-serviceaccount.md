@@ -1,14 +1,15 @@
 ---
-title: "Check ServiceAccount"
+title: 'Check ServiceAccount'
 category: Sample
 version: 1.6.0
 subject: Pod,ServiceAccount
-policyType: "validate"
+policyType: 'validate'
 description: >
-    ServiceAccounts with privileges to create Pods may be able to do so and name a ServiceAccount other than the one used to create it. This policy checks the Pod, if created by a ServiceAccount, and ensures the `serviceAccountName` field matches the actual ServiceAccount.
+  ServiceAccounts with privileges to create Pods may be able to do so and name a ServiceAccount other than the one used to create it. This policy checks the Pod, if created by a ServiceAccount, and ensures the `serviceAccountName` field matches the actual ServiceAccount.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/check-serviceaccount/check-serviceaccount.yaml" target="-blank">/other/check-serviceaccount/check-serviceaccount.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/subject: Pod,ServiceAccount
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.21"
+    kyverno.io/kubernetes-version: '1.21'
     policies.kyverno.io/description: >-
       ServiceAccounts with privileges to create Pods may be able to do so and name
       a ServiceAccount other than the one used to create it. This policy checks the
@@ -35,21 +36,20 @@ spec:
     - name: check-sa
       match:
         any:
-        - resources:
-            kinds:
-            - Pod
+          - resources:
+              kinds:
+                - Pod
       preconditions:
         all:
-        - key: "{{serviceAccountName}}"
-          operator: Equals
-          value: "*?"
-        - key: "{{request.operation}}"
-          operator: Equals
-          value: CREATE
+          - key: '{{serviceAccountName}}'
+            operator: Equals
+            value: '*?'
+          - key: '{{request.operation}}'
+            operator: Equals
+            value: CREATE
       validate:
-        message: "The ServiceAccount used to create this Pod is confined to using the same account when running the Pod."
+        message: 'The ServiceAccount used to create this Pod is confined to using the same account when running the Pod.'
         pattern:
           spec:
-            serviceAccountName: "{{serviceAccountName}}"
-
+            serviceAccountName: '{{serviceAccountName}}'
 ```

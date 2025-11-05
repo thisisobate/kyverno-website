@@ -34,13 +34,13 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["namespaces"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['namespaces']
   variables:
     - name: targetNs
-      expression: "object.metadata.name"
+      expression: 'object.metadata.name'
     - name: sourceSecret
       expression: resource.Get("v1", "secrets", "default", "regcred")
   generate:
@@ -88,13 +88,13 @@ spec:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["namespaces"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['namespaces']
   variables:
     - name: nsName
-      expression: "object.metadata.name"
+      expression: 'object.metadata.name'
     - name: downstream
       expression: >-
         [
@@ -137,13 +137,13 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["namespaces"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['namespaces']
   variables:
     - name: nsName
-      expression: "object.metadata.name"
+      expression: 'object.metadata.name'
     - name: source
       expression: resource.Get("v1", "secrets", "default", "regcred")
   generate:
@@ -164,13 +164,13 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["namespaces"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['namespaces']
   variables:
     - name: nsName
-      expression: "object.metadata.name"
+      expression: 'object.metadata.name'
     - name: sources
       expression: resource.List("v1", "secrets", "default")
   generate:
@@ -197,10 +197,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['configmaps']
   variables:
     - name: nsList
       expression: "object.data.namespaces.split(',')"
@@ -238,10 +238,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['configmaps']
   variables:
     # nsList becomes ["ns1", "ns2", "ns3"]
     - name: nsList
@@ -278,7 +278,6 @@ Then, the `generate` block does the following:
 1. `variables.indexed.all(i, ...):` This CEL expression iterates through each number `i` in the indexed list. The loop variable `i` holds the current index (0, then 1, then 2).
 
 2. `generator.Apply(variables.nsList[i], ...):` Inside the loop, this function generates the resource.
-
    - It uses `variables.nsList[i]` to get the target namespace (e.g., when `i` is 1, it gets `ns2`).
    - It dynamically creates the NetworkPolicy name by appending the index `i` (e.g., `"np-" + string(1)` results in the name `np-1`).
 
@@ -296,10 +295,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['configmaps']
   variables:
     # nsList is ["filtered-ns-1", "filtered-ns-2", "filtered-ns-3"]
     - name: nsList
@@ -341,7 +340,6 @@ The `generate` block then uses these variables to create NetworkPolicies in the 
 1. `variables.indexed.all(i, ...):` The loop iterates over the indexed list, so `i` will be 0 and then 2.
 
 2. `generator.Apply(variables.nsList[i], ...):` Inside the loop, it uses the index `i` to target the correct namespace from the original list and to create a uniquely named resource.
-
    - When `i` is 0, it creates `filtered-np-0` in namespace `filtered-ns-1`.
    - When `i` is 2, it creates `filtered-np-2` in namespace `filtered-ns-3`.
    - Namespace `filtered-ns-2` is skipped entirely because it was not in the `filteredList`.
@@ -362,10 +360,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['configmaps']
   variables:
     - name: nsList
       expression: "object.data.namespaces.split(',')"
@@ -391,10 +389,10 @@ spec:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["configmaps"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['configmaps']
   variables:
     - name: nsList
       expression: "object.data.namespaces.split(',')"
@@ -469,13 +467,13 @@ spec:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["namespaces"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['namespaces']
   variables:
     - name: nsName
-      expression: "object.metadata.name"
+      expression: 'object.metadata.name'
     - name: source
       expression: resource.Get("v1", "secrets", "default", "regcred")
   generate:

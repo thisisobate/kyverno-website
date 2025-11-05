@@ -1,5 +1,5 @@
 ---
-title: "kyverno json scan"
+title: 'kyverno json scan'
 sidebar:
   order: 35
 ---

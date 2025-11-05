@@ -1,14 +1,15 @@
 ---
-title: "Certificate max duration 100 days"
+title: 'Certificate max duration 100 days'
 category: Cert-Manager
 version: 1.6.0
 subject: Certificate
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Kubernetes managed non-letsencrypt certificates have to be renewed in every 100 days.
+  Kubernetes managed non-letsencrypt certificates have to be renewed in every 100 days.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//cert-manager/limit-duration/limit-duration.yaml" target="-blank">/cert-manager/limit-duration/limit-duration.yaml</a>
 
 ```yaml
@@ -28,27 +29,26 @@ spec:
   validationFailureAction: Audit
   background: false
   rules:
-  - name: certificate-duration-max-100days 
-    match:
-      any:
-      - resources:
-          kinds:
-          - Certificate
-    preconditions:
-      all:
-      - key: "{{ contains(request.object.spec.issuerRef.name, 'letsencrypt') }}"
-        operator: Equals
-        value: False
-      - key: "{{ request.object.spec.duration }}"
-        operator: NotEquals
-        value: ""
-    validate:
-      message: "certificate duration must be < than 2400h (100 days)"
-      deny:
-        conditions:
-          all:
-          - key: "{{ max( [ to_number(regex_replace_all('h.*',request.object.spec.duration,'')), to_number('2400') ] ) }}"
+    - name: certificate-duration-max-100days
+      match:
+        any:
+          - resources:
+              kinds:
+                - Certificate
+      preconditions:
+        all:
+          - key: "{{ contains(request.object.spec.issuerRef.name, 'letsencrypt') }}"
+            operator: Equals
+            value: False
+          - key: '{{ request.object.spec.duration }}'
             operator: NotEquals
-            value: 2400
-
+            value: ''
+      validate:
+        message: 'certificate duration must be < than 2400h (100 days)'
+        deny:
+          conditions:
+            all:
+              - key: "{{ max( [ to_number(regex_replace_all('h.*',request.object.spec.duration,'')), to_number('2400') ] ) }}"
+                operator: NotEquals
+                value: 2400
 ```

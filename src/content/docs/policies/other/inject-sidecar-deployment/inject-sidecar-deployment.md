@@ -1,14 +1,15 @@
 ---
-title: "Inject Sidecar Container"
+title: 'Inject Sidecar Container'
 category: Sample
 version: 1.6.0
 subject: Deployment,Volume
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    The sidecar pattern is very common in Kubernetes whereby other applications can insert components via tacit modification of a submitted resource. This is, for example, often how service meshes and secrets applications are able to function transparently. This policy injects a sidecar container, initContainer, and volume into Pods that match an annotation called `vault.hashicorp.com/agent-inject: true`.
+  The sidecar pattern is very common in Kubernetes whereby other applications can insert components via tacit modification of a submitted resource. This is, for example, often how service meshes and secrets applications are able to function transparently. This policy injects a sidecar container, initContainer, and volume into Pods that match an annotation called `vault.hashicorp.com/agent-inject: true`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/inject-sidecar-deployment/inject-sidecar-deployment.yaml" target="-blank">/other/inject-sidecar-deployment/inject-sidecar-deployment.yaml</a>
 
 ```yaml
@@ -29,37 +30,36 @@ metadata:
       an annotation called `vault.hashicorp.com/agent-inject: true`.
 spec:
   rules:
-  - name: inject-sidecar
-    match:
-      any:
-      - resources:
-          kinds:
-          - Deployment
-    mutate:
-      patchStrategicMerge:
-        spec:
-          template:
-            metadata:
-              annotations:
-                (vault.hashicorp.com/agent-inject): "true"
-            spec:
-              containers:
-              - name: vault-agent
-                image: vault:1.5.4
-                imagePullPolicy: IfNotPresent
-                volumeMounts:
-                - mountPath: /vault/secrets
-                  name: vault-secret
-              initContainers:
-              - name: vault-agent-init
-                image: vault:1.5.4
-                imagePullPolicy: IfNotPresent
-                volumeMounts:
-                - mountPath: /vault/secrets
-                  name: vault-secret
-              volumes:
-              - name: vault-secret
-                emptyDir:
-                  medium: Memory
-
+    - name: inject-sidecar
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              metadata:
+                annotations:
+                  (vault.hashicorp.com/agent-inject): 'true'
+              spec:
+                containers:
+                  - name: vault-agent
+                    image: vault:1.5.4
+                    imagePullPolicy: IfNotPresent
+                    volumeMounts:
+                      - mountPath: /vault/secrets
+                        name: vault-secret
+                initContainers:
+                  - name: vault-agent-init
+                    image: vault:1.5.4
+                    imagePullPolicy: IfNotPresent
+                    volumeMounts:
+                      - mountPath: /vault/secrets
+                        name: vault-secret
+                volumes:
+                  - name: vault-secret
+                    emptyDir:
+                      medium: Memory
 ```

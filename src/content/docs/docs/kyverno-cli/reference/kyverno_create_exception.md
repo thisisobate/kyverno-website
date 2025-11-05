@@ -1,5 +1,5 @@
 ---
-title: "kyverno create exception"
+title: 'kyverno create exception'
 sidebar:
   order: 35
 ---

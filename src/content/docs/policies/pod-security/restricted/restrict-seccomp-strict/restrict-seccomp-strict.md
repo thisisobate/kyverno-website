@@ -1,14 +1,15 @@
 ---
-title: "Restrict Seccomp (Strict)"
+title: 'Restrict Seccomp (Strict)'
 category: Pod Security Standards (Restricted)
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The seccomp profile in the Restricted group must not be explicitly set to Unconfined but additionally must also not allow an unset value. This policy,  requiring Kubernetes v1.19 or later, ensures that seccomp is  set to `RuntimeDefault` or `Localhost`. A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
+  The seccomp profile in the Restricted group must not be explicitly set to Unconfined but additionally must also not allow an unset value. This policy,  requiring Kubernetes v1.19 or later, ensures that seccomp is  set to `RuntimeDefault` or `Localhost`. A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security/restricted/restrict-seccomp-strict/restrict-seccomp-strict.yaml" target="-blank">/pod-security/restricted/restrict-seccomp-strict/restrict-seccomp-strict.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.22-1.23"
+    kyverno.io/kubernetes-version: '1.22-1.23'
     policies.kyverno.io/description: >-
       The seccomp profile in the Restricted group must not be explicitly set to Unconfined
       but additionally must also not allow an unset value. This policy, 
@@ -36,9 +37,9 @@ spec:
     - name: check-seccomp-strict
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
         message: >-
           Use of custom Seccomp profiles is disallowed. The fields
@@ -48,34 +49,33 @@ spec:
           spec.ephemeralContainers[*].securityContext.seccompProfile.type
           must be set to `RuntimeDefault` or `Localhost`.
         anyPattern:
-        - spec:
-            securityContext:
-              seccompProfile:
-                type: "RuntimeDefault | Localhost"
-            =(ephemeralContainers):
-            - =(securityContext):
-                =(seccompProfile):
-                  =(type): "RuntimeDefault | Localhost"
-            =(initContainers):
-            - =(securityContext):
-                =(seccompProfile):
-                  =(type): "RuntimeDefault | Localhost"
-            containers:
-            - =(securityContext):
-                =(seccompProfile):
-                  =(type): "RuntimeDefault | Localhost"
-        - spec:
-            =(ephemeralContainers):
-            - securityContext:
+          - spec:
+              securityContext:
                 seccompProfile:
-                  type: "RuntimeDefault | Localhost"
-            =(initContainers):
-            - securityContext:
-                seccompProfile:
-                  type: "RuntimeDefault | Localhost"
-            containers:
-            - securityContext:
-                seccompProfile:
-                  type: "RuntimeDefault | Localhost"
-
+                  type: 'RuntimeDefault | Localhost'
+              =(ephemeralContainers):
+                - =(securityContext):
+                    =(seccompProfile):
+                      =(type): 'RuntimeDefault | Localhost'
+              =(initContainers):
+                - =(securityContext):
+                    =(seccompProfile):
+                      =(type): 'RuntimeDefault | Localhost'
+              containers:
+                - =(securityContext):
+                    =(seccompProfile):
+                      =(type): 'RuntimeDefault | Localhost'
+          - spec:
+              =(ephemeralContainers):
+                - securityContext:
+                    seccompProfile:
+                      type: 'RuntimeDefault | Localhost'
+              =(initContainers):
+                - securityContext:
+                    seccompProfile:
+                      type: 'RuntimeDefault | Localhost'
+              containers:
+                - securityContext:
+                    seccompProfile:
+                      type: 'RuntimeDefault | Localhost'
 ```

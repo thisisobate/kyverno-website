@@ -1,14 +1,15 @@
 ---
-title: "Add Linkerd Mesh Injection"
+title: 'Add Linkerd Mesh Injection'
 category: Linkerd
-version: 
+version:
 subject: Namespace, Annotation
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. In addition, a second annotation may be applied which controls the Pod startup behavior. This policy sets the annotations, if not present, `linkerd.io/inject` and `config.linkerd.io/proxy-await` to `enabled` on all new Namespaces.
+  Sidecar proxy injection in Linkerd may be handled at the Namespace level by setting the annotation `linkerd.io/inject` to `enabled`. In addition, a second annotation may be applied which controls the Pod startup behavior. This policy sets the annotations, if not present, `linkerd.io/inject` and `config.linkerd.io/proxy-await` to `enabled` on all new Namespaces.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//linkerd/add-linkerd-mesh-injection/add-linkerd-mesh-injection.yaml" target="-blank">/linkerd/add-linkerd-mesh-injection/add-linkerd-mesh-injection.yaml</a>
 
 ```yaml
@@ -29,16 +30,16 @@ metadata:
       to `enabled` on all new Namespaces.
 spec:
   rules:
-  - name: add-mesh-annotations
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          annotations:
-            +(linkerd.io/inject): enabled
-            +(config.linkerd.io/proxy-await): enabled
+    - name: add-mesh-annotations
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              +(linkerd.io/inject): enabled
+              +(config.linkerd.io/proxy-await): enabled
 ```

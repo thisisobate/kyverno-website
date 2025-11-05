@@ -64,20 +64,20 @@ Here's an example binding taken from a K3d (K3s) cluster. Notice here that the P
 ```yaml
 uid: 21fb3d8e-b9c9-42fe-a987-d4374e74a084
 kind:
-  group: ""
+  group: ''
   version: v1
   kind: Binding
 resource:
-  group: ""
+  group: ''
   version: v1
   resource: pods
 subResource: binding
 requestKind:
-  group: ""
+  group: ''
   version: v1
   kind: Binding
 requestResource:
-  group: ""
+  group: ''
   version: v1
   resource: pods
 requestSubResource: binding
@@ -110,7 +110,7 @@ object:
         manager: k3s
         operation: Update
         subresource: binding
-        time: "2024-02-18T14:36:37Z"
+        time: '2024-02-18T14:36:37Z'
     name: busybox
     namespace: default
     uid: fceccee4-4821-408a-b75b-44262392b93c
@@ -137,34 +137,34 @@ Typically, use cases which involve fetching Node information and presenting it t
 For example, you can use the downward API to tell a Pod's containers about the name of the Pod in which they are running with an environment variable named `POD_NAME`.
 
 ```yaml
-  env:
-    - name: POD_NAME
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.name
+env:
+  - name: POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
 ```
 
 And you could do the same thing with a volume and its mount.
 
 ```yaml
-  volumes:
-    - name: podname
-      downwardAPI:
-        items:
-          - path: podname
-            fieldRef:
-              fieldPath: metadata.name
+volumes:
+  - name: podname
+    downwardAPI:
+      items:
+        - path: podname
+          fieldRef:
+            fieldPath: metadata.name
 ```
 
 ```yaml
-    volumeMounts:
-      - name: podname
-        mountPath: /etc/podinfo
+volumeMounts:
+  - name: podname
+    mountPath: /etc/podinfo
 ```
 
 In the case of the former, the containers will get an environment variable `POD_NAME=mypod` and in the latter will have a file available at `/etc/podinfo/podname` which contains the word `mypod`.
 
-But here's another important nuance which will be highlighted in the next section:  which way you choose to consume this information can matter when fetching it from Nodes.
+But here's another important nuance which will be highlighted in the next section: which way you choose to consume this information can matter when fetching it from Nodes.
 
 Once Kubelet launches containers, providing this information later does nothing and it won't be available because the container has already started. When it comes to environment variables, these need to be defined before Kubelet begins its routine. Volumes are a bit less forgiving, especially for lengthier container pulls as it takes the Kubelet a little bit longer to establish all the connections. Keep this in mind because it matters whether or not you'll be successful in mutating those Pods.
 
@@ -194,30 +194,30 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.10.0
     policies.kyverno.io/minversion: 1.10.0
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
 spec:
   background: false
   rules:
     - name: project-foo
       match:
         any:
-        - resources:
-            kinds:
-            - Pod/binding
+          - resources:
+              kinds:
+                - Pod/binding
       context:
-      - name: node
-        variable:
-          jmesPath: request.object.target.name
-          default: ''
-      - name: zone
-        apiCall:
-          urlPath: "/api/v1/nodes/{{node}}"
-          jmesPath: "metadata.labels.\"topology.kubernetes.io/zone\" || 'empty'"
+        - name: node
+          variable:
+            jmesPath: request.object.target.name
+            default: ''
+        - name: zone
+          apiCall:
+            urlPath: '/api/v1/nodes/{{node}}'
+            jmesPath: 'metadata.labels."topology.kubernetes.io/zone" || ''empty'''
       mutate:
         patchStrategicMerge:
           metadata:
             annotations:
-              topology.kubernetes.io/zone: "{{ zone }}"
+              topology.kubernetes.io/zone: '{{ zone }}'
 ```
 
 {{% alert title="Important!" color="warning" %}}
@@ -231,7 +231,7 @@ Let's demonstrate this in action. For this, we'll use a simple K3d cluster with 
 ```sh
 $ kubectl get no --show-labels
 NAME                 STATUS   ROLES                  AGE     VERSION        LABELS
-k3d-kyv11-server-0   Ready    control-plane,master   3h27m   v1.27.4+k3s1   
+k3d-kyv11-server-0   Ready    control-plane,master   3h27m   v1.27.4+k3s1
 k3d-worker01-0       Ready    <none>                 13m     v1.27.4+k3s1   topology.kubernetes.io/zone=us-east-2a
 k3d-worker02-0       Ready    <none>                 13m     v1.27.4+k3s1   topology.kubernetes.io/zone=us-east-2b
 ```
@@ -259,22 +259,22 @@ spec:
     spec:
       automountServiceAccountToken: false
       containers:
-      - image: busybox:latest
-        name: busybox
-        command:
-        - env
-        env:
-        - name: ZONE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['topology.kubernetes.io/zone']
+        - image: busybox:latest
+          name: busybox
+          command:
+            - env
+          env:
+            - name: ZONE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['topology.kubernetes.io/zone']
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: topology.kubernetes.io/zone
-                operator: Exists
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: Exists
 ```
 
 Once this is created, we expect Kyverno to mutate the Pod/binding resource to add the `topology.kubernetes.io/zone` annotation to each Pod (not to the parent Deployment since we disabled [rule auto-gen](/docs/policy-types/cluster-policy/autogen.md)). We're running the `env` program to simply write out all the environment variables. So we expect the Pods to be in a "Completed" state where we can inspect the logs and hopefully see the `ZONE` environment variable has been set with the value equaling the value of the `topology.kubernetes.io/zone` label on the parent Node.
@@ -346,12 +346,12 @@ metadata:
     app.kubernetes.io/part-of: kyverno
   name: kyverno:update-pods
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - update
+  - apiGroups:
+      - ''
+    resources:
+      - pods
+    verbs:
+      - update
 ```
 
 ```yaml
@@ -366,30 +366,31 @@ spec:
     - name: add-topology-labels
       match:
         any:
-        - resources:
-            kinds:
-            - Pod/binding
+          - resources:
+              kinds:
+                - Pod/binding
       context:
-      - name: node
-        variable:
-          jmesPath: request.object.target.name
-          default: ''
-      - name: ZoneLabel
-        apiCall:
-          urlPath: "/api/v1/nodes/{{node}}"
-          jmesPath: "metadata.labels.\"topology.kubernetes.io/zone\" || 'empty'"
+        - name: node
+          variable:
+            jmesPath: request.object.target.name
+            default: ''
+        - name: ZoneLabel
+          apiCall:
+            urlPath: '/api/v1/nodes/{{node}}'
+            jmesPath: 'metadata.labels."topology.kubernetes.io/zone" || ''empty'''
       mutate:
         targets:
-        - apiVersion: v1
-          kind: Pod
-          name: "{{ request.object.metadata.name }}"
-          namespace: "{{ request.object.metadata.namespace }}"
+          - apiVersion: v1
+            kind: Pod
+            name: '{{ request.object.metadata.name }}'
+            namespace: '{{ request.object.metadata.namespace }}'
         patchStrategicMerge:
           metadata:
-            labels: 
+            labels:
               # https://kubernetes.io/docs/reference/labels-annotations-taints/#topologykubernetesiozone
-              topology.kubernetes.io/zone: "{{ ZoneLabel }}"
+              topology.kubernetes.io/zone: '{{ ZoneLabel }}'
 ```
+
 ### Credits
 
 Thanks to [Abir Sigron](https://github.com/abirsigron) for initiating the idea on Slack and conducting a POC.

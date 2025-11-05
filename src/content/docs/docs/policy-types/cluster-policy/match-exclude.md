@@ -92,8 +92,8 @@ match:
   any:
     - resources:
         names:
-          - "prod-*"
-          - "staging"
+          - 'prod-*'
+          - 'staging'
         kinds:
           - Service
         operations:
@@ -160,16 +160,16 @@ spec:
         any:
           - resources:
               kinds:
-                - "*"
+                - '*'
               operations:
                 - CREATE
       validate:
         failureAction: Audit
-        message: "The label `app.kubernetes.io/name` is required."
+        message: 'The label `app.kubernetes.io/name` is required.'
         pattern:
           metadata:
             labels:
-              app.kubernetes.io/name: "?*"
+              app.kubernetes.io/name: '?*'
 ```
 
 {{% alert title="Warning" color="warning" %}}
@@ -254,14 +254,14 @@ spec:
                 - StatefulSet
               # Optional resource names. Supports wildcards (* and ?)
               names:
-                - "mongo*"
-                - "postgres*"
+                - 'mongo*'
+                - 'postgres*'
               # Optional list of namespaces. Supports wildcards (* and ?)
               operations:
                 - CREATE
                 - UPDATE
               namespaces:
-                - "dev*"
+                - 'dev*'
                 - test
               # Optional label selectors. Values support wildcards (* and ?)
               selector:
@@ -435,7 +435,7 @@ spec:
         any:
           - resources:
               annotations:
-                imageregistry: "https://hub.docker.com/"
+                imageregistry: 'https://hub.docker.com/'
               kinds:
                 - Pod
               operations:
@@ -469,11 +469,11 @@ spec:
                 - CREATE
       validate:
         failureAction: Audit
-        message: "The label `team` is required."
+        message: 'The label `team` is required.'
         pattern:
           metadata:
             labels:
-              team: "?*"
+              team: '?*'
     - name: require-match
       match:
         any:
@@ -484,11 +484,11 @@ spec:
                 - UPDATE
       validate:
         failureAction: Audit
-        message: "The label `match` is required."
+        message: 'The label `match` is required.'
         pattern:
           metadata:
             labels:
-              match: "?*"
+              match: '?*'
 ```
 
 The webhook rules would look like this:
@@ -496,14 +496,14 @@ The webhook rules would look like this:
 ```yaml
 rules:
   - apiGroups:
-      - ""
+      - ''
     apiVersions:
       - v1
     operations:
       - CREATE
     resources:
       - namespaces
-    scope: "*"
+    scope: '*'
   - apiGroups:
       - apps
     apiVersions:
@@ -512,5 +512,5 @@ rules:
       - UPDATE
     resources:
       - deployments
-    scope: "*"
+    scope: '*'
 ```

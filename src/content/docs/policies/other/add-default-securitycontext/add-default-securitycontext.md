@@ -1,14 +1,15 @@
 ---
-title: "Add Default securityContext"
+title: 'Add Default securityContext'
 category: Sample
 version: 1.6.0
 subject: Pod
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    A Pod securityContext entry defines fields such as the user and group which should be used to run the Pod. Sometimes choosing default values for users rather than blocking is a better alternative to not impede such Pod definitions. This policy will mutate a Pod to set `runAsNonRoot`, `runAsUser`, `runAsGroup`, and  `fsGroup` fields within the Pod securityContext if they are not already set.
+  A Pod securityContext entry defines fields such as the user and group which should be used to run the Pod. Sometimes choosing default values for users rather than blocking is a better alternative to not impede such Pod definitions. This policy will mutate a Pod to set `runAsNonRoot`, `runAsUser`, `runAsGroup`, and  `fsGroup` fields within the Pod securityContext if they are not already set.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/add-default-securitycontext/add-default-securitycontext.yaml" target="-blank">/other/add-default-securitycontext/add-default-securitycontext.yaml</a>
 
 ```yaml
@@ -28,19 +29,18 @@ metadata:
       `fsGroup` fields within the Pod securityContext if they are not already set.
 spec:
   rules:
-  - name: add-default-securitycontext
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    mutate:
-      patchStrategicMerge:
-        spec:
-          securityContext:
-            +(runAsNonRoot): true
-            +(runAsUser): 1000
-            +(runAsGroup): 3000
-            +(fsGroup): 2000
-
+    - name: add-default-securitycontext
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+        patchStrategicMerge:
+          spec:
+            securityContext:
+              +(runAsNonRoot): true
+              +(runAsUser): 1000
+              +(runAsGroup): 3000
+              +(fsGroup): 2000
 ```

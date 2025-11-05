@@ -1,14 +1,15 @@
 ---
-title: "Disallow Capabilities (Strict) in ValidatingPolicy"
+title: 'Disallow Capabilities (Strict) in ValidatingPolicy'
 category: Pod Security Standards (Restricted) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.
+  Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-vpol/restricted/disallow-capabilities-strict/disallow-capabilities-strict.yaml" target="-blank">/pod-security-vpol/restricted/disallow-capabilities-strict/disallow-capabilities-strict.yaml</a>
 
 ```yaml
@@ -22,43 +23,42 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.14.0
     kyverno.io/kyverno-version: 1.14.0
-    kyverno.io/kubernetes-version: "1.30+"
+    kyverno.io/kubernetes-version: '1.30+'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition,
       all containers must explicitly drop `ALL` capabilities.
 spec:
   validationActions:
-     - Audit
+    - Audit
   evaluation:
     background:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups:   [""]
-        apiVersions: ["v1"]
-        operations:  ["CREATE", "UPDATE"]
-        resources:   ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
-  - name: allContainers
-    expression: >-
-      object.spec.containers + 
-      (object.spec.?initContainers.orValue([])) + 
-      (object.spec.?ephemeralContainers.orValue([]))
+    - name: allContainers
+      expression: >-
+        object.spec.containers + 
+        (object.spec.?initContainers.orValue([])) + 
+        (object.spec.?ephemeralContainers.orValue([]))
 
   validations:
-  - expression: >-
-      variables.allContainers.all(container, 
-      container.?securityContext.?capabilities.?drop.orValue([]).exists_one(capability, capability == 'ALL'))
-    message: >-
-      Containers must drop `ALL` capabilities.
+    - expression: >-
+        variables.allContainers.all(container, 
+        container.?securityContext.?capabilities.?drop.orValue([]).exists_one(capability, capability == 'ALL'))
+      message: >-
+        Containers must drop `ALL` capabilities.
 
-  - expression: >-
-      variables.allContainers.all(container, 
-        container.?securityContext.?capabilities.?add.orValue([]).size() == 0 || 
-        (container.securityContext.capabilities.add.orValue([]).size() == 1 && 
-        container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE'))
-    message: >-
-      Any capabilities added other than NET_BIND_SERVICE are disallowed.
-
+    - expression: >-
+        variables.allContainers.all(container, 
+          container.?securityContext.?capabilities.?add.orValue([]).size() == 0 || 
+          (container.securityContext.capabilities.add.orValue([]).size() == 1 && 
+          container.securityContext.capabilities.add[0] == 'NET_BIND_SERVICE'))
+      message: >-
+        Any capabilities added other than NET_BIND_SERVICE are disallowed.
 ```

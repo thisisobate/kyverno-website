@@ -1,5 +1,5 @@
 ---
-title: "kyverno jp"
+title: 'kyverno jp'
 sidebar:
   order: 35
 ---

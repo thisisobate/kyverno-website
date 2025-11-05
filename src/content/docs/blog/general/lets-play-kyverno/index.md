@@ -14,10 +14,11 @@ While this approach makes it very easy to use Kyverno in its intended environmen
 To help potential users get started and reduce the effort required to test Kyverno and/or develop new policies, the [Kyverno Playground](https://playground.kyverno.io) has been developed. This has now been available for 3 weeks, currently in version 0.3.1.
 
 This article explains:
-* What is the Kyverno Playground?
-* How was the Kyverno Playground created?
-* How does the Kyverno Playground work?
-* What additional features provides the Kyverno Playground?
+
+- What is the Kyverno Playground?
+- How was the Kyverno Playground created?
+- How does the Kyverno Playground work?
+- What additional features provides the Kyverno Playground?
 
 ## Introduction
 
@@ -64,6 +65,7 @@ Besides the basic idea of providing a simple testing environment, the Playground
 Let's take a look at a small selection of these available additional features.
 
 ### Example Library
+
 In order to give new users an interactive overview of what Kyverno can do and how different use cases can be achieved within the Playground, we decided to include a small sample library based on the extensive [Kyverno Policy Repository](https://github.com/kyverno/policies). The examples provide a set of predefined policies and related resources and configurations for common use cases such as the [Pod Security Standards](https://github.com/kyverno/policies/tree/main/pod-security) and [Best Practices](https://github.com/kyverno/policies/tree/main/best-practices).
 
 The tutorials focus on features and how they can be simulated in the Playground, providing various examples such as upgrade operations, image verification, resource cloning, and more.

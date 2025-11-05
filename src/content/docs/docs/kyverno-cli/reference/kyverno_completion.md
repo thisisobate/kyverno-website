@@ -1,5 +1,5 @@
 ---
-title: "kyverno completion"
+title: 'kyverno completion'
 sidebar:
   order: 35
 ---

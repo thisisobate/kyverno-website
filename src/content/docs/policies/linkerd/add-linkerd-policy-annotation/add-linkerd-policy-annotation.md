@@ -1,14 +1,15 @@
 ---
-title: "Add Linkerd Policy Annotation"
+title: 'Add Linkerd Policy Annotation'
 category: Linkerd
-version: 
+version:
 subject: Namespace,Annotation
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Linkerd will, by default, allow all incoming traffic to Pods in the mesh including that from outside the cluster network. In many cases, this default needs to be changed to deny all traffic so it may be selectively opened using Linkerd policy objects. This policy sets the annotation `config.linkerd.io/default-inbound-policy` to `deny`, if not present, for new Namespaces. It can be customized with exclusions to more tightly control its application.
+  Linkerd will, by default, allow all incoming traffic to Pods in the mesh including that from outside the cluster network. In many cases, this default needs to be changed to deny all traffic so it may be selectively opened using Linkerd policy objects. This policy sets the annotation `config.linkerd.io/default-inbound-policy` to `deny`, if not present, for new Namespaces. It can be customized with exclusions to more tightly control its application.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//linkerd/add-linkerd-policy-annotation/add-linkerd-policy-annotation.yaml" target="-blank">/linkerd/add-linkerd-policy-annotation/add-linkerd-policy-annotation.yaml</a>
 
 ```yaml
@@ -30,16 +31,15 @@ metadata:
       It can be customized with exclusions to more tightly control its application.
 spec:
   rules:
-  - name: deny-inbound-namespace
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          annotations:
-            +(config.linkerd.io/default-inbound-policy): deny
-
+    - name: deny-inbound-namespace
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              +(config.linkerd.io/default-inbound-policy): deny
 ```

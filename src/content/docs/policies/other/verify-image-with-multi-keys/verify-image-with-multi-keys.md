@@ -1,14 +1,15 @@
 ---
-title: "Verify Image with Multiple Keys"
+title: 'Verify Image with Multiple Keys'
 category: Software Supply Chain Security
 version: 1.7.0
 subject: Pod
-policyType: "verifyImages"
+policyType: 'verifyImages'
 description: >
-    There may be multiple keys used to sign images based on the parties involved in the creation process. This image verification policy requires the named image be signed by two separate keys. It will search for a global "production" key in a ConfigMap called `keys` in the `default` Namespace and also a Namespace key in the same ConfigMap.
+  There may be multiple keys used to sign images based on the parties involved in the creation process. This image verification policy requires the named image be signed by two separate keys. It will search for a global "production" key in a ConfigMap called `keys` in the `default` Namespace and also a Namespace key in the same ConfigMap.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/verify-image-with-multi-keys/verify-image-with-multi-keys.yaml" target="-blank">/other/verify-image-with-multi-keys/verify-image-with-multi-keys.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.7.0
     kyverno.io/kyverno-version: 1.7.2
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: >-
       There may be multiple keys used to sign images based on
       the parties involved in the creation process. This image
@@ -38,24 +39,23 @@ spec:
     - name: check-image-with-two-keys
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       context:
-      - name: keys
-        configMap:
-          name: keys
-          namespace: default
+        - name: keys
+          configMap:
+            name: keys
+            namespace: default
       verifyImages:
-      - imageReferences:
-        - "ghcr.io/myorg/myimage*"
-        required: true
-        attestors:
-        - count: 2
-          entries:
-          - keys: 
-              publicKeys: "{{ keys.data.production }}"
-          - keys: 
-              publicKeys: "{{ keys.data.{{request.namespace}} }}"
-
+        - imageReferences:
+            - 'ghcr.io/myorg/myimage*'
+          required: true
+          attestors:
+            - count: 2
+              entries:
+                - keys:
+                    publicKeys: '{{ keys.data.production }}'
+                - keys:
+                    publicKeys: '{{ keys.data.{{request.namespace}} }}'
 ```

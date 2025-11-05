@@ -1,14 +1,15 @@
 ---
-title: "Require Requests and Limits for emptyDir"
+title: 'Require Requests and Limits for emptyDir'
 category: Other
 version: 1.9.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Pods which mount emptyDir volumes may be allowed to potentially overrun the medium backing the emptyDir volume. This sample ensures that any initContainers or containers mounting an emptyDir volume have ephemeral-storage requests and limits set. Policy will be skipped if the volume has already a sizeLimit set.
+  Pods which mount emptyDir volumes may be allowed to potentially overrun the medium backing the emptyDir volume. This sample ensures that any initContainers or containers mounting an emptyDir volume have ephemeral-storage requests and limits set. Policy will be skipped if the volume has already a sizeLimit set.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/require-emptydir-requests-limits/require-emptydir-requests-limits.yaml" target="-blank">/other/require-emptydir-requests-limits/require-emptydir-requests-limits.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.9.0
     kyverno.io/kyverno-version: 1.11.1
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Pods which mount emptyDir volumes may be allowed to potentially overrun
@@ -41,9 +42,9 @@ spec:
               kinds:
                 - Pod
       context:
-      - name: emptydirnames
-        variable:
-          jmesPath: request.object.spec.volumes[?contains(keys(@), 'emptyDir') && !contains(keys(emptyDir), 'sizeLimit')].name
+        - name: emptydirnames
+          variable:
+            jmesPath: request.object.spec.volumes[?contains(keys(@), 'emptyDir') && !contains(keys(emptyDir), 'sizeLimit')].name
       preconditions:
         all:
           - key: "{{ request.object.spec.volumes[?contains(keys(@), 'emptyDir')] || `[]` | length(@) }}"
@@ -57,16 +58,16 @@ spec:
       validate:
         message: Containers mounting emptyDir volumes must specify requests and limits for ephemeral-storage.
         foreach:
-          - list: "request.object.spec.[initContainers, containers][]"
+          - list: 'request.object.spec.[initContainers, containers][]'
             preconditions:
               any:
-              - key: "{{ element.volumeMounts[].name }}"
-                operator: AnyIn
-                value: "{{ emptydirnames }}"
+                - key: '{{ element.volumeMounts[].name }}'
+                  operator: AnyIn
+                  value: '{{ emptydirnames }}'
             pattern:
               resources:
                 requests:
-                  ephemeral-storage: "?*"
+                  ephemeral-storage: '?*'
                 limits:
-                  ephemeral-storage: "?*"
+                  ephemeral-storage: '?*'
 ```

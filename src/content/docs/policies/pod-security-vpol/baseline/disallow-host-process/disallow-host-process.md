@@ -1,14 +1,15 @@
 ---
-title: "Disallow hostProcess in ValidatingPolicy"
+title: 'Disallow hostProcess in ValidatingPolicy'
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Windows pods offer the ability to run HostProcess containers which enables privileged access to the Windows node. Privileged access to the host is disallowed in the baseline policy. HostProcess pods are an alpha feature as of Kubernetes v1.22. This policy ensures the `hostProcess` field, if present, is set to `false`.
+  Windows pods offer the ability to run HostProcess containers which enables privileged access to the Windows node. Privileged access to the host is disallowed in the baseline policy. HostProcess pods are an alpha feature as of Kubernetes v1.22. This policy ensures the `hostProcess` field, if present, is set to `false`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-vpol/baseline/disallow-host-process/disallow-host-process.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-process/disallow-host-process.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30+"
+    kyverno.io/kubernetes-version: '1.30+'
     policies.kyverno.io/description: >-
       Windows pods offer the ability to run HostProcess containers which enables privileged
       access to the Windows node. Privileged access to the host is disallowed in the baseline
@@ -30,16 +31,16 @@ metadata:
       the `hostProcess` field, if present, is set to `false`.
 spec:
   validationActions:
-     - Audit
+    - Audit
   evaluation:
     background:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups:   [""]
-        apiVersions: ["v1"]
-        operations:  ["CREATE", "UPDATE"]
-        resources:   ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
     - name: allContainers
       expression: >-
@@ -55,6 +56,5 @@ spec:
         HostProcess containers are disallowed. The field spec.containers[*].securityContext.windowsOptions.hostProcess,
         spec.initContainers[*].securityContext.windowsOptions.hostProcess, and
         spec.ephemeralContainers[*].securityContext.windowsOptions.hostProcess
-        must either be undefined or set to `false`. 
-
+        must either be undefined or set to `false`.
 ```

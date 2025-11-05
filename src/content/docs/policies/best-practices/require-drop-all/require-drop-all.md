@@ -1,14 +1,15 @@
 ---
-title: "Drop All Capabilities"
+title: 'Drop All Capabilities'
 category: Best Practices
 version: 1.6.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Capabilities permit privileged actions without giving full root access. All capabilities should be dropped from a Pod, with only those required added back. This policy ensures that all containers explicitly specify the `drop: ["ALL"]` ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards.
+  Capabilities permit privileged actions without giving full root access. All capabilities should be dropped from a Pod, with only those required added back. This policy ensures that all containers explicitly specify the `drop: ["ALL"]` ability. Note that this policy also illustrates how to cover drop entries in any case although this may not strictly conform to the Pod Security Standards.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//best-practices/require-drop-all/require-drop-all.yaml" target="-blank">/best-practices/require-drop-all/require-drop-all.yaml</a>
 
 ```yaml
@@ -35,14 +36,14 @@ spec:
     - name: require-drop-all
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: NotEquals
-          value: DELETE
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
         message: >-
           Containers must drop `ALL` capabilities.
@@ -51,7 +52,7 @@ spec:
             deny:
               conditions:
                 all:
-                - key: ALL
-                  operator: AnyNotIn
-                  value: "{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}"
+                  - key: ALL
+                    operator: AnyNotIn
+                    value: '{{ element.securityContext.capabilities.drop[].to_upper(@) || `[]` }}'
 ```

@@ -1,14 +1,15 @@
 ---
-title: "Require Pod Probes"
+title: 'Require Pod Probes'
 category: Best Practices, EKS Best Practices
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Liveness and readiness probes need to be configured to correctly manage a Pod's lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic `livenessProbe` is performed by the kubelet to determine if the Pod's containers are running or need to be restarted. A `readinessProbe` is used by Services and Deployments to determine if the Pod is ready to receive network traffic. This policy validates that all containers have one of livenessProbe, readinessProbe, or startupProbe defined.
+  Liveness and readiness probes need to be configured to correctly manage a Pod's lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic `livenessProbe` is performed by the kubelet to determine if the Pod's containers are running or need to be restarted. A `readinessProbe` is used by Services and Deployments to determine if the Pod is ready to receive network traffic. This policy validates that all containers have one of livenessProbe, readinessProbe, or startupProbe defined.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//best-practices/require-probes/require-probes.yaml" target="-blank">/best-practices/require-probes/require-probes.yaml</a>
 
 ```yaml
@@ -34,33 +35,33 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: validate-probes
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    preconditions:
-      all:
-      - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: AnyIn
-        value:
-        - CREATE
-        - UPDATE
-    validate:
-      message: "Liveness, readiness, or startup probes are required for all containers."
-      foreach:
-      - list: request.object.spec.containers[]
-        deny:
-          conditions:
-            all:
-            - key: livenessProbe
-              operator: AllNotIn
-              value: "{{ element.keys(@)[] }}"
-            - key: startupProbe
-              operator: AllNotIn
-              value: "{{ element.keys(@)[] }}"
-            - key: readinessProbe
-              operator: AllNotIn
-              value: "{{ element.keys(@)[] }}"
+    - name: validate-probes
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      preconditions:
+        all:
+          - key: "{{request.operation || 'BACKGROUND'}}"
+            operator: AnyIn
+            value:
+              - CREATE
+              - UPDATE
+      validate:
+        message: 'Liveness, readiness, or startup probes are required for all containers.'
+        foreach:
+          - list: request.object.spec.containers[]
+            deny:
+              conditions:
+                all:
+                  - key: livenessProbe
+                    operator: AllNotIn
+                    value: '{{ element.keys(@)[] }}'
+                  - key: startupProbe
+                    operator: AllNotIn
+                    value: '{{ element.keys(@)[] }}'
+                  - key: readinessProbe
+                    operator: AllNotIn
+                    value: '{{ element.keys(@)[] }}'
 ```

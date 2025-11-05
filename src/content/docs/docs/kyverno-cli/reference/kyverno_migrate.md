@@ -1,5 +1,5 @@
 ---
-title: "kyverno migrate"
+title: 'kyverno migrate'
 sidebar:
   order: 35
 ---

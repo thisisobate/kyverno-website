@@ -1,14 +1,15 @@
 ---
-title: "Disallow Latest Tag"
+title: 'Disallow Latest Tag'
 category: Best Practices
 version: 1.6.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The ':latest' tag is mutable and can lead to unexpected errors if the image changes. A best practice is to use an immutable tag that maps to a specific version of an application Pod. This policy validates that the image specifies a tag and that it is not called `latest`.
+  The ':latest' tag is mutable and can lead to unexpected errors if the image changes. A best practice is to use an immutable tag that maps to a specific version of an application Pod. This policy validates that the image specifies a tag and that it is not called `latest`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//best-practices/disallow-latest-tag/disallow-latest-tag.yaml" target="-blank">/best-practices/disallow-latest-tag/disallow-latest-tag.yaml</a>
 
 ```yaml
@@ -31,41 +32,40 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: require-image-tag
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "An image tag is required."
-      foreach:
-        - list: "request.object.spec.containers"
-          pattern:
-            image: "*:*"
-        - list: "request.object.spec.initContainers"
-          pattern:
-            image: "*:*"
-        - list: "request.object.spec.ephemeralContainers"
-          pattern:
-            image: "*:*"
-  - name: validate-image-tag
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "Using a mutable image tag e.g. 'latest' is not allowed."
-      foreach:
-        - list: "request.object.spec.containers"
-          pattern:
-            image: "!*:latest"
-        - list: "request.object.spec.initContainers"
-          pattern:
-            image: "!*:latest"
-        - list: "request.object.spec.ephemeralContainers"
-          pattern:
-            image: "!*:latest"
-
+    - name: require-image-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: 'An image tag is required.'
+        foreach:
+          - list: 'request.object.spec.containers'
+            pattern:
+              image: '*:*'
+          - list: 'request.object.spec.initContainers'
+            pattern:
+              image: '*:*'
+          - list: 'request.object.spec.ephemeralContainers'
+            pattern:
+              image: '*:*'
+    - name: validate-image-tag
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Using a mutable image tag e.g. 'latest' is not allowed."
+        foreach:
+          - list: 'request.object.spec.containers'
+            pattern:
+              image: '!*:latest'
+          - list: 'request.object.spec.initContainers'
+            pattern:
+              image: '!*:latest'
+          - list: 'request.object.spec.ephemeralContainers'
+            pattern:
+              image: '!*:latest'
 ```

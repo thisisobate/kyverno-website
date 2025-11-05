@@ -1,14 +1,15 @@
 ---
-title: "Require Run As Non-Root User in CEL"
+title: 'Require Run As Non-Root User in CEL'
 category: Pod Security Standards (Restricted) in CEL
 version: 1.11.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero.
+  Containers must be required to run as non-root users. This policy ensures `runAsUser` is either unset or set to a number greater than zero.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-cel/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml" target="-blank">/pod-security-cel/restricted/require-run-as-non-root-user/require-run-as-non-root-user.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kyverno-version: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/description: >-
       Containers must be required to run as non-root users. This policy ensures
       `runAsUser` is either unset or set to a number greater than zero.
@@ -34,12 +35,12 @@ spec:
     - name: run-as-non-root-user
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
@@ -76,5 +77,4 @@ spec:
               message: >-
                 Running as root is not allowed. The field spec.ephemeralContainers[*].securityContext.runAsUser must be unset or
                 set to a number greater than zero
-
 ```

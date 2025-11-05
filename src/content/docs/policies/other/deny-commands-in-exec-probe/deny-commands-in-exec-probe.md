@@ -1,14 +1,15 @@
 ---
-title: "Deny Commands in Exec Probe"
+title: 'Deny Commands in Exec Probe'
 category: Other
 version: 1.9.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Developers may feel compelled to use simple shell commands as a workaround to creating "proper" liveness or readiness probes for a Pod. Such a practice can be discouraged via detection of those commands. This policy prevents the use of certain commands `jcmd`, `ps`, or `ls` if found in a Pod's liveness exec probe.
+  Developers may feel compelled to use simple shell commands as a workaround to creating "proper" liveness or readiness probes for a Pod. Such a practice can be discouraged via detection of those commands. This policy prevents the use of certain commands `jcmd`, `ps`, or `ls` if found in a Pod's liveness exec probe.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/deny-commands-in-exec-probe/deny-commands-in-exec-probe.yaml" target="-blank">/other/deny-commands-in-exec-probe/deny-commands-in-exec-probe.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.1.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/description: >-
       Developers may feel compelled to use simple shell commands as a workaround to
       creating "proper" liveness or readiness probes for a Pod. Such a practice can be discouraged
@@ -35,33 +36,32 @@ spec:
     - name: check-commands
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       preconditions:
         all:
-        - key: "{{ length(request.object.spec.containers[].livenessProbe.exec.command[] || `[]`) }}"
-          operator: GreaterThan
-          value: 0
-        - key: "{{ request.operation }}"
-          operator: NotEquals
-          value: DELETE
+          - key: '{{ length(request.object.spec.containers[].livenessProbe.exec.command[] || `[]`) }}'
+            operator: GreaterThan
+            value: 0
+          - key: '{{ request.operation }}'
+            operator: NotEquals
+            value: DELETE
       validate:
         message: Cannot use commands `jcmd`, `ps`, or `ls` in liveness probes.
         deny:
           conditions:
             any:
-            - key:
-              - true
-              operator: AnyIn
-              value: "{{ request.object.spec.containers[].livenessProbe.exec.command[].regex_match('\\bjcmd\\b',@) }}"
-            - key:
-              - true
-              operator: AnyIn
-              value: "{{ request.object.spec.containers[].livenessProbe.exec.command[].regex_match('\\bps\\b',@) }}"
-            - key:
-              - true
-              operator: AnyIn
-              value: "{{ request.object.spec.containers[].livenessProbe.exec.command[].regex_match('\\bls\\b',@) }}"
-
+              - key:
+                  - true
+                operator: AnyIn
+                value: "{{ request.object.spec.containers[].livenessProbe.exec.command[].regex_match('\\bjcmd\\b',@) }}"
+              - key:
+                  - true
+                operator: AnyIn
+                value: "{{ request.object.spec.containers[].livenessProbe.exec.command[].regex_match('\\bps\\b',@) }}"
+              - key:
+                  - true
+                operator: AnyIn
+                value: "{{ request.object.spec.containers[].livenessProbe.exec.command[].regex_match('\\bls\\b',@) }}"
 ```

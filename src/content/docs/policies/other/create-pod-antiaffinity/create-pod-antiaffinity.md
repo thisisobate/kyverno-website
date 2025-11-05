@@ -1,14 +1,15 @@
 ---
-title: "Add Pod Anti-Affinity"
+title: 'Add Pod Anti-Affinity'
 category: Sample
 version: 1.6.0
 subject: Deployment, Pod
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Applications may involve multiple replicas of the same Pod for availability as well as scale purposes, yet Kubernetes does not by default provide a solution for availability. This policy sets a Pod anti-affinity configuration on Deployments which contain an `app` label if it is not already present.
+  Applications may involve multiple replicas of the same Pod for availability as well as scale purposes, yet Kubernetes does not by default provide a solution for availability. This policy sets a Pod anti-affinity configuration on Deployments which contain an `app` label if it is not already present.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/create-pod-antiaffinity/create-pod-antiaffinity.yaml" target="-blank">/other/create-pod-antiaffinity/create-pod-antiaffinity.yaml</a>
 
 ```yaml
@@ -31,15 +32,15 @@ spec:
     - name: insert-pod-antiaffinity
       match:
         any:
-        - resources:
-            kinds:
-              - Deployment
+          - resources:
+              kinds:
+                - Deployment
       preconditions:
         # This precondition selects Pods with the label `app` defined
         all:
-        - key: "{{request.object.spec.template.metadata.labels.app || ''}}"
-          operator: NotEquals
-          value: ""
+          - key: "{{request.object.spec.template.metadata.labels.app || ''}}"
+            operator: NotEquals
+            value: ''
       # Mutates the Deployment resource to add fields.
       mutate:
         patchStrategicMerge:
@@ -52,12 +53,11 @@ spec:
                     +(preferredDuringSchedulingIgnoredDuringExecution):
                       - weight: 1
                         podAffinityTerm:
-                          topologyKey: "kubernetes.io/hostname"
+                          topologyKey: 'kubernetes.io/hostname'
                           labelSelector:
                             matchExpressions:
-                            - key: app
-                              operator: In
-                              values:
-                              - "{{request.object.spec.template.metadata.labels.app}}"
-
+                              - key: app
+                                operator: In
+                                values:
+                                  - '{{request.object.spec.template.metadata.labels.app}}'
 ```

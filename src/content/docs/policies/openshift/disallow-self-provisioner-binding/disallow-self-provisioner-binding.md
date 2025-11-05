@@ -1,14 +1,15 @@
 ---
-title: "Disallow binding to self-provisioner cluster role in OpenShift"
+title: 'Disallow binding to self-provisioner cluster role in OpenShift'
 category: OpenShift
 version: 1.6.0
 subject: ClusterRoleBinding, RBAC
-policyType: "validate"
+policyType: 'validate'
 description: >
-    This policy prevents binding to the self-provisioners role for strict control of OpenShift project creation.
+  This policy prevents binding to the self-provisioners role for strict control of OpenShift project creation.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//openshift/disallow-self-provisioner-binding/disallow-self-provisioner-binding.yaml" target="-blank">/openshift/disallow-self-provisioner-binding/disallow-self-provisioner-binding.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: high
     kyverno.io/kyverno-version: 1.6.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.20"
+    kyverno.io/kubernetes-version: '1.20'
     policies.kyverno.io/subject: ClusterRoleBinding, RBAC
     policies.kyverno.io/description: >-
       This policy prevents binding to the self-provisioners role for strict control of OpenShift project creation.
@@ -30,43 +31,42 @@ spec:
   validationFailureAction: Enforce
   background: true
   rules:
-  - name: check-self-provisioner-binding-no-subject
-    match:
-      any:
-      - resources:
-          kinds:
-          - ClusterRoleBinding
-    preconditions:
-      all:
-      - key: "{{request.object.metadata.name}}"
-        operator: Equals
-        value: self-provisioners
-      - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: Equals
-        value: UPDATE
-    validate:
-      message: >-
-        Modifying the self-provisioners ClusterRoleBinding is not allowed.
-      deny: {}
-  - name: check-self-provisioner-binding-with-subject
-    match:
-      any:
-      - resources:
-          kinds:
-          - ClusterRoleBinding
-    preconditions:
-      all:
-      - key: "{{request.object.metadata.name || ''}}"
-        operator: NotEquals
-        value: self-provisioners
-    validate:
-      message: >-
-        Binding to the self-provisioners cluster role is not allowed.
-      deny:
-        conditions:
-          all:
-          - key: self-provisioner
-            operator: AnyIn
-            value: "{{request.object.roleRef.name}}"
-
+    - name: check-self-provisioner-binding-no-subject
+      match:
+        any:
+          - resources:
+              kinds:
+                - ClusterRoleBinding
+      preconditions:
+        all:
+          - key: '{{request.object.metadata.name}}'
+            operator: Equals
+            value: self-provisioners
+          - key: "{{request.operation || 'BACKGROUND'}}"
+            operator: Equals
+            value: UPDATE
+      validate:
+        message: >-
+          Modifying the self-provisioners ClusterRoleBinding is not allowed.
+        deny: {}
+    - name: check-self-provisioner-binding-with-subject
+      match:
+        any:
+          - resources:
+              kinds:
+                - ClusterRoleBinding
+      preconditions:
+        all:
+          - key: "{{request.object.metadata.name || ''}}"
+            operator: NotEquals
+            value: self-provisioners
+      validate:
+        message: >-
+          Binding to the self-provisioners cluster role is not allowed.
+        deny:
+          conditions:
+            all:
+              - key: self-provisioner
+                operator: AnyIn
+                value: '{{request.object.roleRef.name}}'
 ```

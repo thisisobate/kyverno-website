@@ -36,7 +36,7 @@ spec:
                 - Pod
       verifyImages:
         - imageReferences:
-            - "ghcr.io/kyverno/test-verify-image*"
+            - 'ghcr.io/kyverno/test-verify-image*'
           failureAction: Enforce
           attestors:
             - count: 1
@@ -115,7 +115,7 @@ spec:
       name: sigstore-attestation-verification
       verifyImages:
         - imageReferences:
-            - "*"
+            - '*'
           type: SigstoreBundle
           attestations:
             - attestors:
@@ -127,7 +127,7 @@ spec:
                           url: https://rekor.sigstore.dev
               conditions:
                 - all:
-                    - key: "{{ buildDefinition.buildType }}"
+                    - key: '{{ buildDefinition.buildType }}'
                       operator: Equals
                       value: https://actions.github.io/buildtypes/workflow/v1
               type: https://slsa.dev/provenance/v1
@@ -155,9 +155,9 @@ spec:
                 - Pod
       verifyImages:
         - imageReferences:
-            - "ghcr.io/*"
+            - 'ghcr.io/*'
           skipImageReferences:
-            - "ghcr.io/trusted/*"
+            - 'ghcr.io/trusted/*'
           failureAction: Enforce
           attestors:
             - count: 1
@@ -255,7 +255,7 @@ spec:
                 - Pod
       verifyImages:
         - imageReferences:
-            - "registry.io/org/app*"
+            - 'registry.io/org/app*'
           failureAction: Enforce
           attestations:
             - predicateType: https://example.com/CodeReview/v1
@@ -269,15 +269,15 @@ spec:
                           -----END PUBLIC KEY-----
               conditions:
                 - all:
-                    - key: "{{ repo.uri }}"
+                    - key: '{{ repo.uri }}'
                       operator: Equals
-                      value: "https://git-repo.com/org/app"
-                    - key: "{{ repo.branch }}"
+                      value: 'https://git-repo.com/org/app'
+                    - key: '{{ repo.branch }}'
                       operator: Equals
-                      value: "main"
-                    - key: "{{ reviewers }}"
+                      value: 'main'
+                    - key: '{{ reviewers }}'
                       operator: AnyIn
-                      value: ["ana@example.com", "bob@example.com"]
+                      value: ['ana@example.com', 'bob@example.com']
 ```
 
 The policy rule above fetches and verifies that the attestations are signed with the matching private key, decodes the payloads to extract the predicate, and then applies each [condition](../../preconditions.md#any-and-all-statements) to the predicate.
@@ -353,7 +353,7 @@ spec:
                 - Pod
       verifyImages:
         - imageReferences:
-            - "ghcr.io/kyverno/test-verify-image:signed-cert"
+            - 'ghcr.io/kyverno/test-verify-image:signed-cert'
           failureAction: Enforce
           attestors:
             - entries:
@@ -424,7 +424,7 @@ spec:
                 - Pod
       verifyImages:
         - imageReferences:
-            - "ghcr.io/kyverno/test-verify-image:signed-cert"
+            - 'ghcr.io/kyverno/test-verify-image:signed-cert'
           failureAction: Enforce
           attestors:
             - entries:
@@ -481,20 +481,20 @@ spec:
       context:
         - name: encodedCert
           apiCall:
-            urlPath: "/api/v1/namespaces/default/secrets/my-ca-secret"
+            urlPath: '/api/v1/namespaces/default/secrets/my-ca-secret'
             method: GET
             jmesPath: 'data."root-ca.pem"'
         - name: certChain
           variable:
-            jmesPath: "base64_decode(encodedCert)"
+            jmesPath: 'base64_decode(encodedCert)'
       verifyImages:
         - imageReferences:
-            - "docker.io/mohdcode/signingtest@sha256:ae0563a2513992491b4e3e2e3e610249696097a2be7ca76c1ecd52a5702a192d"
+            - 'docker.io/mohdcode/signingtest@sha256:ae0563a2513992491b4e3e2e3e610249696097a2be7ca76c1ecd52a5702a192d'
           failureAction: Enforce
           attestors:
             - entries:
                 - certificates:
-                    certChain: "{{certChain}}"
+                    certChain: '{{certChain}}'
                     rekor:
                       ignoreTlog: true
                     ctlog:
@@ -547,13 +547,13 @@ spec:
                 - Pod
       verifyImages:
         - imageReferences:
-            - "ghcr.io/kyverno/test-verify-image:signed-keyless"
+            - 'ghcr.io/kyverno/test-verify-image:signed-keyless'
           failureAction: Enforce
           attestors:
             - entries:
                 - keyless:
-                    subject: "*@nirmata.com"
-                    issuer: "https://accounts.google.com"
+                    subject: '*@nirmata.com'
+                    issuer: 'https://accounts.google.com'
                     rekor:
                       url: https://rekor.sigstore.dev
 ```
@@ -577,7 +577,7 @@ spec:
                 - Pod
       verifyImages:
         - imageReferences:
-            - "ghcr.io/kyverno/test-verify-image:signed-keyless"
+            - 'ghcr.io/kyverno/test-verify-image:signed-keyless'
           attestors:
             - entries:
                 - keyless:
@@ -810,12 +810,11 @@ global:
 To use a separate registry to store signatures use the [COSIGN_REPOSITORY](https://github.com/sigstore/cosign#specifying-registry) environment variable when signing the image. Then in the Kyverno policy rule, specify the repository for each image:
 
 ```yaml
-
 ---
 verifyImages:
   - imageReferences:
       - ghcr.io/kyverno/test-verify-image*
-    repository: "registry.io/signatures"
+    repository: 'registry.io/signatures'
     attestors:
       - entries:
           - keys:
@@ -831,7 +830,6 @@ verifyImages:
 By default, cosign uses `sha256` has func when computing digests. To use a different signature algorithm, specify the signature algorithm for each attestor as follows:
 
 ```yaml
-
 ---
 verifyImages:
   - imageReferences:
@@ -856,7 +854,7 @@ Cosign uses Rekor, a transparency log service to store signatures. In Cosign 2.0
 ```yaml
 verifyImages:
   - imageReferences:
-      - "*"
+      - '*'
     attestors:
       - entries:
           - keys:
@@ -1037,13 +1035,13 @@ spec:
                 - tekton.dev/v1beta1/TaskRun.status
       imageExtractors:
         TaskRun:
-          - name: "taskrunstatus"
-            path: "/status/taskSpec/steps/*"
-            value: "image"
-            key: "name"
+          - name: 'taskrunstatus'
+            path: '/status/taskSpec/steps/*'
+            value: 'image'
+            key: 'name'
       verifyImages:
         - imageReferences:
-            - "*"
+            - '*'
           failureAction: Enforce
           required: false
           attestors:
@@ -1073,13 +1071,13 @@ spec:
                 - PipelineRun
       imageExtractors:
         PipelineRun:
-          - name: "pipelineruns"
+          - name: 'pipelineruns'
             path: /spec/pipelineRef
-            value: "bundle"
-            key: "name"
+            value: 'bundle'
+            key: 'name'
       verifyImages:
         - imageReferences:
-            - "*"
+            - '*'
           failureAction: Enforce
           attestors:
             - entries:
@@ -1101,7 +1099,7 @@ metadata:
 spec:
   source:
     registry:
-      url: "docker://kubevirt/fedora-cloud-registry-disk-demo"
+      url: 'docker://kubevirt/fedora-cloud-registry-disk-demo'
   pvc:
     accessModes:
       - ReadWriteOnce

@@ -1,14 +1,15 @@
 ---
-title: "Require Container Port Names"
+title: 'Require Container Port Names'
 category: Other
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Containers may define ports on which they listen. In addition to a port number, a name field may optionally be used. Including a name makes it easier when defining Service resource definitions and others since the name may be referenced allowing the port number to change. This policy requires that for every containerPort defined there is also a name specified.      
+  Containers may define ports on which they listen. In addition to a port number, a name field may optionally be used. Including a name makes it easier when defining Service resource definitions and others since the name may be referenced allowing the port number to change. This policy requires that for every containerPort defined there is also a name specified.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/require-container-port-names/require-container-port-names.yaml" target="-blank">/other/require-container-port-names/require-container-port-names.yaml</a>
 
 ```yaml
@@ -21,14 +22,14 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.7.2
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Containers may define ports on which they listen. In addition to a port number,
       a name field may optionally be used. Including a name makes it easier when defining
       Service resource definitions and others since the name may be referenced allowing
       the port number to change. This policy requires that for every containerPort defined
-      there is also a name specified.      
+      there is also a name specified.
 spec:
   validationFailureAction: Audit
   background: true
@@ -36,16 +37,15 @@ spec:
     - name: port-name
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
         message: Name is required for every containerPort.
         pattern:
           spec:
             containers:
-            - name: "*"
-              =(ports):
-              - name: "*"
-
+              - name: '*'
+                =(ports):
+                  - name: '*'
 ```

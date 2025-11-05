@@ -1,14 +1,15 @@
 ---
-title: "Restrict Auto-Mount of Service Account Tokens in Service Account"
+title: 'Restrict Auto-Mount of Service Account Tokens in Service Account'
 category: Security
-version: 
+version:
 subject: Secret,ServiceAccount
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.      
+  Kubernetes automatically mounts ServiceAccount credentials in each ServiceAccount. The ServiceAccount may be assigned roles allowing Pods to access API resources. Blocking this ability is an extension of the least privilege best practice and should be followed if Pods do not need to speak to the API server to function. This policy ensures that mounting of these ServiceAccount tokens is blocked.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/restrict-sa-automount-sa-token/restrict-sa-automount-sa-token.yaml" target="-blank">/other/restrict-sa-automount-sa-token/restrict-sa-automount-sa-token.yaml</a>
 
 ```yaml
@@ -17,10 +18,10 @@ kind: ClusterPolicy
 metadata:
   name: restrict-sa-automount-sa-token
   annotations:
-    policies.kyverno.io/title: Restrict Auto-Mount of Service Account Tokens in Service Account 
+    policies.kyverno.io/title: Restrict Auto-Mount of Service Account Tokens in Service Account
     policies.kyverno.io/category: Security
     kyverno.io/kyverno-version: 1.11.1
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Secret,ServiceAccount
     policies.kyverno.io/description: >-
@@ -28,19 +29,19 @@ metadata:
       The ServiceAccount may be assigned roles allowing Pods to access API resources.
       Blocking this ability is an extension of the least privilege best practice and should
       be followed if Pods do not need to speak to the API server to function.
-      This policy ensures that mounting of these ServiceAccount tokens is blocked.      
+      This policy ensures that mounting of these ServiceAccount tokens is blocked.
 spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: validate-sa-automountServiceAccountToken
-    match:
-      any:
-      - resources:
-          kinds:
-          - ServiceAccount
-    validate:
-      message: "ServiceAccounts must set automountServiceAccountToken to false."
-      pattern:
-        automountServiceAccountToken: false
+    - name: validate-sa-automountServiceAccountToken
+      match:
+        any:
+          - resources:
+              kinds:
+                - ServiceAccount
+      validate:
+        message: 'ServiceAccounts must set automountServiceAccountToken to false.'
+        pattern:
+          automountServiceAccountToken: false
 ```

@@ -143,13 +143,13 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: ["apps"]
-        apiVersions: ["v1"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
         operations: [CREATE, UPDATE]
-        resources: ["deployments"]
+        resources: ['deployments']
   validations:
-    - message: "deployments must have at least 2 replicas for high availability"
-      expression: "object.spec.replicas >= 2"
+    - message: 'deployments must have at least 2 replicas for high availability'
+      expression: 'object.spec.replicas >= 2'
 ```
 
 As the name suggests, the `NamespacedValidatingPolicy` allows namespace owners to manage validation policies without requiring cluster-admin permissions, improving multi-tenancy and security isolation.
@@ -176,7 +176,7 @@ spec:
     mode: JSON
   matchConditions:
     - name: is-terraform-plan
-      expression: "has(object.planned_values) && has(object.terraform_version)"
+      expression: 'has(object.planned_values) && has(object.terraform_version)'
     - name: has-eks-cluster
       expression: |
         has(object.planned_values) && 
@@ -184,7 +184,7 @@ spec:
            object.planned_values.root_module.child_modules.exists(m, 
              has(m.resources) && m.resources.exists(r, r.type == 'aws_eks_cluster')))
   validations:
-    - message: "Public access to EKS cluster endpoint must be set to false"
+    - message: 'Public access to EKS cluster endpoint must be set to false'
       expression: |
         (
           (!has(object.planned_values.root_module.child_modules) ||

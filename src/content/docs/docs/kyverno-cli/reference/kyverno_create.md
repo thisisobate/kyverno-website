@@ -1,5 +1,5 @@
 ---
-title: "kyverno create"
+title: 'kyverno create'
 sidebar:
   order: 35
 ---

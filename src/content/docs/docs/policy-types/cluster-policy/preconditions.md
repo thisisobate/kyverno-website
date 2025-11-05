@@ -19,11 +19,11 @@ rules:
               - Service
     preconditions:
       all:
-        - key: "{{ request.object.spec.type }}"
+        - key: '{{ request.object.spec.type }}'
           operator: Equals
           value: NodePort
     validate:
-      message: "All NodePort Services must use an externalTrafficPolicy of Local."
+      message: 'All NodePort Services must use an externalTrafficPolicy of Local.'
       pattern:
         spec:
           externalTrafficPolicy: Local
@@ -46,7 +46,7 @@ rules:
           default: []
     preconditions:
       all:
-        - key: "{{ length(hostpathvolnames) }}"
+        - key: '{{ length(hostpathvolnames) }}'
           operator: GreaterThan
           value: 0
 ```
@@ -90,7 +90,7 @@ spec:
       containers:
         - image: busybox:1.28
           name: busybox
-          command: ["sleep", "9999"]
+          command: ['sleep', '9999']
 ```
 
 By using `any` and `all` blocks in the preconditions statement, it is possible to gain more granular control over when rules are evaluated. In the below sample policy, using an `any` block will allow the preconditions to work as a logical OR operation. This policy will only perform the validation if labels `color=blue` OR `app=busybox` are found. Because the Deployment manifest above specified `color=red`, using the `any` statement still allows the validation to occur.
@@ -119,13 +119,13 @@ spec:
             value: busybox
       validate:
         failureAction: Enforce
-        message: "Busybox must be used based on this label combination."
+        message: 'Busybox must be used based on this label combination.'
         pattern:
           spec:
             template:
               spec:
                 containers:
-                  - name: "*busybox*"
+                  - name: '*busybox*'
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -165,13 +165,13 @@ spec:
             value: qa
       validate:
         failureAction: Enforce
-        message: "Foxes must be used based on this label combination."
+        message: 'Foxes must be used based on this label combination.'
         pattern:
           spec:
             template:
               spec:
                 containers:
-                  - name: "*foxes*"
+                  - name: '*foxes*'
 ```
 
 ## Operators
@@ -224,7 +224,7 @@ spec:
                 - Pod
       preconditions:
         any:
-          - key: "{{request.object.spec.containers[0].resources.requests.memory}}"
+          - key: '{{request.object.spec.containers[0].resources.requests.memory}}'
             operator: LessThan
             value: 1Gi
 ```
@@ -241,9 +241,9 @@ String values support the use of wildcards to allow for partial matches. The fol
         - Ingress
   preconditions:
     all:
-      - key: "{{request.object.spec.rules[0].host}}"
+      - key: '{{request.object.spec.rules[0].host}}'
         operator: NotEquals
-        value: "*.mycompany.com"
+        value: '*.mycompany.com'
 ```
 
 ## Matching requests without a service account
@@ -261,9 +261,9 @@ In this example, the rule is only applied to requests from ServiceAccounts (i.e.
             - Namespace
   preconditions:
     any:
-      - key: "{{serviceAccountName}}"
+      - key: '{{serviceAccountName}}'
         operator: NotEquals
-        value: ""
+        value: ''
 ```
 
 ## Matching requests from specific service accounts
@@ -281,7 +281,7 @@ In this example, the rule is only applied to requests from a ServiceAccount with
             - Namespace
   preconditions:
     any:
-      - key: "{{serviceAccountName}}"
+      - key: '{{serviceAccountName}}'
         operator: AnyIn
         value:
           - build-default
@@ -301,11 +301,11 @@ Although preconditions do not produce a blocking effect similar to deny rules, t
             - ConfigMap
   preconditions:
     all:
-      - key: "{{ request.object.data.food }}"
+      - key: '{{ request.object.data.food }}'
         operator: Equals
         value: cheese
         message: My favorite food is cheese.
-      - key: "{{ request.object.data.day }}"
+      - key: '{{ request.object.data.day }}'
         operator: Equals
         value: monday
         message: You have a case of the Mondays.

@@ -1,14 +1,15 @@
 ---
-title: "Generate Flux Multi-Tenant Resources"
+title: 'Generate Flux Multi-Tenant Resources'
 category: Flux
 version: 1.6.0
 subject: ServiceAccount, RoleBinding
-policyType: "generate"
+policyType: 'generate'
 description: >
-    As part of the tenant provisioning process, Flux needs to generate RBAC resources. This policy will create a ServiceAccount and RoleBinding when a new or existing Namespace is labeled with `toolkit.fluxcd.io/tenant`. Use of this rule may require an additional binding for the Kyverno ServiceAccount so it has permissions to properly create the RoleBinding.
+  As part of the tenant provisioning process, Flux needs to generate RBAC resources. This policy will create a ServiceAccount and RoleBinding when a new or existing Namespace is labeled with `toolkit.fluxcd.io/tenant`. Use of this rule may require an additional binding for the Kyverno ServiceAccount so it has permissions to properly create the RoleBinding.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//flux/generate-flux-multi-tenant-resources/generate-flux-multi-tenant-resources.yaml" target="-blank">/flux/generate-flux-multi-tenant-resources/generate-flux-multi-tenant-resources.yaml</a>
 
 ```yaml
@@ -21,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Flux
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: ServiceAccount, RoleBinding
     policies.kyverno.io/description: >-
       As part of the tenant provisioning process, Flux needs to generate RBAC resources. This policy
@@ -30,56 +31,56 @@ metadata:
       Kyverno ServiceAccount so it has permissions to properly create the RoleBinding.
 spec:
   rules:
-  - name: generate-flux-sa
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-          selector:
-            matchLabels:
-              toolkit.fluxcd.io/tenant: "?*"
-    generate:
-      apiVersion: v1
-      kind: ServiceAccount
-      name: "{{request.object.metadata.labels.\"toolkit.fluxcd.io/tenant\"}}"
-      namespace: "{{request.object.metadata.name}}"
-      synchronize: false
-      data:
-        metadata:
-          labels:
-            toolkit.fluxcd.io/tenant: "{{request.object.metadata.labels.\"toolkit.fluxcd.io/tenant\"}}"
-          name: "{{request.object.metadata.labels.\"toolkit.fluxcd.io/tenant\"}}"
-          namespace: "{{request.object.metadata.name}}"
-  - name: generate-flux-rolebinding
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-          selector:
-            matchLabels:
-              toolkit.fluxcd.io/tenant: "?*"
-    generate:
-      apiVersion: rbac.authorization.k8s.io/v1
-      kind: RoleBinding
-      name: "{{request.object.metadata.labels.\"toolkit.fluxcd.io/tenant\"}}"
-      namespace: "{{request.object.metadata.name}}"
-      synchronize: false
-      data:
-        metadata:
-          labels:
-            toolkit.fluxcd.io/tenant: "{{request.object.metadata.labels.\"toolkit.fluxcd.io/tenant\"}}"
-          name: "flux-{{request.object.metadata.labels.\"toolkit.fluxcd.io/tenant\"}}"
-          namespace: "{{request.object.metadata.name}}"
-        roleRef:
-          apiGroup: rbac.authorization.k8s.io
-          kind: ClusterRole
-          name: cluster-admin
-        subjects:
-        - kind: User
-          name: "flux:{{request.object.metadata.name}}:{{request.object.metadata.labels.\"toolkit.fluxcd.io/tenant\"}}"
-        - kind: ServiceAccount
-          name: "{{request.object.metadata.labels.\"toolkit.fluxcd.io/tenant\"}}"
-          namespace: "{{request.object.metadata.name}}"
+    - name: generate-flux-sa
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              selector:
+                matchLabels:
+                  toolkit.fluxcd.io/tenant: '?*'
+      generate:
+        apiVersion: v1
+        kind: ServiceAccount
+        name: '{{request.object.metadata.labels."toolkit.fluxcd.io/tenant"}}'
+        namespace: '{{request.object.metadata.name}}'
+        synchronize: false
+        data:
+          metadata:
+            labels:
+              toolkit.fluxcd.io/tenant: '{{request.object.metadata.labels."toolkit.fluxcd.io/tenant"}}'
+            name: '{{request.object.metadata.labels."toolkit.fluxcd.io/tenant"}}'
+            namespace: '{{request.object.metadata.name}}'
+    - name: generate-flux-rolebinding
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+              selector:
+                matchLabels:
+                  toolkit.fluxcd.io/tenant: '?*'
+      generate:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        name: '{{request.object.metadata.labels."toolkit.fluxcd.io/tenant"}}'
+        namespace: '{{request.object.metadata.name}}'
+        synchronize: false
+        data:
+          metadata:
+            labels:
+              toolkit.fluxcd.io/tenant: '{{request.object.metadata.labels."toolkit.fluxcd.io/tenant"}}'
+            name: 'flux-{{request.object.metadata.labels."toolkit.fluxcd.io/tenant"}}'
+            namespace: '{{request.object.metadata.name}}'
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: cluster-admin
+          subjects:
+            - kind: User
+              name: 'flux:{{request.object.metadata.name}}:{{request.object.metadata.labels."toolkit.fluxcd.io/tenant"}}'
+            - kind: ServiceAccount
+              name: '{{request.object.metadata.labels."toolkit.fluxcd.io/tenant"}}'
+              namespace: '{{request.object.metadata.name}}'
 ```

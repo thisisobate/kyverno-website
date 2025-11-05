@@ -19,7 +19,7 @@ The open source project: [cis-eks-kyverno](https://github.com/ATIC-Yugandhar/cis
 The CIS Amazon EKS Benchmark v1.7.0 contains 46 security recommendations across five critical areas:
 
 - **Control Plane Configuration** (Section 2): Audit logging, endpoint security - 2 controls
-- **Worker Node Security** (Section 3): Kubelet configuration, file permissions - 13 controls  
+- **Worker Node Security** (Section 3): Kubelet configuration, file permissions - 13 controls
 - **RBAC & Service Accounts** (Section 4): Access controls, service account security - 15 controls
 - **Pod Security Standards** (Section 5): Container runtime security - 9 controls
 - **Managed Services** (Section 5): ECR, networking, encryption - 7 additional controls
@@ -55,7 +55,7 @@ Modern cloud native compliance requires acknowledging that no single tool can va
 - **kube-bench**: Community-standard CIS compliance scanner for node-level validation
 - **Kind**: CNCF-aligned local Kubernetes testing
 
-> *Note: OpenTofu generates infrastructure plan files, while Kyverno-JSON validates those plans against CIS compliance policies.*
+> _Note: OpenTofu generates infrastructure plan files, while Kyverno-JSON validates those plans against CIS compliance policies._
 
 ## Solution: Hybrid Cloud Native Policy Automation Architecture
 
@@ -64,15 +64,18 @@ The framework implements a multi-layered approach combining the strengths of dif
 ![Architecture Diagram](./cis-arch.png)
 
 ### 1. Plan-Time Validation (Shift-Left Security):
+
 - Validates OpenTofu configurations before deployment
 - Catches misconfigurations early in development
 - Policies located in [policies/opentofu/](https://github.com/ATIC-Yugandhar/cis-eks-kyverno/blob/main/policies/opentofu)
 
 ### 2. Runtime Validation (Continuous Monitoring):
+
 - **Kyverno**: CNCF Incubating project for Kubernetes resource validation
 - **Coverage**: Pod Security Standards, RBAC, Service Accounts, Network Policies
 
 ### 3. Node-Level Validation (Deep System Inspection):
+
 - **kube-bench**: Industry-standard CIS compliance scanner with privileged access
 - **Coverage**: File permissions, kubelet configuration, control plane settings
 
@@ -82,7 +85,7 @@ The framework implements a multi-layered approach combining the strengths of dif
 
 Through building this open-source project, I've implemented a comprehensive security validation pipeline that demonstrates the entire infrastructure and application lifecycle - from infrastructure planning with OpenTofu to runtime enforcement with Kyverno and system-level auditing with kube-bench.
 
-*Note: This implementation has been thoroughly tested using KIND clusters and is available for community experimentation and contribution.*
+_Note: This implementation has been thoroughly tested using KIND clusters and is available for community experimentation and contribution._
 
 **File:** [opentofu/compliant/main.tf](https://github.com/ATIC-Yugandhar/cis-eks-kyverno/blob/main/opentofu/compliant/main.tf)
 
@@ -127,7 +130,7 @@ spec:
     - name: eks-audit-logging
       assert:
         all:
-          - message: "EKS cluster must have audit logging enabled."
+          - message: 'EKS cluster must have audit logging enabled.'
             check:
               (length(planned_values.root_module.resources[?type=='aws_eks_cluster' && values.enabled_cluster_log_types && contains(values.enabled_cluster_log_types, 'audit')]) > `0`): true
 ```
@@ -145,7 +148,7 @@ kyverno-json scan --policy ../../policies/opentofu/ --payload tofuplan.json
 
 # Results show compliance status before deployment
 ✅ cis-2-1-1-enable-audit-logs: PASS
-✅ cis-5-3-1-encrypt-secrets-kms: PASS 
+✅ cis-5-3-1-encrypt-secrets-kms: PASS
 ✅ cis-5-4-2-private-endpoint: PASS
 ```
 
@@ -175,11 +178,11 @@ spec:
     - name: restrict-privileged
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
-        message: "Privileged containers are not allowed."
+        message: 'Privileged containers are not allowed.'
         pattern:
           spec:
             containers:
@@ -195,7 +198,7 @@ kubectl apply -f policies/kubernetes/
 
 # Test policy enforcement
 kubectl apply -f tests/kind-manifests/noncompliant-pod.yaml
-# Error: admission webhook denied the request: 
+# Error: admission webhook denied the request:
 # Privileged containers are not allowed.
 ```
 
@@ -219,12 +222,12 @@ spec:
       containers:
         - name: kube-bench
           image: aquasec/kube-bench:latest
-          command: ["kube-bench"]
-          args: 
-            - "run"
-            - "--targets"
-            - "node"
-            - "--json"
+          command: ['kube-bench']
+          args:
+            - 'run'
+            - '--targets'
+            - 'node'
+            - '--json'
           securityContext:
             privileged: true
           volumeMounts:
@@ -290,12 +293,12 @@ Based on extensive testing and development of the [cis-eks-kyverno](https://gith
 
 ### CIS EKS Benchmark Coverage Analysis
 
-| CIS Section | Total Controls | Kyverno Coverage | Kube-bench Coverage | Plan-Time Coverage | Combined Status |
-|-------------|----------------|------------------|---------------------|-------------------|-----------------|
-| 2. Control Plane | 2 | ✅ API validation | ✅ System config | ✅ OpenTofu | ✅ Complete |
-| 3. Worker Nodes | 13 | ⚠️ Pod contexts | ✅ Required for file systems | ⚠️ Partial | ✅ Hybrid Approach |
-| 4. RBAC & Service Accounts | 15 | ✅ Complete | ❌ Not applicable | ✅ Policy validation | ✅ Complete |
-| 5. Pod Security | 9 | ✅ Complete | ❌ Not applicable | ✅ OpenTofu | ✅ Complete |
+| CIS Section                | Total Controls | Kyverno Coverage  | Kube-bench Coverage          | Plan-Time Coverage   | Combined Status    |
+| -------------------------- | -------------- | ----------------- | ---------------------------- | -------------------- | ------------------ |
+| 2. Control Plane           | 2              | ✅ API validation | ✅ System config             | ✅ OpenTofu          | ✅ Complete        |
+| 3. Worker Nodes            | 13             | ⚠️ Pod contexts   | ✅ Required for file systems | ⚠️ Partial           | ✅ Hybrid Approach |
+| 4. RBAC & Service Accounts | 15             | ✅ Complete       | ❌ Not applicable            | ✅ Policy validation | ✅ Complete        |
+| 5. Pod Security            | 9              | ✅ Complete       | ❌ Not applicable            | ✅ OpenTofu          | ✅ Complete        |
 
 **Overall Achievement: 95%+ CIS coverage through strategic tool combination**
 
@@ -317,21 +320,25 @@ Based on extensive testing and development of the [cis-eks-kyverno](https://gith
 📋 Policy Validation Results
 
 ✅ Control Plane (Section 2): 2/2 PASS
+
 - custom-2.1.1-enable-audit-logs: PASS
 - custom-2.1.2-ensure-audit-logs-collected: PASS
 
 ⚠️ Worker Nodes (Section 3): 8/13 HYBRID
+
 - Kyverno validates Pod-level configurations
 - Kube-bench REQUIRED for file system checks
 - Combined approach provides complete coverage
 
 ✅ RBAC (Section 4): 15/15 PASS
+
 - supported-4.1.1-use-cluster-admin-only-when-required: PASS
 - supported-4.1.2-minimize-access-to-secrets: PASS
 - supported-4.1.3-minimize-wildcard-use: PASS
 - [12 additional RBAC policies]: PASS
 
 ✅ Pod Security (Section 5): 9/9 PASS
+
 - supported-4.2.1-minimize-privileged-containers: PASS
 - supported-4.2.2-minimize-host-pid-namespace: PASS
 - supported-4.2.3-minimize-host-ipc-namespace: PASS
@@ -339,6 +346,7 @@ Based on extensive testing and development of the [cis-eks-kyverno](https://gith
 
 🔒 Kube-bench CIS Compliance Scan
 ✅ Node scan completed successfully
+
 - File permissions validation: COMPLETE
 - Kubelet configuration checks: COMPLETE
 - System-level security validation: COMPLETE
@@ -349,6 +357,7 @@ Based on extensive testing and development of the [cis-eks-kyverno](https://gith
 The project takes an honest, engineering-focused approach to tool capabilities:
 
 **Project Strengths:**
+
 - 🛡️ **Multi-Tool Integration**: Demonstrates how CNCF tools complement each other for comprehensive coverage
 - 🔒 **Kube-bench Integration**: Essential for complete CIS compliance, especially worker node controls
 - 📚 **Comprehensive Documentation**: Detailed guides explaining tool boundaries and integration requirements
@@ -359,12 +368,14 @@ The project takes an honest, engineering-focused approach to tool capabilities:
 **Tool-Specific Limitations (Documented):**
 
 **Kyverno Limitations:**
+
 - ❌ Cannot access worker node file systems
 - ❌ Cannot validate file permissions or ownership
 - ❌ Cannot read kubelet configuration files directly
 - ✅ Excels at Kubernetes API resource validation
 
 **Why kube-bench Integration is Essential:** Most worker node controls (CIS Section 3) require kube-bench because they involve:
+
 - File permissions on kubeconfig and kubelet config files
 - Kubelet command-line arguments and configuration
 - System-level security settings that require privileged access
@@ -391,48 +402,48 @@ spec:
     - name: eks-audit-logging-opentofu
       match:
         any:
-        - resources:
-            kinds:
-            - "*"
+          - resources:
+              kinds:
+                - '*'
       cel:
         expressions:
-        - expression: |
-            // For OpenTofu plans
-            has(object.data) && 
-            has(object.data.planned_values) &&
-            object.data.planned_values.root_module.resources.
-            filter(r, r.type == 'aws_eks_cluster' && 
-                   has(r.values.enabled_cluster_log_types) &&
-                   'audit' in r.values.enabled_cluster_log_types).size() > 0
-          message: "EKS cluster must have audit logging enabled in OpenTofu plan"
-        - expression: |
-            // For live Kubernetes Event resources
-            object.kind == 'Event' && 
-            object.metadata.namespace == 'kube-system' &&
-            (has(object.reason) && object.reason in ['AuditEnabled', 'PolicyLoaded'])
-          message: "Cluster should generate audit events indicating logging is enabled"
+          - expression: |
+              // For OpenTofu plans
+              has(object.data) && 
+              has(object.data.planned_values) &&
+              object.data.planned_values.root_module.resources.
+              filter(r, r.type == 'aws_eks_cluster' && 
+                     has(r.values.enabled_cluster_log_types) &&
+                     'audit' in r.values.enabled_cluster_log_types).size() > 0
+            message: 'EKS cluster must have audit logging enabled in OpenTofu plan'
+          - expression: |
+              // For live Kubernetes Event resources
+              object.kind == 'Event' && 
+              object.metadata.namespace == 'kube-system' &&
+              (has(object.reason) && object.reason in ['AuditEnabled', 'PolicyLoaded'])
+            message: 'Cluster should generate audit events indicating logging is enabled'
 
     - name: eks-audit-logging-kubernetes
       match:
         any:
-        - resources:
-            kinds:
-            - Event
-            - Node
-            - Pod
-            namespaces:
-            - kube-system
+          - resources:
+              kinds:
+                - Event
+                - Node
+                - Pod
+              namespaces:
+                - kube-system
       cel:
         expressions:
-        - expression: |
-            // Kubernetes resource validation (same as before)
-            object.kind == 'Event' && 
-            (has(object.metadata.annotations) && 
-             has(object.metadata.annotations['audit.k8s.io/level'])) ||
-            object.kind == 'Node' &&
-            (has(object.metadata.annotations) && 
-             has(object.metadata.annotations['audit-config']))
-          message: "Kubernetes resources should indicate audit logging is properly configured"
+          - expression: |
+              // Kubernetes resource validation (same as before)
+              object.kind == 'Event' && 
+              (has(object.metadata.annotations) && 
+               has(object.metadata.annotations['audit.k8s.io/level'])) ||
+              object.kind == 'Node' &&
+              (has(object.metadata.annotations) && 
+               has(object.metadata.annotations['audit-config']))
+            message: 'Kubernetes resources should indicate audit logging is properly configured'
 ```
 
 ### Upcoming Enhancements
@@ -457,7 +468,7 @@ cd cis-eks-kyverno
 # Test all policies (unit tests)
 ./scripts/test-kubernetes-policies.sh
 
-# Test OpenTofu compliance (plan-time validation)  
+# Test OpenTofu compliance (plan-time validation)
 ./scripts/test-opentofu-policies.sh
 
 # Test with KIND cluster (integration with kube-bench)
@@ -492,7 +503,7 @@ cis-eks-kyverno/
 
 - **[CIS EKS Benchmark v1.7.0](https://github.com/ATIC-Yugandhar/cis-eks-kyverno/blob/main/CIS_EKS_Benchmark_v1.7.0.md)**: Complete control listing (46 controls)
 - **[Official CIS EKS Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)**: Official CIS guidelines
-- **[Kyverno Documentation](https://kyverno.io/docs/)**: Official Kyverno docs  
+- **[Kyverno Documentation](https://kyverno.io/docs/)**: Official Kyverno docs
 - **[Kube-bench](https://github.com/aquasecurity/kube-bench)**: Node-level CIS scanning
 - **[AWS EKS Best Practices](https://aws.github.io/aws-eks-best-practices/)**: AWS security guidance
 - **[OpenTofu Documentation](https://opentofu.org/)**: Infrastructure as Code

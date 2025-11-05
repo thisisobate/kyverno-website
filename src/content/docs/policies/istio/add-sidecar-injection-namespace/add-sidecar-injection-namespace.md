@@ -1,14 +1,15 @@
 ---
-title: "Add Istio Sidecar Injection"
+title: 'Add Istio Sidecar Injection'
 category: Istio
 version: 1.6.0
 subject: Namespace
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    In order for Istio to inject sidecars to workloads deployed into Namespaces, the label `istio-injection` must be set to `enabled`. As an alternative to rejecting Namespace definitions which don't already contain this label, it can be added automatically. This policy adds the label `istio-inject` set to `enabled` for all new Namespaces.
+  In order for Istio to inject sidecars to workloads deployed into Namespaces, the label `istio-injection` must be set to `enabled`. As an alternative to rejecting Namespace definitions which don't already contain this label, it can be added automatically. This policy adds the label `istio-inject` set to `enabled` for all new Namespaces.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//istio/add-sidecar-injection-namespace/add-sidecar-injection-namespace.yaml" target="-blank">/istio/add-sidecar-injection-namespace/add-sidecar-injection-namespace.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.0
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/subject: Namespace
     policies.kyverno.io/description: >-
       In order for Istio to inject sidecars to workloads deployed into Namespaces, the label
@@ -31,16 +32,15 @@ metadata:
       `istio-inject` set to `enabled` for all new Namespaces.
 spec:
   rules:
-  - name: add-istio-injection-enabled
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          labels:
-            istio-injection: enabled
-
+    - name: add-istio-injection-enabled
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            labels:
+              istio-injection: enabled
 ```

@@ -1,14 +1,15 @@
 ---
-title: "Restrict Pod Controller ServiceAccount Updates"
+title: 'Restrict Pod Controller ServiceAccount Updates'
 category: Other
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    ServiceAccounts which have the ability to edit/patch workloads which they created may potentially use that privilege to update to a different ServiceAccount with higher privileges. This policy, intended to be run in `enforce` mode, blocks updates to Pod controllers if those updates modify the serviceAccountName field. Updates to Pods directly for this field are not possible as it is immutable once set.
+  ServiceAccounts which have the ability to edit/patch workloads which they created may potentially use that privilege to update to a different ServiceAccount with higher privileges. This policy, intended to be run in `enforce` mode, blocks updates to Pod controllers if those updates modify the serviceAccountName field. Updates to Pods directly for this field are not possible as it is immutable once set.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/restrict-pod-controller-serviceaccount-updates/restrict-pod-controller-serviceaccount-updates.yaml" target="-blank">/other/restrict-pod-controller-serviceaccount-updates/restrict-pod-controller-serviceaccount-updates.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: Medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.9.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     policies.kyverno.io/description: >-
       ServiceAccounts which have the ability to edit/patch workloads which they created
       may potentially use that privilege to update to a different ServiceAccount with higher
@@ -36,47 +37,46 @@ spec:
     - name: block-serviceaccount-updates
       match:
         any:
-        - resources:
-            kinds:
-            - DaemonSet
-            - Deployment
-            - Job
-            - StatefulSet
-            - ReplicaSet
-            - ReplicationController
+          - resources:
+              kinds:
+                - DaemonSet
+                - Deployment
+                - Job
+                - StatefulSet
+                - ReplicaSet
+                - ReplicationController
       preconditions:
         all:
-        - key: "{{ request.operation }}"
-          operator: Equals
-          value: UPDATE
+          - key: '{{ request.operation }}'
+            operator: Equals
+            value: UPDATE
       validate:
         message: >-
           The serviceAccountName field may not be changed once created.
         deny:
           conditions:
             all:
-            - key: "{{ request.object.spec.template.spec.serviceAccountName || 'empty'}}"
-              operator: NotEquals
-              value: "{{ request.oldObject.spec.template.spec.serviceAccountName || 'empty'}}"
+              - key: "{{ request.object.spec.template.spec.serviceAccountName || 'empty'}}"
+                operator: NotEquals
+                value: "{{ request.oldObject.spec.template.spec.serviceAccountName || 'empty'}}"
     - name: block-serviceaccount-updates-cronjob
       match:
         any:
-        - resources:
-            kinds:
-            - CronJob
+          - resources:
+              kinds:
+                - CronJob
       preconditions:
         all:
-        - key: "{{ request.operation }}"
-          operator: Equals
-          value: UPDATE
+          - key: '{{ request.operation }}'
+            operator: Equals
+            value: UPDATE
       validate:
         message: >-
           The serviceAccountName field may not be changed once created.
         deny:
           conditions:
             all:
-            - key: "{{ request.object.spec.jobTemplate.spec.template.spec.serviceAccountName || 'empty'}}"
-              operator: NotEquals
-              value: "{{ request.oldObject.spec.jobTemplate.spec.template.spec.serviceAccountName || 'empty'}}"
-
+              - key: "{{ request.object.spec.jobTemplate.spec.template.spec.serviceAccountName || 'empty'}}"
+                operator: NotEquals
+                value: "{{ request.oldObject.spec.jobTemplate.spec.template.spec.serviceAccountName || 'empty'}}"
 ```

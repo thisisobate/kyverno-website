@@ -1,5 +1,5 @@
 ---
-title: "kyverno completion powershell"
+title: 'kyverno completion powershell'
 sidebar:
   order: 35
 ---

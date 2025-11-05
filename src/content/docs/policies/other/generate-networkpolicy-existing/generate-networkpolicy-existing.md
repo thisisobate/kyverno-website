@@ -1,14 +1,15 @@
 ---
-title: "Generate NetworkPolicy to Existing Namespaces"
+title: 'Generate NetworkPolicy to Existing Namespaces'
 category: Other
 version: 1.7.0
 subject: Namespace, NetworkPolicy
-policyType: "generate"
+policyType: 'generate'
 description: >
-    A NetworkPolicy is often a critical piece when provisioning new Namespaces, but there may be existing Namespaces which also need the same resource. Creating each one individually or manipulating each Namespace in order to trigger creation is additional overhead. This policy creates a new NetworkPolicy for existing Namespaces which results in a default deny behavior and labels it with created-by=kyverno.
+  A NetworkPolicy is often a critical piece when provisioning new Namespaces, but there may be existing Namespaces which also need the same resource. Creating each one individually or manipulating each Namespace in order to trigger creation is additional overhead. This policy creates a new NetworkPolicy for existing Namespaces which results in a default deny behavior and labels it with created-by=kyverno.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/generate-networkpolicy-existing/generate-networkpolicy-existing.yaml" target="-blank">/other/generate-networkpolicy-existing/generate-networkpolicy-existing.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Namespace, NetworkPolicy
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: >-
       A NetworkPolicy is often a critical piece when provisioning new Namespaces,
       but there may be existing Namespaces which also need the same resource. Creating
@@ -33,25 +34,24 @@ metadata:
 spec:
   generateExisting: true
   rules:
-  - name: generate-existing-networkpolicy
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    generate:
-      kind: NetworkPolicy
-      apiVersion: networking.k8s.io/v1
-      name: default-deny
-      namespace: "{{request.object.metadata.name}}"
-      synchronize: true
-      data:
-        metadata:
-          labels:
-            created-by: kyverno
-        spec:
-          podSelector: {}
-          policyTypes:
-          - Egress
-
+    - name: generate-existing-networkpolicy
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      generate:
+        kind: NetworkPolicy
+        apiVersion: networking.k8s.io/v1
+        name: default-deny
+        namespace: '{{request.object.metadata.name}}'
+        synchronize: true
+        data:
+          metadata:
+            labels:
+              created-by: kyverno
+          spec:
+            podSelector: {}
+            policyTypes:
+              - Egress
 ```

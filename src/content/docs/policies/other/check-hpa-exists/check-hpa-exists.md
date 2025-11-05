@@ -1,14 +1,15 @@
 ---
-title: "Ensure HPA for Deployments"
+title: 'Ensure HPA for Deployments'
 category: Other
 version: 1.9.0
 subject: Deployment,ReplicaSet,StatefulSet,DaemonSet
-policyType: "validate"
+policyType: 'validate'
 description: >
-    This policy ensures that Deployments, ReplicaSets, StatefulSets, and DaemonSets are only allowed if they have a corresponding Horizontal Pod Autoscaler (HPA) configured in the same namespace. The policy checks for the presence of an HPA that targets the resource and denies the creation or update of the resource if no such HPA exists. This policy helps enforce scaling practices and ensures that resources are managed efficiently.
+  This policy ensures that Deployments, ReplicaSets, StatefulSets, and DaemonSets are only allowed if they have a corresponding Horizontal Pod Autoscaler (HPA) configured in the same namespace. The policy checks for the presence of an HPA that targets the resource and denies the creation or update of the resource if no such HPA exists. This policy helps enforce scaling practices and ensures that resources are managed efficiently.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/check-hpa-exists/check-hpa-exists.yaml" target="-blank">/other/check-hpa-exists/check-hpa-exists.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/minversion: 1.9.0
-    kyverno.io/kubernetes-version: "1.28"
+    kyverno.io/kubernetes-version: '1.28'
     policies.kyverno.io/subject: Deployment,ReplicaSet,StatefulSet,DaemonSet
     policies.kyverno.io/description: >-
       This policy ensures that Deployments, ReplicaSets, StatefulSets, and DaemonSets are only allowed
@@ -37,24 +38,23 @@ spec:
     - name: validate-hpa
       match:
         any:
-        - resources:
-            kinds:
-            - Deployment
-            - ReplicaSet
-            - StatefulSet
-            - DaemonSet
+          - resources:
+              kinds:
+                - Deployment
+                - ReplicaSet
+                - StatefulSet
+                - DaemonSet
       context:
         - name: hpas
           apiCall:
-            urlPath: "/apis/autoscaling/v1/namespaces/{{ request.namespace }}/horizontalpodautoscalers"
-            jmesPath: "items[].spec.scaleTargetRef.name"
+            urlPath: '/apis/autoscaling/v1/namespaces/{{ request.namespace }}/horizontalpodautoscalers'
+            jmesPath: 'items[].spec.scaleTargetRef.name'
       validate:
-        message: "Deployment is not allowed without a corresponding HPA."
+        message: 'Deployment is not allowed without a corresponding HPA.'
         deny:
           conditions:
             all:
-              - key: "{{ request.object.metadata.name }}"
+              - key: '{{ request.object.metadata.name }}'
                 operator: AnyNotIn
-                value: "{{ hpas }}"
-
+                value: '{{ hpas }}'
 ```

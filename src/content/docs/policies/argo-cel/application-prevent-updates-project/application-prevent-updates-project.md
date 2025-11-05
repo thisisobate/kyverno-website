@@ -1,14 +1,15 @@
 ---
-title: "Prevent Updates to Project in CEL expressions"
+title: 'Prevent Updates to Project in CEL expressions'
 category: Argo in CEL
-version: 
+version:
 subject: Application
-policyType: "validate"
+policyType: 'validate'
 description: >
-    This policy prevents updates to the project field after an Application is created.
+  This policy prevents updates to the project field after an Application is created.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//argo-cel/application-prevent-updates-project/application-prevent-updates-project.yaml" target="-blank">/argo-cel/application-prevent-updates-project/application-prevent-updates-project.yaml</a>
 
 ```yaml
@@ -18,10 +19,10 @@ metadata:
   name: application-prevent-updates-project
   annotations:
     policies.kyverno.io/title: Prevent Updates to Project in CEL expressions
-    policies.kyverno.io/category: Argo in CEL 
+    policies.kyverno.io/category: Argo in CEL
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.12.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/subject: Application
     policies.kyverno.io/description: >-
       This policy prevents updates to the project field after an Application is created.
@@ -32,17 +33,15 @@ spec:
     - name: project-updates
       match:
         any:
-        - resources:
-            kinds:
-              - Application
+          - resources:
+              kinds:
+                - Application
       celPreconditions:
-        - name: "operation-should-be-update"
+        - name: 'operation-should-be-update'
           expression: "request.operation == 'UPDATE'"
       validate:
-        cel:  
+        cel:
           expressions:
-            - expression: "object.spec.project == oldObject.spec.project"
-              message: "The spec.project cannot be changed once the Application is created."
-
-
+            - expression: 'object.spec.project == oldObject.spec.project'
+              message: 'The spec.project cannot be changed once the Application is created.'
 ```

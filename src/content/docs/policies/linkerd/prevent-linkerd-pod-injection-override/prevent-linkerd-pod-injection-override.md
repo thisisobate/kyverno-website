@@ -1,14 +1,15 @@
 ---
-title: "Prevent Linkerd Pod Injection Override"
+title: 'Prevent Linkerd Pod Injection Override'
 category: Linkerd
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Setting the annotation on a Pod (or its controller) `linkerd.io/inject` to `disabled` may effectively disable mesh participation for that workload reducing security and visibility. This policy prevents setting the annotation `linkerd.io/inject` to `disabled` for Pods.
+  Setting the annotation on a Pod (or its controller) `linkerd.io/inject` to `disabled` may effectively disable mesh participation for that workload reducing security and visibility. This policy prevents setting the annotation `linkerd.io/inject` to `disabled` for Pods.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//linkerd/prevent-linkerd-pod-injection-override/prevent-linkerd-pod-injection-override.yaml" target="-blank">/linkerd/prevent-linkerd-pod-injection-override/prevent-linkerd-pod-injection-override.yaml</a>
 
 ```yaml
@@ -30,16 +31,16 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: pod-injection-override
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "Pods may not disable sidecar injection."
-      pattern:
-        metadata:
-          =(annotations):
-            =(linkerd.io/inject): "!disabled"
+    - name: pod-injection-override
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: 'Pods may not disable sidecar injection.'
+        pattern:
+          metadata:
+            =(annotations):
+              =(linkerd.io/inject): '!disabled'
 ```

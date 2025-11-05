@@ -1,14 +1,15 @@
 ---
-title: "Require Annotations"
+title: 'Require Annotations'
 category: Other
-version: 
+version:
 subject: Pod, Annotation
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Define and use annotations that identify semantic attributes of your application or Deployment. A common set of annotations allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended annotations describe applications in a way that can be queried. This policy validates that the annotation `corp.org/department` is specified with some value.      
+  Define and use annotations that identify semantic attributes of your application or Deployment. A common set of annotations allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended annotations describe applications in a way that can be queried. This policy validates that the annotation `corp.org/department` is specified with some value.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/require-annotations/require-annotations.yaml" target="-blank">/other/require-annotations/require-annotations.yaml</a>
 
 ```yaml
@@ -25,22 +26,21 @@ metadata:
       Define and use annotations that identify semantic attributes of your application or Deployment.
       A common set of annotations allows tools to work collaboratively, describing objects in a common manner that
       all tools can understand. The recommended annotations describe applications in a way that can be
-      queried. This policy validates that the annotation `corp.org/department` is specified with some value.      
+      queried. This policy validates that the annotation `corp.org/department` is specified with some value.
 spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: check-for-annotation
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "The annotation `corp.org/department` is required."
-      pattern:
-        metadata:
-          annotations:
-            corp.org/department: "?*"
-
+    - name: check-for-annotation
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: 'The annotation `corp.org/department` is required.'
+        pattern:
+          metadata:
+            annotations:
+              corp.org/department: '?*'
 ```

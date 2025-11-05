@@ -1,14 +1,15 @@
 ---
-title: "Restrict issuer"
+title: 'Restrict issuer'
 category: Cert-Manager
-version: 
+version:
 subject: Certificate
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Certificates for trusted domains should always be steered to a controlled issuer to ensure the chain of trust is appropriate for that application. Users may otherwise be able to create their own issuers and sign certificates for other domains. This policy ensures that a certificate request for a specific domain uses a designated ClusterIssuer.
+  Certificates for trusted domains should always be steered to a controlled issuer to ensure the chain of trust is appropriate for that application. Users may otherwise be able to create their own issuers and sign certificates for other domains. This policy ensures that a certificate request for a specific domain uses a designated ClusterIssuer.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//cert-manager/restrict-issuer/restrict-issuer.yaml" target="-blank">/cert-manager/restrict-issuer/restrict-issuer.yaml</a>
 
 ```yaml
@@ -30,19 +31,19 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: restrict-corp-cert-issuer
-    match:
-      any:
-      - resources:
-          kinds:
-          - Certificate
-    validate:
-      message: When requesting a cert for this domain, you must use our corporate issuer.
-      pattern:
-        spec:
-          (dnsNames): ["*.corp.com"]
-          issuerRef:
-            name: our-corp-issuer
-            kind: ClusterIssuer
-            group: cert-manager.io
+    - name: restrict-corp-cert-issuer
+      match:
+        any:
+          - resources:
+              kinds:
+                - Certificate
+      validate:
+        message: When requesting a cert for this domain, you must use our corporate issuer.
+        pattern:
+          spec:
+            (dnsNames): ['*.corp.com']
+            issuerRef:
+              name: our-corp-issuer
+              kind: ClusterIssuer
+              group: cert-manager.io
 ```

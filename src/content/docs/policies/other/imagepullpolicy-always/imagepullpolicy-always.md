@@ -1,14 +1,15 @@
 ---
-title: "Require imagePullPolicy Always"
+title: 'Require imagePullPolicy Always'
 category: Sample
 version: 1.6.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    If the `latest` tag is allowed for images, it is a good idea to have the imagePullPolicy field set to `Always` to ensure should that tag be overwritten that future pulls will get the updated image. This policy validates the imagePullPolicy is set to `Always` when the `latest` tag is specified explicitly or where a tag is not defined at all.
+  If the `latest` tag is allowed for images, it is a good idea to have the imagePullPolicy field set to `Always` to ensure should that tag be overwritten that future pulls will get the updated image. This policy validates the imagePullPolicy is set to `Always` when the `latest` tag is specified explicitly or where a tag is not defined at all.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/imagepullpolicy-always/imagepullpolicy-always.yaml" target="-blank">/other/imagepullpolicy-always/imagepullpolicy-always.yaml</a>
 
 ```yaml
@@ -31,18 +32,18 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: imagepullpolicy-always
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: >-
-        The imagePullPolicy must be set to `Always` when the tag `latest` is used.
-      pattern:
-        spec:
-          containers:
-          - (image): "*:latest | !*:*"
-            imagePullPolicy: "Always"
+    - name: imagepullpolicy-always
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: >-
+          The imagePullPolicy must be set to `Always` when the tag `latest` is used.
+        pattern:
+          spec:
+            containers:
+              - (image): '*:latest | !*:*'
+                imagePullPolicy: 'Always'
 ```

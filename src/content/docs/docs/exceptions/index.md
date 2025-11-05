@@ -52,9 +52,9 @@ spec:
           spec.hostIPC, and spec.hostPID must be unset or set to `false`.
         pattern:
           spec:
-            =(hostPID): "false"
-            =(hostIPC): "false"
-            =(hostNetwork): "false"
+            =(hostPID): 'false'
+            =(hostIPC): 'false'
+            =(hostNetwork): 'false'
 ```
 
 A cluster administrator wishes to grant an exception to a Pod or Deployment named `important-tool` which will be created in the `delta` Namespace. A PolicyException resource is created which specifies the policy name and rule name which should be bypassed as well as the resource kind, Namespace, and name which may bypass it.
@@ -116,7 +116,7 @@ spec:
       containers:
         - image: busybox:1.35
           name: busybox
-          command: ["sleep", "1d"]
+          command: ['sleep', '1d']
 ```
 
 PolicyExceptions are always Namespaced yet may provide an exception for a cluster-scoped resource as well. There is no correlation between the Namespace in which the PolicyException exists and the Namespace where resources may be excepted.
@@ -167,10 +167,10 @@ spec:
             match:
               =(any):
                 - resources:
-                    names: "?*"
+                    names: '?*'
               =(all):
                 - resources:
-                    names: "?*"
+                    names: '?*'
 ```
 
 ## Pod Security Exemptions
@@ -219,7 +219,7 @@ spec:
           namespaces:
             - delta
   podSecurity:
-    - controlName: "Running as Non-root"
+    - controlName: 'Running as Non-root'
 ```
 
 The following Pod satisfies all controls in the restricted profile except the `Running as Non-root` control but it matches the exception. Hence, it will be successfully created.
@@ -301,8 +301,8 @@ spec:
   podSecurity:
     - controlName: Capabilities
       images:
-        - "*/istio/proxyv2*"
-        - "*/linkerd/proxy-init*"
+        - '*/istio/proxyv2*'
+        - '*/linkerd/proxy-init*'
       restrictedField: spec.initContainers[*].securityContext.capabilities.add
       values:
         - NET_ADMIN
@@ -323,19 +323,19 @@ spec:
       args:
         - istio-iptables
         - -p
-        - "15001"
+        - '15001'
         - -z
-        - "15006"
+        - '15006'
         - -u
-        - "1337"
+        - '1337'
         - -m
         - REDIRECT
         - -i
-        - "*"
+        - '*'
         - -x
-        - ""
+        - ''
         - -b
-        - "*"
+        - '*'
         - -d
         - 15090,15021,15020
         - --log_output_level=default:info
@@ -374,19 +374,19 @@ spec:
       args:
         - istio-iptables
         - -p
-        - "15001"
+        - '15001'
         - -z
-        - "15006"
+        - '15006'
         - -u
-        - "1337"
+        - '1337'
         - -m
         - REDIRECT
         - -i
-        - "*"
+        - '*'
         - -x
-        - ""
+        - ''
         - -b
-        - "*"
+        - '*'
         - -d
         - 15090,15021,15020
         - --log_output_level=default:info
@@ -434,10 +434,10 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: ["apps"]
-        apiVersions: ["v1"]
-        resources: ["deployments"]
-        operations: ["CREATE", "UPDATE"]
+      - apiGroups: ['apps']
+        apiVersions: ['v1']
+        resources: ['deployments']
+        operations: ['CREATE', 'UPDATE']
   validations:
     - expression: >-
         has(object.metadata.labels) && object.metadata.labels.env == 'prod'
@@ -478,7 +478,7 @@ results:
   - policy: vpol-report-background-sample
     rule: exception
     result: skip
-    message: "rule is skipped due to policy exception: default/exclude-skipped-deployment"
+    message: 'rule is skipped due to policy exception: default/exclude-skipped-deployment'
     properties:
       exceptions: exclude-skipped-deployment
       process: admission review
@@ -516,11 +516,11 @@ metadata:
   name: skipped-pod
   namespace: default
   labels:
-    prod: "true"
+    prod: 'true'
 spec:
   containers:
     - name: nginx
-      image: "ghcr.io/kyverno/test-verify-image:unsigned"
+      image: 'ghcr.io/kyverno/test-verify-image:unsigned'
 ```
 
 The `ImageValidatingPolicy` shown below is configured to run only during background scans, not during admission. It targets Pod resources have the label `prod: true`. When such a resource is encountered, the policy performs three layers of validation: it verifies the image signature using a provided notary certificate, checks for the presence of an SBOM attestation of type `CycloneDX`, and confirms that the payload format matches the expected structure.
@@ -543,12 +543,12 @@ spec:
     - Audit
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   matchConditions:
-    - name: "check-prod-label"
+    - name: 'check-prod-label'
       expression: >-
         has(object.metadata.labels) && has(object.metadata.labels.prod) && object.metadata.labels.prod == 'true'
   matchImageReferences:
@@ -590,7 +590,7 @@ spec:
     - name: ivpol-sample
       kind: ImageValidatingPolicy
   matchConditions:
-    - name: "check-name"
+    - name: 'check-name'
       expression: "object.metadata.name == 'skipped-pod'"
 ```
 
@@ -611,7 +611,7 @@ results:
   - policy: ivpol-sample
     rule: exception
     result: skip
-    message: "rule is skipped due to policy exception: "
+    message: 'rule is skipped due to policy exception: '
     properties:
       exceptions: check-name
       process: background scan
@@ -652,13 +652,13 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["namespaces"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['namespaces']
   variables:
     - name: nsName
-      expression: "object.metadata.name"
+      expression: 'object.metadata.name'
     - name: configmap
       expression: >-
         [
@@ -691,7 +691,7 @@ spec:
     - name: generate-configmap
       kind: GeneratingPolicy
   matchConditions:
-    - name: "check-namespace-name"
+    - name: 'check-namespace-name'
       expression: "object.metadata.name == 'testing'"
 ```
 

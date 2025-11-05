@@ -1,14 +1,15 @@
 ---
-title: "Restrict Escalation Verbs in Roles"
+title: 'Restrict Escalation Verbs in Roles'
 category: Security
 version: 1.6.0
 subject: Role, ClusterRole, RBAC
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.
+  The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to privilege escalation and should be tightly controlled. This policy prevents use of these verbs in Role or ClusterRole resources.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/restrict-escalation-verbs-roles/restrict-escalation-verbs-roles.yaml" target="-blank">/other/restrict-escalation-verbs-roles/restrict-escalation-verbs-roles.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Role, ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: >-
       The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to
       privilege escalation and should be tightly controlled. This policy prevents
@@ -35,31 +36,30 @@ spec:
     - name: escalate
       match:
         any:
-        - resources:
-            kinds:
-              - Role
-              - ClusterRole
+          - resources:
+              kinds:
+                - Role
+                - ClusterRole
       validate:
-        message: "Use of verbs `escalate`, `bind`, and `impersonate` are forbidden."
+        message: 'Use of verbs `escalate`, `bind`, and `impersonate` are forbidden.'
         foreach:
-        - list: "request.object.rules[]"
-          deny:
-            conditions:
-              all:
-              - key: "{{ element.apiGroups || '' }}"
-                operator: AnyIn
-                value:
-                - rbac.authorization.k8s.io
-              - key: "{{ element.resources || '' }}"
-                operator: AnyIn
-                value:
-                - clusterroles
-                - roles
-              - key: "{{ element.verbs }}"
-                operator: AnyIn
-                value:
-                - bind
-                - escalate
-                - impersonate
-
+          - list: 'request.object.rules[]'
+            deny:
+              conditions:
+                all:
+                  - key: "{{ element.apiGroups || '' }}"
+                    operator: AnyIn
+                    value:
+                      - rbac.authorization.k8s.io
+                  - key: "{{ element.resources || '' }}"
+                    operator: AnyIn
+                    value:
+                      - clusterroles
+                      - roles
+                  - key: '{{ element.verbs }}'
+                    operator: AnyIn
+                    value:
+                      - bind
+                      - escalate
+                      - impersonate
 ```

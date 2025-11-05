@@ -201,10 +201,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   matchImageReferences:
     - glob: ghcr.io/*
   attestors:
@@ -223,7 +223,6 @@ spec:
     - name: toto # Another attestation named `toto`
       intoto:
         type: https://example.com/attestations/slsa-provenance/v0.2 # Predicate type URI for in-toto format
-
 ```
 
 ### validationConfigurations
@@ -259,14 +258,14 @@ spec:
   credentials:
     allowInsecureRegistry: false # Deny insecure access to registries
     providers: # specifies whose authentication providers are provided
-      - "default"
-      - "google"
-      - "azure"
-      - "amazon"
-      - "github"
+      - 'default'
+      - 'google'
+      - 'azure'
+      - 'amazon'
+      - 'github'
 
     secrets:
-      - "my-registry-secret" # Secrets specifies a list of secrets that are provided for credentials. Secrets must live in the Kyverno namespace.
+      - 'my-registry-secret' # Secrets specifies a list of secrets that are provided for credentials. Secrets must live in the Kyverno namespace.
 ```
 
 ## Kyverno CEL Libraries
@@ -294,10 +293,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE']
+        resources: ['pods']
   matchImageReferences:
     - glob: ghcr.io/*
       attestors:
@@ -353,21 +352,21 @@ spec:
   failurePolicy: Fail
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE', 'UPDATE']
   matchImageReferences:
-    - glob: "ghcr.io/myorg/myrepo:*"
+    - glob: 'ghcr.io/myorg/myrepo:*'
   attestors:
     - name: cosign
       cosign:
         keyless:
           identities:
-            - subject: "https://github.com/myorg/myrepo/.github/workflows/*"
-              issuer: "https://token.actions.githubusercontent.com"
+            - subject: 'https://github.com/myorg/myrepo/.github/workflows/*'
+              issuer: 'https://token.actions.githubusercontent.com'
         ctlog:
-          url: "https://rekor.sigstore.dev"
+          url: 'https://rekor.sigstore.dev'
   attestations:
     - name: cosignAttestation
       intoto:
@@ -375,10 +374,10 @@ spec:
   validations:
     - expression: >-
         images.containers.map(image, verifyImageSignatures(image,  [attestors.cosign])).all(e, e > 0)
-      message: "Failed image signature verification"
+      message: 'Failed image signature verification'
     - expression: >-
         images.containers.map(image, verifyAttestationSignatures(image, attestations.cosignAttestation, [attestors.cosign])).all(e, e > 0)
-      message: "Failed to verify vulnerability scan attestation with Cosign keyless"
+      message: 'Failed to verify vulnerability scan attestation with Cosign keyless'
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -409,12 +408,12 @@ spec:
   validationActions: [Deny]
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   matchImageReferences:
-    - glob: "docker.io/kyverno/kyverno*"
+    - glob: 'docker.io/kyverno/kyverno*'
   attestors:
     - name: cosign
       cosign:

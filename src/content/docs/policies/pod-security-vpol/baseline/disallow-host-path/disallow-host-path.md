@@ -1,14 +1,15 @@
 ---
-title: "Disallow hostPath in ValidatingPolicy"
+title: 'Disallow hostPath in ValidatingPolicy'
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod,Volume
-policyType: "validate"
+policyType: 'validate'
 description: >
-    HostPath volumes let Pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed. This policy ensures no hostPath volumes are in use.
+  HostPath volumes let Pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed. This policy ensures no hostPath volumes are in use.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-vpol/baseline/disallow-host-path/disallow-host-path.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-path/disallow-host-path.yaml</a>
 
 ```yaml
@@ -22,27 +23,26 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod,Volume
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30+"
+    kyverno.io/kubernetes-version: '1.30+'
     policies.kyverno.io/description: >-
       HostPath volumes let Pods use host directories and volumes in containers.
       Using host resources can be used to access shared data or escalate privileges
       and should not be allowed. This policy ensures no hostPath volumes are in use.
 spec:
   validationActions:
-     - Audit
+    - Audit
   evaluation:
     background:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups:   [""]
-        apiVersions: ["v1"]
-        operations:  ["CREATE", "UPDATE"]
-        resources:   ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   validations:
-        - expression: >-
-            object.spec.?volumes.orValue([]).all(volume, !has(volume.hostPath))
-          message: >-
-            HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset
-
+    - expression: >-
+        object.spec.?volumes.orValue([]).all(volume, !has(volume.hostPath))
+      message: >-
+        HostPath volumes are forbidden. The field spec.volumes[*].hostPath must be unset
 ```

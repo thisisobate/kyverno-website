@@ -55,16 +55,16 @@ rules:
               - Pod
     validate:
       failureAction: Enforce
-      message: "Port number for the livenessProbe must be less than that of the readinessProbe."
+      message: 'Port number for the livenessProbe must be less than that of the readinessProbe.'
       pattern:
         spec:
           ^(containers):
             - livenessProbe:
                 tcpSocket:
-                  port: "$(./../../../readinessProbe/tcpSocket/port)"
+                  port: '$(./../../../readinessProbe/tcpSocket/port)'
               readinessProbe:
                 tcpSocket:
-                  port: "3000"
+                  port: '3000'
 ```
 
 In this above example, for any containers found in a Pod spec, the field `readinessProbe.tcpSocket.port` must be `3000` and the field `livenessProbe.tcpSocket.port` must be the same value. The lookup expression can be thought of as a `cd` back three levels and down into the `readinessProbe` object.
@@ -74,10 +74,10 @@ Operators also work on manifest lookup variables as well so the previous snippet
 ```yaml
 - livenessProbe:
     tcpSocket:
-      port: "$(<./../../../readinessProbe/tcpSocket/port)"
+      port: '$(<./../../../readinessProbe/tcpSocket/port)'
   readinessProbe:
     tcpSocket:
-      port: "3000"
+      port: '3000'
 ```
 
 In this case, the field `livenessProbe.tcpSocket.port` must now be **less** than the value specified in `readinessProbe.tcpSocket.port`.
@@ -109,10 +109,10 @@ spec:
         patchStrategicMerge:
           spec:
             containers:
-              - (name): "?*"
+              - (name): '?*'
                 env:
                   - name: NODE_NAME
-                    value: "mutated_name"
+                    value: 'mutated_name'
                   - name: POD_IP_ADDRESS
                     valueFrom:
                       fieldRef:
@@ -150,7 +150,7 @@ spec:
   containers:
     - name: test-container
       image: busybox
-      command: ["sh", "-c"]
+      command: ['sh', '-c']
       args:
         - while true; do
           echo -en '\n';
@@ -159,7 +159,7 @@ spec:
           done;
       env:
         - name: NODE_NAME
-          value: "node_name"
+          value: 'node_name'
         - name: POD_NAME
           valueFrom:
             fieldRef:
@@ -264,7 +264,7 @@ spec:
         patchStrategicMerge:
           metadata:
             annotations:
-              created-by: "{{request.userInfo.username}}"
+              created-by: '{{request.userInfo.username}}'
 ```
 
 This sample will mutate all incoming Pod creation requests with an annotation named `created-by` and the value of the authenticated user based on their `kubeconfig`.
@@ -411,7 +411,7 @@ context:
     variable:
       # value defines the value that the variable must have, it may contain jmespath variables or any yaml object that can be represented as a json object.
       # value, default, and jmespath are optional but either value or jmespath must be defined.
-      value: "foo"
+      value: 'foo'
 ```
 
 This snippet sets a context variable to the value of `request.object.metadata.name`. If the `value` field is not defined, the contents of `jmesPath` will act on the entire context.
@@ -435,9 +435,9 @@ context:
             name: { { request.object.metadata.name } }
       # the default value a variable may have if after jmespath processing the value ends up being nil
       # the default value may also be another variable, for example something from the AdmissionReview
-      default: "{}"
+      default: '{}'
       # jmespath expression that can be used to modify the `value` before it is assigned to the variable
-      jmesPath: "to_string(@)"
+      jmesPath: 'to_string(@)'
 ```
 
 Variables can reference other variables as well as shown below. Note that context variables are ordered; a variable consumed by another variable must be defined higher in the list of context variables.
@@ -450,8 +450,8 @@ context:
   - name: objName
     variable:
       value:
-        name: "{{ request.object.metadata.name }}"
-      jmesPath: "{{ jpExpression }}"
+        name: '{{ request.object.metadata.name }}'
+      jmesPath: '{{ jpExpression }}'
 ```
 
 ## Variables from external data sources
@@ -489,7 +489,7 @@ spec:
         patchStrategicMerge:
           metadata:
             annotations:
-              foo: "{{LabelsCM.data.{{ request.object.metadata.labels.app }}}}"
+              foo: '{{LabelsCM.data.{{ request.object.metadata.labels.app }}}}'
 ```
 
 In this example, AdmissionReview data is first collected in the inner expression in the form of `{{request.object.metadata.labels.app}}` while the outer expression is built from a ConfigMap context named `LabelsCM`.

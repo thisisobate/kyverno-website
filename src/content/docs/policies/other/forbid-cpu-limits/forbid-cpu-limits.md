@@ -1,14 +1,15 @@
 ---
-title: "Forbid CPU Limits"
+title: 'Forbid CPU Limits'
 category: Other
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Setting of CPU limits is a debatable poor practice as it can result, when defined, in potentially starving applications of much-needed CPU cycles even when they are available. Ensuring that CPU limits are not set may ensure apps run more effectively. This policy forbids any container in a Pod from defining CPU limits.
+  Setting of CPU limits is a debatable poor practice as it can result, when defined, in potentially starving applications of much-needed CPU cycles even when they are available. Ensuring that CPU limits are not set may ensure apps run more effectively. This policy forbids any container in a Pod from defining CPU limits.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/forbid-cpu-limits/forbid-cpu-limits.yaml" target="-blank">/other/forbid-cpu-limits/forbid-cpu-limits.yaml</a>
 
 ```yaml
@@ -21,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.10.0
-    kyverno.io/kubernetes-version: "1.26"
+    kyverno.io/kubernetes-version: '1.26'
     policies.kyverno.io/description: >-
       Setting of CPU limits is a debatable poor practice as it can result, when defined, in potentially starving
       applications of much-needed CPU cycles even when they are available. Ensuring that CPU limits are not
@@ -30,20 +31,19 @@ spec:
   background: true
   validationFailureAction: Enforce
   rules:
-  - name: check-cpu-limits
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: Containers may not define CPU limits.
-      pattern:
-        spec:
-          containers:
-          - (name): "*"
-            =(resources):
-              =(limits):
-                X(cpu): null
-
+    - name: check-cpu-limits
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: Containers may not define CPU limits.
+        pattern:
+          spec:
+            containers:
+              - (name): '*'
+                =(resources):
+                  =(limits):
+                    X(cpu): null
 ```

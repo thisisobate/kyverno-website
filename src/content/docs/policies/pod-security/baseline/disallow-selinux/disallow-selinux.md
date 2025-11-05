@@ -1,14 +1,15 @@
 ---
-title: "Disallow SELinux"
+title: 'Disallow SELinux'
 category: Pod Security Standards (Baseline)
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    SELinux options can be used to escalate privileges and should not be allowed. This policy ensures that the `seLinuxOptions` field is undefined.
+  SELinux options can be used to escalate privileges and should not be allowed. This policy ensures that the `seLinuxOptions` field is undefined.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security/baseline/disallow-selinux/disallow-selinux.yaml" target="-blank">/pod-security/baseline/disallow-selinux/disallow-selinux.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.22-1.23"
+    kyverno.io/kubernetes-version: '1.22-1.23'
     policies.kyverno.io/description: >-
       SELinux options can be used to escalate privileges and should not be allowed. This policy
       ensures that the `seLinuxOptions` field is undefined.
@@ -33,9 +34,9 @@ spec:
     - name: selinux-type
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
         message: >-
           Setting the SELinux type is restricted. The fields
@@ -46,25 +47,25 @@ spec:
           spec:
             =(securityContext):
               =(seLinuxOptions):
-                =(type): "container_t | container_init_t | container_kvm_t"
+                =(type): 'container_t | container_init_t | container_kvm_t'
             =(ephemeralContainers):
               - =(securityContext):
                   =(seLinuxOptions):
-                    =(type): "container_t | container_init_t | container_kvm_t"
+                    =(type): 'container_t | container_init_t | container_kvm_t'
             =(initContainers):
               - =(securityContext):
                   =(seLinuxOptions):
-                    =(type): "container_t | container_init_t | container_kvm_t"
+                    =(type): 'container_t | container_init_t | container_kvm_t'
             containers:
               - =(securityContext):
                   =(seLinuxOptions):
-                    =(type): "container_t | container_init_t | container_kvm_t"
+                    =(type): 'container_t | container_init_t | container_kvm_t'
     - name: selinux-user-role
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
+          - resources:
+              kinds:
+                - Pod
       validate:
         message: >-
           Setting the SELinux user or role is forbidden. The fields
@@ -77,22 +78,21 @@ spec:
           spec:
             =(securityContext):
               =(seLinuxOptions):
-                X(user): "null"
-                X(role): "null"
+                X(user): 'null'
+                X(role): 'null'
             =(ephemeralContainers):
               - =(securityContext):
                   =(seLinuxOptions):
-                    X(user): "null"
-                    X(role): "null"
+                    X(user): 'null'
+                    X(role): 'null'
             =(initContainers):
               - =(securityContext):
                   =(seLinuxOptions):
-                    X(user): "null"
-                    X(role): "null"
+                    X(user): 'null'
+                    X(role): 'null'
             containers:
               - =(securityContext):
                   =(seLinuxOptions):
-                    X(user): "null"
-                    X(role): "null"
-
+                    X(user): 'null'
+                    X(role): 'null'
 ```

@@ -10,8 +10,8 @@ The [Kyverno Command Line Interface (CLI)](../../../docs/kyverno-cli/) allows ap
 
 The two commands used for testing are `apply` and `test`:
 
-* The `apply` command is used to perform a dry run on one or more policies for the given manifest(s).
-* The `test` command is used to test a given set of resources against one or more policies to check the desired results defined in a special test manifest.
+- The `apply` command is used to perform a dry run on one or more policies for the given manifest(s).
+- The `test` command is used to test a given set of resources against one or more policies to check the desired results defined in a special test manifest.
 
 In this post, I will show you how you can apply/test Kubernetes ValidatingAdmissionPolicies that were first [introduced in 1.26](https://kubernetes.io/blog/2022/12/20/validating-admission-policies-alpha/) with the enhancements to the Kyverno CLI in v1.11.
 
@@ -74,7 +74,7 @@ The output should be the following.
 ```sh
 Applying 1 policy rule(s) to 1 resource(s)...
 
-pass: 1, fail: 0, warn: 0, error: 0, skip: 0 
+pass: 1, fail: 0, warn: 0, error: 0, skip: 0
 ```
 
 Let's try to create another deployment that violates the policy.
@@ -104,7 +104,7 @@ EOF
 Then apply the policy to the resource as follows.
 
 ```sh
-kyverno apply ./check-deployment-replicas.yaml --resource deployment-fail.yaml 
+kyverno apply ./check-deployment-replicas.yaml --resource deployment-fail.yaml
 ```
 
 The output should be as shown.

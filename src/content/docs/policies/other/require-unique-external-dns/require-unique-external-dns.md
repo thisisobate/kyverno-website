@@ -1,14 +1,15 @@
 ---
-title: "Require Unique External DNS Services"
+title: 'Require Unique External DNS Services'
 category: Other
 version: 1.6.0
 subject: Service
-policyType: "validate"
+policyType: 'validate'
 description: >
-    ExternalDNS, part of Kubernetes SIGs, triggers the creation of external DNS records in supported providers when the annotation`external-dns.alpha.kubernetes.io/hostname` is present. Like with internal DNS, duplicates must be avoided. This policy requires every such Service have a cluster-unique hostname present in the value of the annotation.
+  ExternalDNS, part of Kubernetes SIGs, triggers the creation of external DNS records in supported providers when the annotation`external-dns.alpha.kubernetes.io/hostname` is present. Like with internal DNS, duplicates must be avoided. This policy requires every such Service have a cluster-unique hostname present in the value of the annotation.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/require-unique-external-dns/require-unique-external-dns.yaml" target="-blank">/other/require-unique-external-dns/require-unique-external-dns.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Service
     kyverno.io/kyverno-version: 1.5.1
-    kyverno.io/kubernetes-version: "1.21"
+    kyverno.io/kubernetes-version: '1.21'
     policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
       ExternalDNS, part of Kubernetes SIGs, triggers the creation of external DNS records in supported
@@ -36,24 +37,24 @@ spec:
     - name: ensure-valid-externaldns-annotation
       match:
         any:
-        - resources:
-            kinds:
-              - Service
-            annotations:
-              external-dns.alpha.kubernetes.io/hostname: "*"
+          - resources:
+              kinds:
+                - Service
+              annotations:
+                external-dns.alpha.kubernetes.io/hostname: '*'
       context:
         # Looks up external DNS entries.
         - name: alldns
           apiCall:
-            urlPath: "/api/v1/services"
-            jmesPath: "items[?[metadata.namespace, metadata.name] != ['{{request.object.metadata.namespace}}', '{{request.object.metadata.name}}']].metadata.annotations.\"external-dns.alpha.kubernetes.io/hostname\""
+            urlPath: '/api/v1/services'
+            jmesPath: 'items[?[metadata.namespace, metadata.name] != [''{{request.object.metadata.namespace}}'', ''{{request.object.metadata.name}}'']].metadata.annotations."external-dns.alpha.kubernetes.io/hostname"'
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: AnyIn
-          value:
-            - CREATE
-            - UPDATE
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: AnyIn
+            value:
+              - CREATE
+              - UPDATE
       validate:
         message: >-
           External DNS entry "{{request.object.metadata.annotations."external-dns.alpha.kubernetes.io/hostname"}}" is already
@@ -62,8 +63,7 @@ spec:
           conditions:
             all:
               # Deny if "external-dns.alpha.kubernetes.io/hostname" annotation value is already taken
-              - key: "{{request.object.metadata.annotations.\"external-dns.alpha.kubernetes.io/hostname\"}}"
+              - key: '{{request.object.metadata.annotations."external-dns.alpha.kubernetes.io/hostname"}}'
                 operator: AnyIn
-                value: "{{alldns}}"
-
+                value: '{{alldns}}'
 ```

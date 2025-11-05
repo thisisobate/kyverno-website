@@ -1,14 +1,15 @@
 ---
-title: "Restrict NetworkPolicy with Empty podSelector"
+title: 'Restrict NetworkPolicy with Empty podSelector'
 category: Other, Multi-Tenancy
-version: 
+version:
 subject: NetworkPolicy
-policyType: "validate"
+policyType: 'validate'
 description: >
-    By default, all pods in a Kubernetes cluster are allowed to communicate with each other, and all network traffic is unencrypted. It is recommended to not use an empty podSelector in order to more closely control the necessary traffic flows. This policy requires that all NetworkPolicies other than that of `default-deny` not use an empty podSelector.
+  By default, all pods in a Kubernetes cluster are allowed to communicate with each other, and all network traffic is unencrypted. It is recommended to not use an empty podSelector in order to more closely control the necessary traffic flows. This policy requires that all NetworkPolicies other than that of `default-deny` not use an empty podSelector.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/restrict-networkpolicy-empty-podselector/restrict-networkpolicy-empty-podselector.yaml" target="-blank">/other/restrict-networkpolicy-empty-podselector/restrict-networkpolicy-empty-podselector.yaml</a>
 
 ```yaml
@@ -30,25 +31,25 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: empty-podselector
-    match:
-      any:
-      - resources:
-          kinds:
-          - NetworkPolicy
-    exclude:
-      any:
-      - resources:
-          kinds:
-          - NetworkPolicy
-          names:
-          - default-deny
-    validate:
-      message: "NetworkPolicies must not use an empty podSelector."
-      deny:
-        conditions:
-          any:
-          - key: "{{request.object.spec.podSelector.keys(@) | length(@)}}"
-            operator: Equals
-            value: 0
+    - name: empty-podselector
+      match:
+        any:
+          - resources:
+              kinds:
+                - NetworkPolicy
+      exclude:
+        any:
+          - resources:
+              kinds:
+                - NetworkPolicy
+              names:
+                - default-deny
+      validate:
+        message: 'NetworkPolicies must not use an empty podSelector.'
+        deny:
+          conditions:
+            any:
+              - key: '{{request.object.spec.podSelector.keys(@) | length(@)}}'
+                operator: Equals
+                value: 0
 ```

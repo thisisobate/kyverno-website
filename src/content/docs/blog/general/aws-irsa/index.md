@@ -96,12 +96,13 @@ cat >notation-signer-policy.json <<EOF
 EOF
 ```
 
-Create the IAM policy: 
+Create the IAM policy:
+
 ```sh
 aws iam create-policy --policy-name notation-signer-policy --policy-document file://notation-signer-policy.json
 ```
 
-To configure a Kubernetes service account to assume an IAM role, you can use the `eksctl` command to create an IAM service account. 
+To configure a Kubernetes service account to assume an IAM role, you can use the `eksctl` command to create an IAM service account.
 
 If your Kyverno is installed with default configurations, you can run the following command directly to create the IAM service account. Otherwise, replace the service account name and namespace with your custom values.
 
@@ -109,8 +110,8 @@ If your Kyverno is installed with default configurations, you can run the follow
 $ eksctl create iamserviceaccount --override-existing-serviceaccounts kyverno-admission-controller --namespace kyverno --cluster kyverno-irsa --role-name kyverno-irsa --attach-policy-arn arn:aws:iam::xxxxxxxxxxxx:policy/notation-signer-policy --approve
 2023-08-14 21:18:17 [ℹ]  1 iamserviceaccount (kyverno/kyverno-admission-controller) was included (based on the include/exclude rules)
 2023-08-14 21:18:17 [!]  metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
-2023-08-14 21:18:17 [ℹ]  1 task: { 
-    2 sequential sub-tasks: { 
+2023-08-14 21:18:17 [ℹ]  1 task: {
+    2 sequential sub-tasks: {
         create IAM role for serviceaccount "kyverno/kyverno-admission-controller",
         create serviceaccount "kyverno/kyverno-admission-controller",
     } }2023-08-14 21:18:17 [ℹ]  building iamserviceaccount stack "eksctl-kyverno-irsa-addon-iamserviceaccount-kyverno-kyverno-admission-controller"
@@ -124,6 +125,7 @@ $ eksctl create iamserviceaccount --override-existing-serviceaccounts kyverno-ad
 After creating the IAM service account, you can verify that the role and service account are configured correctly.
 
 Confirm that the IAM role's trust policy is configured correctly:
+
 ```sh
 $ aws iam get-role --role-name kyverno-irsa --query Role.AssumeRolePolicyDocument
 {
@@ -147,12 +149,14 @@ $ aws iam get-role --role-name kyverno-irsa --query Role.AssumeRolePolicyDocumen
 ```
 
 Confirm that the policy that you attached to your role in a previous step is attached to the role:
+
 ```sh
 $ aws iam list-attached-role-policies --role-name kyverno-irsa --query AttachedPolicies --output text
 arn:aws:iam::xxxxxxxxxxxx:policy/notation-signer-policy notation-signer-policy
 ```
 
 Confirm that the Kyverno service account is annotated with the role:
+
 ```sh
 $ kubectl describe serviceaccount kyverno-admission-controller -n kyverno
 
@@ -162,6 +166,7 @@ Annotations:         eks.amazonaws.com/role-arn: arn:aws:iam::xxxxxxxxxxxx:role/
 ```
 
 Confirm that the environment variables are injected to the admission controller:
+
 ```sh
 $ kubectl get pod -n kyverno -l app.kubernetes.io/component=admission-controller -o yaml | grep AWS -A2
       - name: AWS_STS_REGIONAL_ENDPOINTS
@@ -224,47 +229,49 @@ metadata:
 spec:
   background: true
   rules:
-  - match:
-      resources:
-        kinds:
-        - Pod
-        namespaces:
-        - test-shuting
-    name: check-digest
-    verifyImages:
-    - attestors:
-      - count: 1
-        entries:
-        - certificates:
-            cert: |-
-              -----BEGIN CERTIFICATE-----
-              ...
-              ...
-              ...
-              -----END CERTIFICATE-----
-      imageReferences:
-      - xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting*
-      mutateDigest: true
-      required: true
-      type: Notary
-      verifyDigest: true
+    - match:
+        resources:
+          kinds:
+            - Pod
+          namespaces:
+            - test-shuting
+      name: check-digest
+      verifyImages:
+        - attestors:
+            - count: 1
+              entries:
+                - certificates:
+                    cert: |-
+                      -----BEGIN CERTIFICATE-----
+                      ...
+                      ...
+                      ...
+                      -----END CERTIFICATE-----
+          imageReferences:
+            - xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting*
+          mutateDigest: true
+          required: true
+          type: Notary
+          verifyDigest: true
   validationFailureAction: Enforce
   webhookTimeoutSeconds: 30
 ```
 
 Once the policy is installed in the cluster, you can create the pod using the signed image and check the creation passes through:
+
 ```sh
 $ kubectl -n test-shuting run test --image=xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1 --dry-run=server
 pod/test created (server dry run)
 ```
 
 Then if you create the pod using an unsigned image, the pod creation is blocked by Kyverno as it does not have any signatures associated with it:
+
 ```sh
 $ kubectl -n test-shuting run test --image=xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1-unsigned --dry-run=server
 
-Error from server: admission webhook "mutate.kyverno.svc-fail" denied the request: 
+Error from server: admission webhook "mutate.kyverno.svc-fail" denied the request:
 
-resource Pod/test-shuting/test was blocked due to the following policies 
+resource Pod/test-shuting/test was blocked due to the following policies
 
 test-irsa:
   check-digest: 'failed to verify image xxxxxxxxxxxx.dkr.ecr.us-west-2.amazonaws.com/test-shuting-notation:v1-unsigned:
@@ -273,7 +280,6 @@ test-irsa:
     make sure the artifact was signed successfully'
 
 ```
-
 
 ### Conclusion
 

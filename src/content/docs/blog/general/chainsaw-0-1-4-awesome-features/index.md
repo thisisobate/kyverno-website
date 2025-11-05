@@ -39,7 +39,7 @@ The same error in `v0.1.4` will be reported including a resource diff:
         v1/Pod/chainsaw-rare-liger/example-5477b4ff8c-tnhd9
         ---------------------------------------------------
         * metadata.annotations.foo: Invalid value: "null": Expected value: "bar"
-        
+
         --- expected
         +++ actual
         @@ -1,10 +1,16 @@
@@ -94,7 +94,7 @@ metadata:
   name: my-mocked-provider
 spec:
   type: prometheus
-  targetServer: "http://mockserver.$NAMESPACE.svc.cluster.local:1080"
+  targetServer: 'http://mockserver.$NAMESPACE.svc.cluster.local:1080'
 ```
 
 We can use a script to perform namespace substitution with `envsubst` and pipe the result to `kubectl`:
@@ -106,10 +106,10 @@ metadata:
   name: example
 spec:
   steps:
-  - try:
-    - script:
-        content: |
-          envsubst < resource.yaml | kubectl apply -f - -n $NAMESPACE
+    - try:
+        - script:
+            content: |
+              envsubst < resource.yaml | kubectl apply -f - -n $NAMESPACE
 ```
 
 This is bad because Chainsaw doesn't know anything about this resource and won't be able to clean it up when tearing down the test.
@@ -142,11 +142,11 @@ spec:
   # enable templating (at the test level)
   template: true
   steps:
-  - try:
-    - apply:
-        # or enable templating (at the operation level)
-        template: true
-        file: resource.yaml
+    - try:
+        - apply:
+            # or enable templating (at the operation level)
+            template: true
+            file: resource.yaml
 ```
 
 ### Supported operations

@@ -1,14 +1,15 @@
 ---
-title: "Enable Kubecost Continuous Rightsizing"
+title: 'Enable Kubecost Continuous Rightsizing'
 category: Kubecost
-version: 
+version:
 subject: Deployment, Annotation
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Kubecost is able to modify container resource requests and limits dynamically based upon observed utilization patterns and recommendations. This provides an easy way to automatically improve allocation of cluster resources by increasing efficiency. This policy will annotate all Deployments which have the label `env=test` with `request.autoscaling.kubecost.com/enabled="true"` if the annotation is not already present. Other annotations may be added according to need and users should see the documentation for a complete list.
+  Kubecost is able to modify container resource requests and limits dynamically based upon observed utilization patterns and recommendations. This provides an easy way to automatically improve allocation of cluster resources by increasing efficiency. This policy will annotate all Deployments which have the label `env=test` with `request.autoscaling.kubecost.com/enabled="true"` if the annotation is not already present. Other annotations may be added according to need and users should see the documentation for a complete list.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//kubecost/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml" target="-blank">/kubecost/enable-kubecost-continuous-rightsizing/enable-kubecost-continuous-rightsizing.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Deployment, Annotation
     kyverno.io/kyverno-version: 1.10.0
-    kyverno.io/kubernetes-version: "1.25"
+    kyverno.io/kubernetes-version: '1.25'
     policies.kyverno.io/description: >-
       Kubecost is able to modify container resource requests and limits dynamically
       based upon observed utilization patterns and recommendations. This provides an
@@ -33,19 +34,18 @@ metadata:
       should see the documentation for a complete list.
 spec:
   rules:
-  - name: enable-kubecost-autoscaling
-    match:
-      any:
-      - resources:
-          kinds:
-          - Deployment
-          selector:
-            matchLabels:
-              env: test
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          annotations:
-            +(request.autoscaling.kubecost.com/enabled): "true"
-
+    - name: enable-kubecost-autoscaling
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+              selector:
+                matchLabels:
+                  env: test
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              +(request.autoscaling.kubecost.com/enabled): 'true'
 ```

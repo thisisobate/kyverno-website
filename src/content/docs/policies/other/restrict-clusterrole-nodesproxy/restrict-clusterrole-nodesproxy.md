@@ -1,14 +1,15 @@
 ---
-title: "Restrict ClusterRole with Nodes Proxy"
+title: 'Restrict ClusterRole with Nodes Proxy'
 category: Sample
 version: 1.6.0
 subject: ClusterRole, RBAC
-policyType: "validate"
+policyType: 'validate'
 description: >
-    A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource. 
+  A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/restrict-clusterrole-nodesproxy/restrict-clusterrole-nodesproxy.yaml" target="-blank">/other/restrict-clusterrole-nodesproxy/restrict-clusterrole-nodesproxy.yaml</a>
 
 ```yaml
@@ -23,14 +24,14 @@ metadata:
     policies.kyverno.io/subject: ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.11.4
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.27"
+    kyverno.io/kubernetes-version: '1.27'
     policies.kyverno.io/description: >-
       A ClusterRole with nodes/proxy resource access allows a user to
       perform anything the kubelet API allows. It also allows users to bypass
       the API server and talk directly to the kubelet potentially circumventing
       audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac
       for more info. This policy prevents the creation
-      of a ClusterRole if it contains the nodes/proxy resource. 
+      of a ClusterRole if it contains the nodes/proxy resource.
 spec:
   validationFailureAction: Audit
   background: true
@@ -38,18 +39,18 @@ spec:
     - name: clusterrole-nodesproxy
       match:
         any:
-        - resources:
-            kinds:
-              - ClusterRole
+          - resources:
+              kinds:
+                - ClusterRole
       validate:
-        message: "A ClusterRole containing the nodes/proxy resource is not allowed."
+        message: 'A ClusterRole containing the nodes/proxy resource is not allowed.'
         deny:
           conditions:
             all:
-            - key: nodes/proxy
-              operator: AnyIn
-              value: "{{ request.object.rules[].resources[] }}"
-            - key: ""
-              operator: AnyIn
-              value: "{{ request.object.rules[].apiGroups[] }}"
+              - key: nodes/proxy
+                operator: AnyIn
+                value: '{{ request.object.rules[].resources[] }}'
+              - key: ''
+                operator: AnyIn
+                value: '{{ request.object.rules[].apiGroups[] }}'
 ```

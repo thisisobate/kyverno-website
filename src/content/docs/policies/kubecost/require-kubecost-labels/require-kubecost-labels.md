@@ -1,14 +1,15 @@
 ---
-title: "Require Kubecost Labels"
+title: 'Require Kubecost Labels'
 category: Kubecost
-version: 
+version:
 subject: Pod, Label
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Kubecost can use labels assigned to Pods in order to track and display cost allocation in a granular way. These labels, which can be customized, can be used to organize and group workloads in different ways. This policy requires that the labels `owner`, `team`, `department`, `app`, and `env` are all defined on Pods. With Kyverno autogen enabled (absence of the annotation `pod-policies.kyverno.io/autogen-controllers=none`), these labels will also be required for all Pod controllers.
+  Kubecost can use labels assigned to Pods in order to track and display cost allocation in a granular way. These labels, which can be customized, can be used to organize and group workloads in different ways. This policy requires that the labels `owner`, `team`, `department`, `app`, and `env` are all defined on Pods. With Kyverno autogen enabled (absence of the annotation `pod-policies.kyverno.io/autogen-controllers=none`), these labels will also be required for all Pod controllers.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//kubecost/require-kubecost-labels/require-kubecost-labels.yaml" target="-blank">/kubecost/require-kubecost-labels/require-kubecost-labels.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod, Label
     kyverno.io/kyverno-version: 1.10.0
-    kyverno.io/kubernetes-version: "1.25"
+    kyverno.io/kubernetes-version: '1.25'
     policies.kyverno.io/description: >-
       Kubecost can use labels assigned to Pods in order to track and display
       cost allocation in a granular way. These labels, which can be customized, can be used
@@ -34,20 +35,20 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: require-labels
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "The Kubecost labels `owner`, `team`, `department`, `app`, and `env` are all required for Pods."
-      pattern:
-        metadata:
-          labels:
-            owner: "?*"
-            team: "?*"
-            department: "?*"
-            app: "?*"
-            env: "?*"
+    - name: require-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: 'The Kubecost labels `owner`, `team`, `department`, `app`, and `env` are all required for Pods.'
+        pattern:
+          metadata:
+            labels:
+              owner: '?*'
+              team: '?*'
+              department: '?*'
+              app: '?*'
+              env: '?*'
 ```

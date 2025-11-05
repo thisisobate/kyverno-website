@@ -1,14 +1,15 @@
 ---
-title: "Add CAST AI Removal Disabled"
+title: 'Add CAST AI Removal Disabled'
 category: CAST AI
-version: 
+version:
 subject: Job, CronJob
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    CAST AI will not downscale a node that includes a pod with the  autoscaling.cast.ai/removal-disabled="true" label on it, this protects sensitive workloads from being evicted and can be attributed to any pod to protect against unwanted downscaling. This policy will mutate jobs and  cronjobs to add the removal-disabled label to protect against eviction. 
+  CAST AI will not downscale a node that includes a pod with the  autoscaling.cast.ai/removal-disabled="true" label on it, this protects sensitive workloads from being evicted and can be attributed to any pod to protect against unwanted downscaling. This policy will mutate jobs and  cronjobs to add the removal-disabled label to protect against eviction.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//castai/add-castai-removal-disabled/add-castai-removal-disabled.yaml" target="-blank">/castai/add-castai-removal-disabled/add-castai-removal-disabled.yaml</a>
 
 ```yaml
@@ -20,43 +21,43 @@ metadata:
     policies.kyverno.io/title: Add CAST AI Removal Disabled
     policies.kyverno.io/category: CAST AI
     policies.kyverno.io/severity: medium
-    policies.kyverno.io/subject: "Job, CronJob"
-    kyverno.io/kyverno-version: "1.9"
-    kyverno.io/kubernetes-version: "1.25"
-    policies.kyverno.io/description: >- 
+    policies.kyverno.io/subject: 'Job, CronJob'
+    kyverno.io/kyverno-version: '1.9'
+    kyverno.io/kubernetes-version: '1.25'
+    policies.kyverno.io/description: >-
       CAST AI will not downscale a node that includes a pod with the 
       autoscaling.cast.ai/removal-disabled="true" label on it, this protects
       sensitive workloads from being evicted and can be attributed to any pod to
       protect against unwanted downscaling. This policy will mutate jobs and 
-      cronjobs to add the removal-disabled label to protect against eviction. 
+      cronjobs to add the removal-disabled label to protect against eviction.
 spec:
   rules:
-  - name: do-not-evict-jobs
-    match:
-      any:
-      - resources:
-          kinds:
-          - Job
-    mutate:
-      patchStrategicMerge:
-        spec:
-          template:
-            metadata:
-              labels:
-                autoscaling.cast.ai/removal-disabled: "true"
-  - name: do-not-evict-cronjobs
-    match:
-      any:
-      - resources:
-          kinds:
-          - CronJob
-    mutate:
-      patchStrategicMerge:
-        spec:
-          jobTemplate:
-            spec:
-              template:
-                metadata:
-                  labels:
-                    autoscaling.cast.ai/removal-disabled: "true"
+    - name: do-not-evict-jobs
+      match:
+        any:
+          - resources:
+              kinds:
+                - Job
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              metadata:
+                labels:
+                  autoscaling.cast.ai/removal-disabled: 'true'
+    - name: do-not-evict-cronjobs
+      match:
+        any:
+          - resources:
+              kinds:
+                - CronJob
+      mutate:
+        patchStrategicMerge:
+          spec:
+            jobTemplate:
+              spec:
+                template:
+                  metadata:
+                    labels:
+                      autoscaling.cast.ai/removal-disabled: 'true'
 ```

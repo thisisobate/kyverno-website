@@ -1,14 +1,15 @@
 ---
-title: "Require StorageClass"
+title: 'Require StorageClass'
 category: Other, Multi-Tenancy
-version: 
+version:
 subject: PersistentVolumeClaim, StatefulSet
-policyType: "validate"
+policyType: 'validate'
 description: >
-    PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.
+  PersistentVolumeClaims (PVCs) and StatefulSets may optionally define a StorageClass to dynamically provision storage. In a multi-tenancy environment where StorageClasses are far more common, it is often better to require storage only be provisioned from these StorageClasses. This policy requires that PVCs and StatefulSets containing volumeClaimTemplates define the storageClassName field with some value.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/require-storageclass/require-storageclass.yaml" target="-blank">/other/require-storageclass/require-storageclass.yaml</a>
 
 ```yaml
@@ -31,29 +32,28 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: pvc-storageclass
-    match:
-      any:
-      - resources:
-          kinds:
-          - PersistentVolumeClaim
-    validate:
-      message: "PersistentVolumeClaims must define a storageClassName."
-      pattern:
-        spec:
-          storageClassName: "?*"
-  - name: ss-storageclass
-    match:
-      any:
-      - resources:
-          kinds:
-          - StatefulSet
-    validate:
-      message: "StatefulSets must define a storageClassName."
-      pattern:
-        spec:
-          =(volumeClaimTemplates):
-            - spec:
-                storageClassName: "?*"
-
+    - name: pvc-storageclass
+      match:
+        any:
+          - resources:
+              kinds:
+                - PersistentVolumeClaim
+      validate:
+        message: 'PersistentVolumeClaims must define a storageClassName.'
+        pattern:
+          spec:
+            storageClassName: '?*'
+    - name: ss-storageclass
+      match:
+        any:
+          - resources:
+              kinds:
+                - StatefulSet
+      validate:
+        message: 'StatefulSets must define a storageClassName.'
+        pattern:
+          spec:
+            =(volumeClaimTemplates):
+              - spec:
+                  storageClassName: '?*'
 ```

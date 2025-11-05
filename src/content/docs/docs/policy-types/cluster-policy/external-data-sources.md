@@ -79,7 +79,7 @@ spec:
         patchStrategicMerge:
           metadata:
             labels:
-              my-environment-name: "{{dictionary.data.env}}"
+              my-environment-name: '{{dictionary.data.env}}'
 ```
 
 In the above ClusterPolicy, a mutate rule matches all incoming Pod resources and adds a label to them with the name of `my-environment-name`. Because we have defined a context which points to our earlier ConfigMap named `mycmap`, we can reference the value with the expression `{{dictionary.data.env}}`. A new Pod will then receive the label `my-environment-name=production`.
@@ -141,7 +141,7 @@ spec:
         deny:
           conditions:
             any:
-              - key: "{{ request.object.metadata.annotations.role }}"
+              - key: '{{ request.object.metadata.annotations.role }}'
                 operator: AnyNotIn
                 value: '{{ "roles-dictionary".data."allowed-roles" | parse_json(@) }}'
 ```
@@ -176,7 +176,7 @@ spec:
       containers:
         - image: busybox:1.28
           name: busybox
-          command: ["sleep", "9999"]
+          command: ['sleep', '9999']
 ```
 
 Submit the manifest and see how Kyverno reacts.
@@ -220,8 +220,8 @@ rules:
     context:
       - name: podCount
         apiCall:
-          urlPath: "/api/v1/namespaces/{{request.namespace}}/pods"
-          jmesPath: "items | length(@)"
+          urlPath: '/api/v1/namespaces/{{request.namespace}}/pods'
+          jmesPath: 'items | length(@)'
 ```
 
 Calls to the Kubernetes API server may also perform `POST` operations in addition to `GET` which is the default method. The returned data from the API server can then be used for further policy decisions.
@@ -241,12 +241,12 @@ context:
           value: authorization.k8s.io/v1
         - key: spec
           value:
-            resource: "namespace"
+            resource: 'namespace'
             resourceAttributes:
-              namespace: "{{ request.namespace }}"
-              verb: "delete"
-              group: ""
-            user: "{{ request.userInfo.username }}"
+              namespace: '{{ request.namespace }}'
+              verb: 'delete'
+              group: ''
+            user: '{{ request.userInfo.username }}'
 ```
 
 The response from such a request will be the full JSON return and accessible under the variable `subjectaccessreview`.
@@ -392,7 +392,7 @@ Query parameters are also accepted in the `urlPath` field. This allows, for exam
 context:
   - name: serviceCount
     apiCall:
-      urlPath: "/api/v1/namespaces/{{ request.namespace }}/services?labelSelector=foo=bar?limit=5"
+      urlPath: '/api/v1/namespaces/{{ request.namespace }}/services?labelSelector=foo=bar?limit=5'
       jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"
 ```
 
@@ -531,15 +531,15 @@ spec:
       context:
         - name: serviceCount
           apiCall:
-            urlPath: "/api/v1/namespaces/{{ request.namespace }}/services"
+            urlPath: '/api/v1/namespaces/{{ request.namespace }}/services'
             jmesPath: "items[?spec.type == 'LoadBalancer'] | length(@)"
       validate:
         failureAction: Enforce
-        message: "Only one LoadBalancer service is allowed per namespace"
+        message: 'Only one LoadBalancer service is allowed per namespace'
         deny:
           conditions:
             any:
-              - key: "{{ serviceCount }}"
+              - key: '{{ serviceCount }}'
                 operator: GreaterThan
                 value: 1
 ```
@@ -573,7 +573,7 @@ spec:
             method: POST
             data:
               - key: namespace
-                value: "{{request.namespace}}"
+                value: '{{request.namespace}}'
             service:
               url: http://sample.kyverno-extension/check-namespace
               caBundle: |-
@@ -582,11 +582,11 @@ spec:
                 -----END CERTIFICATE-----
       validate:
         failureAction: Enforce
-        message: "namespace {{request.namespace}} is not allowed"
+        message: 'namespace {{request.namespace}} is not allowed'
         deny:
           conditions:
             all:
-              - key: "{{ result.allowed }}"
+              - key: '{{ result.allowed }}'
                 operator: Equals
                 value: false
 ```
@@ -669,7 +669,7 @@ metadata:
   name: deployments
 spec:
   apiCall:
-    urlPath: "/apis/apps/v1/namespaces/fitness/deployments?labelSelector=app=blue"
+    urlPath: '/apis/apps/v1/namespaces/fitness/deployments?labelSelector=app=blue'
     refreshInterval: 10s
 ```
 
@@ -723,12 +723,11 @@ GlobalContextEntries must be in a healthy state (i.e., there is a response recei
 In the case where the api server returns an error, `default` can be used to provide a fallback value for the api call context entry. The following example shows how to add default value to context entries:
 
 ```yaml
-
 ---
 context:
   - name: currentnamespace
     apiCall:
-      urlPath: "/api/v1/namespaces/{{ request.namespace }}"
+      urlPath: '/api/v1/namespaces/{{ request.namespace }}'
       jmesPath: metadata.name
       default: default
 ```
@@ -743,7 +742,7 @@ For example, if you are using an `imageRegistry` like shown below:
 context:
   - name: imageData
     imageRegistry:
-      reference: "ghcr.io/kyverno/kyverno"
+      reference: 'ghcr.io/kyverno/kyverno'
 ```
 
 the output `imageData` variable will have a structure which looks like the following:
@@ -849,19 +848,19 @@ spec:
                 - UPDATE
       validate:
         failureAction: Enforce
-        message: "Images run as root are not allowed."
+        message: 'Images run as root are not allowed.'
         foreach:
-          - list: "request.object.spec.containers"
+          - list: 'request.object.spec.containers'
             context:
               - name: imageData
                 imageRegistry:
-                  reference: "{{ element.image }}"
+                  reference: '{{ element.image }}'
             deny:
               conditions:
                 any:
                   - key: "{{ imageData.configData.config.User || ''}}"
                     operator: Equals
-                    value: ""
+                    value: ''
 ```
 
 In the above sample policy, a new context has been written named `imageData` which uses the `imageRegistry` type. The `reference` key is used to instruct Kyverno where the image metadata is stored. In this case, the location is the same as the image itself hence `element.image` where `element` is each container image inside of a Pod. The value can then be referenced in an expression, for example in `deny.conditions` via the key `{{ imageData.configData.config.User || ''}}`.
@@ -913,10 +912,10 @@ The `imageRegistry` context type also has an optional property called `jmesPath`
 context:
   - name: imageSize
     imageRegistry:
-      reference: "{{ element.image }}"
+      reference: '{{ element.image }}'
       # Note that we need to use `to_string` here to allow kyverno to treat it like a resource quantity of type memory
       # the total size of an image as calculated by docker is the total sum of its layer sizes
-      jmesPath: "to_string(sum(manifest.layers[*].size))"
+      jmesPath: 'to_string(sum(manifest.layers[*].size))'
 ```
 
 To access images stored on private registries, see [using private registries](verify-images/sigstore/_index.md#using-private-registries)
@@ -944,14 +943,14 @@ context:
         - key: foo
           value: bar
         - key: namespace
-          value: "{{ `{{ request.namespace }}` }}"
+          value: '{{ `{{ request.namespace }}` }}'
       service:
         url: http://my-service.svc.cluster.local/validation
         headers:
-          - key: "UserAgent"
-            value: "Kyverno Policy XYZ"
-          - key: "Authorization"
-            value: "Bearer {{ MY_SECRET }}"
+          - key: 'UserAgent'
+            value: 'Kyverno Policy XYZ'
+          - key: 'Authorization'
+            value: 'Bearer {{ MY_SECRET }}'
 ```
 
 ## Explanation

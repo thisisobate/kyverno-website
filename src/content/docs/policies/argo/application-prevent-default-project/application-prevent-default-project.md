@@ -1,14 +1,15 @@
 ---
-title: "Prevent Use of Default Project"
+title: 'Prevent Use of Default Project'
 category: Argo
 version: 1.6.0
 subject: Application
-policyType: "validate"
+policyType: 'validate'
 description: >
-    This policy prevents the use of the default project in an Application.
+  This policy prevents the use of the default project in an Application.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//argo/application-prevent-default-project/application-prevent-default-project.yaml" target="-blank">/argo/application-prevent-default-project/application-prevent-default-project.yaml</a>
 
 ```yaml
@@ -22,7 +23,7 @@ metadata:
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Application
     policies.kyverno.io/description: >-
       This policy prevents the use of the default project in an Application.
@@ -33,17 +34,17 @@ spec:
     - name: default-project
       match:
         any:
-        - resources:
-            kinds:
-              - Application
+          - resources:
+              kinds:
+                - Application
       preconditions:
         all:
-        - key: "{{ request.operation || 'BACKGROUND' }}"
-          operator: NotEquals
-          value: DELETE
+          - key: "{{ request.operation || 'BACKGROUND' }}"
+            operator: NotEquals
+            value: DELETE
       validate:
-        message: "The default project may not be used in an Application."
+        message: 'The default project may not be used in an Application.'
         pattern:
           spec:
-            project: "!default"
+            project: '!default'
 ```

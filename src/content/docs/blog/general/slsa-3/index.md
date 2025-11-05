@@ -25,7 +25,7 @@ SLSA divides the requirements into three main areas: source, build, and integrit
 ### Source Requirements
 
 | Requirement           | Required at SLSA Level 3     | Met by Kyverno |
-|-----------------------|------------------------------|----------------|
+| --------------------- | ---------------------------- | -------------- |
 | Version controlled    | Yes                          | Yes            |
 | Verified history      | Yes                          | Yes            |
 | Retained indefinitely | Yes (for 18 months or above) | Yes            |
@@ -59,7 +59,7 @@ The git tree remains unaltered. The source code of the build is archived.
 The conversion of source code into the build is the responsibility of the build system. The build system must be secured against any sort of outside intervention. The build system should produce the builds in a reproducible manner for verification.
 
 | Requirement           | Required at SLSA Level 3 | Met by Kyverno |
-|-----------------------|--------------------------|----------------|
+| --------------------- | ------------------------ | -------------- |
 | Scripted build        | Yes                      | Yes            |
 | Build service         | Yes                      | Yes            |
 | Build as code         | Yes                      | Yes            |
@@ -110,15 +110,15 @@ The GitHub-hosted runners run each job in a separate virtual machine. When the j
 
 In order to prove that build was produced and artifacts were produced according to SLSA Level 3, SLSA mentions some requirements for provenance which can be grouped into the following:
 
-* Requirements on the process by which provenance is generated and consumed
-* Requirements on the content of the provenance
+- Requirements on the process by which provenance is generated and consumed
+- Requirements on the content of the provenance
 
 Kyverno relies on the official [SLSA GitHub Generator project](https://github.com/slsa-framework/slsa-github-generator) for provenance generation. For more information on the generator project, see https://github.com/slsa-framework/slsa-github-generator.
 
 **Requirements on the process by which provenance is generated and consumed**
 
 | Requirement       | Required at SLSA Level 3 | Met by Kyverno |
-|-------------------|--------------------------|----------------|
+| ----------------- | ------------------------ | -------------- |
 | Available         | Yes                      | Yes            |
 | Authenticated     | Yes                      | Yes            |
 | Service generated | Yes                      | Yes            |
@@ -159,7 +159,7 @@ GitHub takes care of avoiding interference with the build system. GitHub uses ep
 ### Provenance Content Requirements
 
 | Requirement                   | Required at SLSA Level 3 | Met by Kyverno |
-|-------------------------------|--------------------------|----------------|
+| ----------------------------- | ------------------------ | -------------- |
 | Identifies artifact           | Yes                      | Yes            |
 | Identifies builder            | Yes                      | Yes            |
 | Identifies build instructions | Yes                      | Yes            |
@@ -181,7 +181,7 @@ The provenance file stores SHA-256 hashes of build artifacts. The provenance ide
 The entity who executed the build process and generated the provenance should be identified by provenance.
 
 **Kyverno Processes:**
-The id of the builder is added to provenance in  the `predicate.builder` section. In case of Kyverno, GitHub Actions act as the builder. The build logic is defined inside GitHub workflows file. The provenance generation logic is in a separate reusable workflow which is recorded in the `predicate.builder` section. As an example, refer to the [Provenance Example](#provenance-example) section.
+The id of the builder is added to provenance in the `predicate.builder` section. In case of Kyverno, GitHub Actions act as the builder. The build logic is defined inside GitHub workflows file. The provenance generation logic is in a separate reusable workflow which is recorded in the `predicate.builder` section. As an example, refer to the [Provenance Example](#provenance-example) section.
 
 #### Identifies Build Instructions
 
@@ -189,7 +189,7 @@ The id of the builder is added to provenance in  the `predicate.builder` section
 The top-level instruction that was executed to initiate the build should be available in the provenance file.
 
 **Kyverno Processes:**
-The top-level instruction is the GitHub Action workflow which is calling the provenance generation workflow. This is recorded in `invocation.entrypoint` in the provenance file.  In Kyverno's case, it is `release.yaml`. The SLSA requirements mentions that "The identified instructions should be at the highest level available to the build" so it doesn't necessarily need to record all the the instructions as they are part of workflow file. As an example, refer to the [Provenance Example](#provenance-example) section.
+The top-level instruction is the GitHub Action workflow which is calling the provenance generation workflow. This is recorded in `invocation.entrypoint` in the provenance file. In Kyverno's case, it is `release.yaml`. The SLSA requirements mentions that "The identified instructions should be at the highest level available to the build" so it doesn't necessarily need to record all the the instructions as they are part of workflow file. As an example, refer to the [Provenance Example](#provenance-example) section.
 
 #### Identifies Source Code
 
@@ -410,10 +410,7 @@ The following is an example of the generated provenance for Kyverno which will b
             "svn_url": "https://github.com/kyverno/kyverno",
             "tags_url": "https://api.github.com/repos/kyverno/kyverno/tags",
             "teams_url": "https://api.github.com/repos/kyverno/kyverno/teams",
-            "topics": [
-              "kubernetes",
-              "policy-management"
-            ],
+            "topics": ["kubernetes", "policy-management"],
             "trees_url": "https://api.github.com/repos/kyverno/kyverno/git/trees{/sha}",
             "updated_at": "2023-01-10T06:16:33Z",
             "url": "https://github.com/kyverno/kyverno",

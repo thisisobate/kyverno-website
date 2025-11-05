@@ -1,14 +1,15 @@
 ---
-title: "Restrict runtimeClass"
+title: 'Restrict runtimeClass'
 category: PSP Migration
-version: 
+version:
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The runtimeClass field of a Pod spec defines which container engine runtime should be used. In the previous Pod Security Policy controller, defining restrictions on which classes were allowed was permitted. Limiting runtime classes to only those which have been defined can prevent unintended running states or Pods which may not come online. This policy restricts the runtimeClass field to the values `prodclass` or `expclass`.
+  The runtimeClass field of a Pod spec defines which container engine runtime should be used. In the previous Pod Security Policy controller, defining restrictions on which classes were allowed was permitted. Limiting runtime classes to only those which have been defined can prevent unintended running states or Pods which may not come online. This policy restricts the runtimeClass field to the values `prodclass` or `expclass`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//psp-migration/restrict-runtimeClassName/restrict-runtimeClassName.yaml" target="-blank">/psp-migration/restrict-runtimeClassName/restrict-runtimeClassName.yaml</a>
 
 ```yaml
@@ -21,7 +22,7 @@ metadata:
     policies.kyverno.io/category: PSP Migration
     policies.kyverno.io/subject: Pod
     kyverno.io/kyverno-version: 1.10.0
-    kyverno.io/kubernetes-version: "1.24"
+    kyverno.io/kubernetes-version: '1.24'
     pod-policies.kyverno.io/autogen-controllers: none
     policies.kyverno.io/description: >-
       The runtimeClass field of a Pod spec defines which container engine runtime should be used.
@@ -33,20 +34,20 @@ spec:
   validationFailureAction: Enforce
   background: false
   rules:
-  - name: prodclass-or-expclass
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    preconditions:
-      all:
-      - key: "{{request.operation || 'BACKGROUND'}}"
-        operator: Equals
-        value: CREATE
-    validate:
-      message: Only the runtime classes prodclass or expclass may be used.
-      pattern:
-        =(spec):
-          =(runtimeClassName): "prodclass | expclass"
+    - name: prodclass-or-expclass
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      preconditions:
+        all:
+          - key: "{{request.operation || 'BACKGROUND'}}"
+            operator: Equals
+            value: CREATE
+      validate:
+        message: Only the runtime classes prodclass or expclass may be used.
+        pattern:
+          =(spec):
+            =(runtimeClassName): 'prodclass | expclass'
 ```

@@ -27,7 +27,7 @@ To attend our community meetings, join the [Kyverno group](https://groups.google
 
 ### Maintainers Meeting
 
-This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and roadmap. 
+This is a public, weekly meetings for maintainers to discuss issues and PRs pertaining to Kyverno's development and roadmap.
 
 Topics are proposed by maintainers. All in the community are welcome to attend, but non-maintainers may not propose new agenda items in this forum, they can instead add to the [community meeting](#community-meeting) agenda.
 
@@ -46,9 +46,9 @@ Thanks for your interest in contributing! We welcome all types of contributions 
 
 The project contributors use a combination of [GitHub discussions](https://github.com/kyverno/kyverno/discussions) and the [#kyverno-dev Slack channel](https://kubernetes.slack.com/archives/C032MM2CH7X) for notes on the development environment, project guidelines, and best practices.
 
-Developer documentation is available in the [DEVELOPER.md](https://github.com/kyverno/kyverno/blob/main/DEVELOPMENT.md) file. 
+Developer documentation is available in the [DEVELOPER.md](https://github.com/kyverno/kyverno/blob/main/DEVELOPMENT.md) file.
 
-**NOTE:** Developer documentation was previously available in the ([GitHub Wiki](https://github.com/kyverno/kyverno/wiki)) but is no longer maintained there. 
+**NOTE:** Developer documentation was previously available in the ([GitHub Wiki](https://github.com/kyverno/kyverno/wiki)) but is no longer maintained there.
 
 To start contributing, take a look at available issues in the [Good First Issues](https://github.com/orgs/kyverno/projects/10) project.
 

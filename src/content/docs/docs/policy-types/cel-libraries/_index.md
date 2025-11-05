@@ -39,10 +39,10 @@ spec:
       enabled: false
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
     - name: allContainers
       expression: >-
@@ -55,7 +55,7 @@ spec:
     - name: allowedRegistry
       expression: "variables.cm.data[?'registry'].orValue('')"
   validations:
-    - expression: "variables.allContainers.all(c, c.image.startsWith(variables.allowedRegistry))"
+    - expression: 'variables.allContainers.all(c, c.image.startsWith(variables.allowedRegistry))'
       messageExpression: '"image must be from registry: " + string(variables.allowedRegistry)'
 ```
 
@@ -71,7 +71,7 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
+      - apiGroups: ['']
         apiVersions: [v1]
         operations: [CREATE, UPDATE]
         resources: [configmaps]
@@ -115,10 +115,10 @@ spec:
       enabled: false
   matchConstraints:
     resourceRules:
-      - apiGroups: ["networking.k8s.io"]
-        apiVersions: ["v1"]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["ingresses"]
+      - apiGroups: ['networking.k8s.io']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['ingresses']
   variables:
     - name: allpaths
       expression: >-
@@ -179,7 +179,7 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
+      - apiGroups: ['']
         apiVersions: [v1]
         operations: [CREATE, UPDATE]
         resources: [pods]
@@ -205,10 +205,10 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE']
   variables:
     - name: response
       expression: >-
@@ -246,10 +246,10 @@ spec:
     - Deny
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE']
   variables:
     - name: sa
       expression: parseServiceAccount(request.userInfo.username)
@@ -268,10 +268,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        resources: ["pods"]
-        operations: ["CREATE", "UPDATE"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        resources: ['pods']
+        operations: ['CREATE', 'UPDATE']
   variables:
     - name: sa
       expression: parseServiceAccount(request.userInfo.username)
@@ -316,7 +316,7 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
+      - apiGroups: ['']
         apiVersions: [v1]
         operations: [CREATE, UPDATE]
         resources: [pods]
@@ -369,7 +369,7 @@ spec:
   validationActions: [Deny]
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
+      - apiGroups: ['']
         apiVersions: [v1]
         operations: [CREATE, UPDATE]
         resources: [pods]
@@ -414,7 +414,7 @@ metadata:
   name: gctxentry-apicall-correct
 spec:
   apiCall:
-    urlPath: "/apis/apps/v1/namespaces/test-globalcontext-apicall-correct/deployments"
+    urlPath: '/apis/apps/v1/namespaces/test-globalcontext-apicall-correct/deployments'
     refreshInterval: 1h
 ```
 
@@ -428,10 +428,10 @@ metadata:
 spec:
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
+      - apiGroups: ['']
         apiVersions: [v1]
-        operations: ["CREATE", "UPDATE"]
-        resources: ["pods"]
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
     - name: dcount
       expression: >-

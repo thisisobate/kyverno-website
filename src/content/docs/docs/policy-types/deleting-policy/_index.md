@@ -37,7 +37,7 @@ Unlike admission policies that react to API requests, DeletingPolicy:
 A cron expression that defines when the policy will be evaluated.
 
 ```yaml
-schedule: "0 0 * * *" #everyday at midnight
+schedule: '0 0 * * *' #everyday at midnight
 ```
 
 - Must follow standard cron format
@@ -48,7 +48,7 @@ schedule: "0 0 * * *" #everyday at midnight
 Controls how rules are matched against the API request:
 
 ```yaml
-matchPolicy: "Equivalent"
+matchPolicy: 'Equivalent'
 ```
 
 - **Exact:** strict matching on group/version
@@ -57,7 +57,7 @@ matchPolicy: "Equivalent"
 ### deletionPropogationPolicy
 
 ```yaml
-deletionPropagationPolicy: "Orphan"
+deletionPropagationPolicy: 'Orphan'
 ```
 
 DeletionPropagationPolicy defines how resources will be deleted (Foreground, Background, Orphan)
@@ -84,14 +84,14 @@ metadata:
   name: cleanup-jobs
   namespace: production
 spec:
-  schedule: "0 2 * * *" # Daily at 2 AM
+  schedule: '0 2 * * *' # Daily at 2 AM
   matchConstraints:
     resourceRules:
-      - apiGroups: ["batch"]
-        apiVersions: ["v1"]
-        resources: ["jobs"]
+      - apiGroups: ['batch']
+        apiVersions: ['v1']
+        resources: ['jobs']
   conditions:
-    - name: "completed-jobs"
+    - name: 'completed-jobs'
       expression: "object.status.conditions[?type=='Complete'].status == 'True'"
 ```
 
@@ -113,14 +113,14 @@ kind: DeletingPolicy
 metadata:
   name: cleanup-old-test-pods
 spec:
-  schedule: "0 1 * * *" # Run daily at 1 AM
+  schedule: '0 1 * * *' # Run daily at 1 AM
   matchConstraints:
     resourceRules:
-      - apiGroups: [""]
-        apiVersions: ["v1"]
-        operations: ["*"]
-        resources: ["pods"]
-        scope: "Namespaced"
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['*']
+        resources: ['pods']
+        scope: 'Namespaced'
     namespaceSelector:
       matchLabels:
         environment: test
@@ -171,8 +171,8 @@ kind: Event
 metadata:
   name: cleanup-old-test-pods.184c935c5c7c52c0
   namespace: default
-  creationTimestamp: "2025-06-26T11:13:00Z"
-  resourceVersion: "3894"
+  creationTimestamp: '2025-06-26T11:13:00Z'
+  resourceVersion: '3894'
   uid: 064e08ef-4547-43a3-b199-d2bbadd93b65
 action: Resource Cleaned Up
 reason: PolicyApplied
@@ -217,9 +217,9 @@ For example, to delete Configmaps:
 
 ```yaml
 rules:
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get", "list", "watch", "delete"]
+  - apiGroups: ['']
+    resources: ['configmaps']
+    verbs: ['get', 'list', 'watch', 'delete']
 ```
 
 > Kyverno cleanup-controller always requires RBAC permissions for deleting resources (even pods). But In some testing clusters like `Minikube` and `Kind` often already includes permissions to manage core resources like:

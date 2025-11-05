@@ -1,14 +1,15 @@
 ---
-title: "Restrict Annotations"
+title: 'Restrict Annotations'
 category: Sample
 version: 1.6.0
 subject: Pod, Annotation
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don't set reserved annotations or to force them to use a newer version of an annotation.
+  Some annotations control functionality driven by other cluster-wide tools and are not normally set by some class of users. This policy prevents the use of an annotation beginning with `fluxcd.io/`. This can be useful to ensure users either don't set reserved annotations or to force them to use a newer version of an annotation.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/restrict-annotations/restrict-annotations.yaml" target="-blank">/other/restrict-annotations/restrict-annotations.yaml</a>
 
 ```yaml
@@ -31,21 +32,21 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: block-flux-v1
-    match:
-      any:
-      - resources:
-          kinds:
-          - Deployment
-          - CronJob
-          - Job
-          - StatefulSet
-          - DaemonSet
-          - Pod
-    validate:
-      message: Cannot use Flux v1 annotation.
-      pattern:
-        metadata:
-          =(annotations):
-            X(fluxcd.io/*): "*?"
+    - name: block-flux-v1
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+                - CronJob
+                - Job
+                - StatefulSet
+                - DaemonSet
+                - Pod
+      validate:
+        message: Cannot use Flux v1 annotation.
+        pattern:
+          metadata:
+            =(annotations):
+              X(fluxcd.io/*): '*?'
 ```

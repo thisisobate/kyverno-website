@@ -1,14 +1,15 @@
 ---
-title: "Spread Pods Across Nodes & Zones in CEL expressions"
+title: 'Spread Pods Across Nodes & Zones in CEL expressions'
 category: Sample in CEL
 version: 1.11.0
 subject: Deployment, StatefulSet
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy ensures topologySpreadConstraints are defined,  to spread pods over nodes and zones. Deployments or Statefulsets with less than 3  replicas are skipped.
+  Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy ensures topologySpreadConstraints are defined,  to spread pods over nodes and zones. Deployments or Statefulsets with less than 3  replicas are skipped.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other-cel/topologyspreadconstraints-policy/topologyspreadconstraints-policy.yaml" target="-blank">/other-cel/topologyspreadconstraints-policy/topologyspreadconstraints-policy.yaml</a>
 
 ```yaml
@@ -18,9 +19,9 @@ metadata:
   name: topologyspreadconstraints-policy
   annotations:
     policies.kyverno.io/title: Spread Pods Across Nodes & Zones in CEL expressions
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     kyverno.io/kyverno-version: 1.11.0
-    policies.kyverno.io/category: Sample in CEL 
+    policies.kyverno.io/category: Sample in CEL
     policies.kyverno.io/description: >-
       Deployments to a Kubernetes cluster with multiple availability zones often need to
       distribute those replicas to align with those zones to ensure site-level failures
@@ -43,17 +44,15 @@ spec:
                 - Deployment
                 - StatefulSet
               operations:
-              - CREATE
-              - UPDATE
+                - CREATE
+                - UPDATE
       celPreconditions:
-        - name: "replicas-must-be-3-or-more"
-          expression: "object.spec.replicas >= 3"
+        - name: 'replicas-must-be-3-or-more'
+          expression: 'object.spec.replicas >= 3'
       validate:
         cel:
           expressions:
             - expression: >-
                 size(object.spec.template.spec.?topologySpreadConstraints.orValue([]).filter(t, t.topologyKey == 'kubernetes.io/hostname' || t.topologyKey == 'topology.kubernetes.io/zone')) == 2
-              message: "topologySpreadConstraint for kubernetes.io/hostname & topology.kubernetes.io/zone are required"
-
-
+              message: 'topologySpreadConstraint for kubernetes.io/hostname & topology.kubernetes.io/zone are required'
 ```

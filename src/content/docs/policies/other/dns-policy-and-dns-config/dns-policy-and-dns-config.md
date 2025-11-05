@@ -1,14 +1,15 @@
 ---
-title: "Change DNS Config and Policy"
+title: 'Change DNS Config and Policy'
 category: Other
-version: 
+version:
 subject: Pod
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    The Default DNS policy in Kubernetes gives the flexibility of service  access; however, it costs some latency on a high scale, and it needs to  be optimized. This policy helps us to optimize the performance of DNS  queries by setting DNS Options, nodelocalDNS IP, and search Domains. This policy can be applied for the clusters provisioned by kubeadm.
+  The Default DNS policy in Kubernetes gives the flexibility of service  access; however, it costs some latency on a high scale, and it needs to  be optimized. This policy helps us to optimize the performance of DNS  queries by setting DNS Options, nodelocalDNS IP, and search Domains. This policy can be applied for the clusters provisioned by kubeadm.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/dns-policy-and-dns-config/dns-policy-and-dns-config.yaml" target="-blank">/other/dns-policy-and-dns-config/dns-policy-and-dns-config.yaml</a>
 
 ```yaml
@@ -21,7 +22,7 @@ metadata:
     policies.kyverno.io/category: Other
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.8.1
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       The Default DNS policy in Kubernetes gives the flexibility of service 
@@ -31,45 +32,44 @@ metadata:
       This policy can be applied for the clusters provisioned by kubeadm.
 spec:
   rules:
-  - name: dns-policy
-    context:
-    - name: dictionary
-      configMap:
-        # kubelet-config cm would also works by using clusterDomain 
-        # instead of clusterName; but kubeadm-config sounds more reliable
-        # when considering kubelet-config is changed every cluster upgrade, etc.
-        name: kubeadm-config 
-        namespace: kube-system
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    preconditions:
-      any:
-      - key: "{{ request.object.spec.dnsPolicy || '' }}"
-        operator: AnyIn
-        value: 
-        - ClusterFirst
-        - ClusterFirstWithHostNet
-        - None
-    mutate:
-      patchStrategicMerge:
-        spec:
-          dnsConfig:
-            nameservers:
-            # NodelocalDNS IP
-            - 169.254.25.10 
-            options:
-            - name: timeout
-              value: "1"
-            - name: ndots
-              value: "2"
-            - name: attempts
-              value: "1"
-            searches:
-            - svc.{{dictionary.data.ClusterConfiguration | parse_yaml(@).clusterName}}
-            - "{{ request.namespace }}.svc.{{ dictionary.data.ClusterConfiguration | parse_yaml(@).clusterName }}"
-          dnsPolicy: None
-
+    - name: dns-policy
+      context:
+        - name: dictionary
+          configMap:
+            # kubelet-config cm would also works by using clusterDomain
+            # instead of clusterName; but kubeadm-config sounds more reliable
+            # when considering kubelet-config is changed every cluster upgrade, etc.
+            name: kubeadm-config
+            namespace: kube-system
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      preconditions:
+        any:
+          - key: "{{ request.object.spec.dnsPolicy || '' }}"
+            operator: AnyIn
+            value:
+              - ClusterFirst
+              - ClusterFirstWithHostNet
+              - None
+      mutate:
+        patchStrategicMerge:
+          spec:
+            dnsConfig:
+              nameservers:
+                # NodelocalDNS IP
+                - 169.254.25.10
+              options:
+                - name: timeout
+                  value: '1'
+                - name: ndots
+                  value: '2'
+                - name: attempts
+                  value: '1'
+              searches:
+                - svc.{{dictionary.data.ClusterConfiguration | parse_yaml(@).clusterName}}
+                - '{{ request.namespace }}.svc.{{ dictionary.data.ClusterConfiguration | parse_yaml(@).clusterName }}'
+            dnsPolicy: None
 ```

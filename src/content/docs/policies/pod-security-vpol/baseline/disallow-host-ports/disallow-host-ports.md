@@ -1,14 +1,15 @@
 ---
-title: "Disallow hostPorts in ValidatingPolicy"
+title: 'Disallow hostPorts in ValidatingPolicy'
 category: Pod Security Standards (Baseline) in ValidatingPolicy
 version: 1.14.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`. 
+  Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-vpol/baseline/disallow-host-ports/disallow-host-ports.yaml" target="-blank">/pod-security-vpol/baseline/disallow-host-ports/disallow-host-ports.yaml</a>
 
 ```yaml
@@ -22,31 +23,31 @@ metadata:
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.14.0
-    kyverno.io/kubernetes-version: "1.30+"
+    kyverno.io/kubernetes-version: '1.30+'
     policies.kyverno.io/description: >-
       Access to host ports allows potential snooping of network traffic and should not be
       allowed, or at minimum restricted to a known list. This policy ensures the `hostPort`
-      field is unset or set to `0`. 
+      field is unset or set to `0`.
 spec:
   validationActions:
-     - Audit
+    - Audit
   evaluation:
     background:
       enabled: true
   matchConstraints:
     resourceRules:
-      - apiGroups:   [""]
-        apiVersions: ["v1"]
-        operations:  ["CREATE", "UPDATE"]
-        resources:   ["pods"]
+      - apiGroups: ['']
+        apiVersions: ['v1']
+        operations: ['CREATE', 'UPDATE']
+        resources: ['pods']
   variables:
     - name: allContainers
       expression: >-
-         object.spec.containers + 
-          object.spec.?initContainers.orValue([]) + 
-          object.spec.?ephemeralContainers.orValue([])
+        object.spec.containers + 
+         object.spec.?initContainers.orValue([]) + 
+         object.spec.?ephemeralContainers.orValue([])
   validations:
-    - expression: >- 
+    - expression: >-
         variables.allContainers.all(container, 
           container.?ports.orValue([]).all(port, port.?hostPort.orValue(0) == 0))
       message: >-

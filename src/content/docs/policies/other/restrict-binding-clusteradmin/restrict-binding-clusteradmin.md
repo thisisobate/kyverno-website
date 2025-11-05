@@ -1,14 +1,15 @@
 ---
-title: "Restrict Binding to Cluster-Admin"
+title: 'Restrict Binding to Cluster-Admin'
 category: Security
 version: 1.6.0
 subject: RoleBinding, ClusterRoleBinding, RBAC
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The cluster-admin ClusterRole allows any action to be performed on any resource in the cluster and its granting should be heavily restricted. This policy prevents binding to the cluster-admin ClusterRole in RoleBinding or ClusterRoleBinding resources.
+  The cluster-admin ClusterRole allows any action to be performed on any resource in the cluster and its granting should be heavily restricted. This policy prevents binding to the cluster-admin ClusterRole in RoleBinding or ClusterRoleBinding resources.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/restrict-binding-clusteradmin/restrict-binding-clusteradmin.yaml" target="-blank">/other/restrict-binding-clusteradmin/restrict-binding-clusteradmin.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
     kyverno.io/kyverno-version: 1.6.2
     policies.kyverno.io/minversion: 1.6.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: >-
       The cluster-admin ClusterRole allows any action to be performed on any resource
       in the cluster and its granting should be heavily restricted. This
@@ -36,13 +37,13 @@ spec:
     - name: clusteradmin-bindings
       match:
         any:
-        - resources:
-            kinds:
-              - RoleBinding
-              - ClusterRoleBinding
+          - resources:
+              kinds:
+                - RoleBinding
+                - ClusterRoleBinding
       validate:
-        message: "Binding to cluster-admin is not allowed."
+        message: 'Binding to cluster-admin is not allowed.'
         pattern:
-          roleRef: 
-            name: "!cluster-admin"
+          roleRef:
+            name: '!cluster-admin'
 ```

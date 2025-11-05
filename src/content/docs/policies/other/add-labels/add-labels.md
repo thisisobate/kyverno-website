@@ -1,14 +1,15 @@
 ---
-title: "Add Labels"
+title: 'Add Labels'
 category: Sample
 version: 1.6.0
 subject: Label
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Labels are used as an important source of metadata describing objects in various ways or triggering other functionality. Labels are also a very basic concept and should be used throughout Kubernetes. This policy performs a simple mutation which adds a label `foo=bar` to Pods, Services, ConfigMaps, and Secrets.
+  Labels are used as an important source of metadata describing objects in various ways or triggering other functionality. Labels are also a very basic concept and should be used throughout Kubernetes. This policy performs a simple mutation which adds a label `foo=bar` to Pods, Services, ConfigMaps, and Secrets.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/add-labels/add-labels.yaml" target="-blank">/other/add-labels/add-labels.yaml</a>
 
 ```yaml
@@ -29,18 +30,18 @@ metadata:
       `foo=bar` to Pods, Services, ConfigMaps, and Secrets.
 spec:
   rules:
-  - name: add-labels
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-          - Service
-          - ConfigMap
-          - Secret
-    mutate:
-      patchStrategicMerge:
-        metadata:
-          labels:
-            foo: bar
+    - name: add-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+                - Service
+                - ConfigMap
+                - Secret
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            labels:
+              foo: bar
 ```

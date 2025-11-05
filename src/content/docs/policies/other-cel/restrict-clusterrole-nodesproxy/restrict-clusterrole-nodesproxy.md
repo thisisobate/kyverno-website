@@ -1,14 +1,15 @@
 ---
-title: "Restrict ClusterRole with Nodes Proxy in CEL expressions"
+title: 'Restrict ClusterRole with Nodes Proxy in CEL expressions'
 category: Sample in CEL
 version: 1.11.0
 subject: ClusterRole, RBAC
-policyType: "validate"
+policyType: 'validate'
 description: >
-    A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource. 
+  A ClusterRole with nodes/proxy resource access allows a user to perform anything the kubelet API allows. It also allows users to bypass the API server and talk directly to the kubelet potentially circumventing audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac for more info. This policy prevents the creation of a ClusterRole if it contains the nodes/proxy resource.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other-cel/restrict-clusterrole-nodesproxy/restrict-clusterrole-nodesproxy.yaml" target="-blank">/other-cel/restrict-clusterrole-nodesproxy/restrict-clusterrole-nodesproxy.yaml</a>
 
 ```yaml
@@ -18,19 +19,19 @@ metadata:
   name: restrict-clusterrole-nodesproxy
   annotations:
     policies.kyverno.io/title: Restrict ClusterRole with Nodes Proxy in CEL expressions
-    policies.kyverno.io/category: Sample in CEL 
+    policies.kyverno.io/category: Sample in CEL
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: ClusterRole, RBAC
     kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/minversion: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/description: >-
       A ClusterRole with nodes/proxy resource access allows a user to
       perform anything the kubelet API allows. It also allows users to bypass
       the API server and talk directly to the kubelet potentially circumventing
       audits and admission controllers. See https://blog.aquasec.com/privilege-escalation-kubernetes-rbac
       for more info. This policy prevents the creation
-      of a ClusterRole if it contains the nodes/proxy resource. 
+      of a ClusterRole if it contains the nodes/proxy resource.
 spec:
   validationFailureAction: Audit
   background: true
@@ -38,12 +39,12 @@ spec:
     - name: clusterrole-nodesproxy
       match:
         any:
-        - resources:
-            kinds:
-              - ClusterRole
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - ClusterRole
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
@@ -52,7 +53,5 @@ spec:
                 !object.rules.exists(rule, 
                 rule.resources.exists(resource, resource == 'nodes/proxy') && 
                 rule.apiGroups.exists(apiGroup, apiGroup == ''))
-              message: "A ClusterRole containing the nodes/proxy resource is not allowed."
-
-
+              message: 'A ClusterRole containing the nodes/proxy resource is not allowed.'
 ```

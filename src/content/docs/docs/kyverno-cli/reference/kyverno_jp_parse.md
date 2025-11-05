@@ -1,5 +1,5 @@
 ---
-title: "kyverno jp parse"
+title: 'kyverno jp parse'
 sidebar:
   order: 35
 ---

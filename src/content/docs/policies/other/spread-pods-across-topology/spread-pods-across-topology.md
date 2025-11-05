@@ -1,14 +1,15 @@
 ---
-title: "Spread Pods Across Nodes"
+title: 'Spread Pods Across Nodes'
 category: Sample
 version: 1.6.0
 subject: Deployment, Pod
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy matches Deployments with the label `distributed=required` and mutates them to spread Pods across zones.
+  Deployments to a Kubernetes cluster with multiple availability zones often need to distribute those replicas to align with those zones to ensure site-level failures do not impact availability. This policy matches Deployments with the label `distributed=required` and mutates them to spread Pods across zones.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/spread-pods-across-topology/spread-pods-across-topology.yaml" target="-blank">/other/spread-pods-across-topology/spread-pods-across-topology.yaml</a>
 
 ```yaml
@@ -32,12 +33,12 @@ spec:
       # Matches any Deployment with the label `distributed=required`
       match:
         any:
-        - resources:
-            kinds:
-            - Deployment
-            selector:
-              matchLabels:
-                distributed: required
+          - resources:
+              kinds:
+                - Deployment
+              selector:
+                matchLabels:
+                  distributed: required
       # Mutates the incoming Deployment.
       mutate:
         patchStrategicMerge:
@@ -46,10 +47,10 @@ spec:
               spec:
                 # Adds the topologySpreadConstraints field if non-existent in the request.
                 +(topologySpreadConstraints):
-                - maxSkew: 1
-                  topologyKey: zone
-                  whenUnsatisfiable: DoNotSchedule
-                  labelSelector:
-                    matchLabels:
-                      distributed: required
+                  - maxSkew: 1
+                    topologyKey: zone
+                    whenUnsatisfiable: DoNotSchedule
+                    labelSelector:
+                      matchLabels:
+                        distributed: required
 ```

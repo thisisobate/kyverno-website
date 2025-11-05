@@ -24,18 +24,18 @@ Once the writing was on the wall for PSP, a replacement had to be found. That re
 
 We've put together a comparison table below which allows you to see how the three options stack up and we'll cover each of these rows below to give you a better explanation of what they mean.
 
-|                 Pod Security Policy             |            Pod Security Admission          |                     Kyverno                    |
-|:-----------------------------------------------:|:------------------------------------------:|:----------------------------------------------:|
-|     Pods only                                   |     Pods only                              |     Anything                                   |
-|     Limited options                             |     Only 2 options (PSS only, gaps*)       |     Anything                                   |
-|     Limited mutation                            |     No mutation                            |     Mutate anything                            |
-|     Requires RBAC modifications                 |     Does not require RBAC                  |     Does not require RBAC                      |
-|     Limited to User, Group, ServiceAccount      |     Limited to cluster, Namespace          |     Any association                            |
-|     No support for Pod controllers              |     No support for Pod controllers**       |     Automatic support for Pod controllers      |
-|     No auditing                                 |     Audits in audit log                    |     Audits in Policy Reports                   |
-|     No message customization                    |     No message customization               |     Fully custom messages                      |
-|     No exclusions                               |     Limited exclusions                     |     Flexible exclusions                        |
-|     Integrated                                  |     Integrated                             |     External                                   |
+|          Pod Security Policy           |       Pod Security Admission       |                Kyverno                |
+| :------------------------------------: | :--------------------------------: | :-----------------------------------: |
+|               Pods only                |             Pods only              |               Anything                |
+|            Limited options             | Only 2 options (PSS only, gaps\*)  |               Anything                |
+|            Limited mutation            |            No mutation             |            Mutate anything            |
+|      Requires RBAC modifications       |       Does not require RBAC        |         Does not require RBAC         |
+| Limited to User, Group, ServiceAccount |   Limited to cluster, Namespace    |            Any association            |
+|     No support for Pod controllers     | No support for Pod controllers\*\* | Automatic support for Pod controllers |
+|              No auditing               |        Audits in audit log         |       Audits in Policy Reports        |
+|        No message customization        |      No message customization      |         Fully custom messages         |
+|             No exclusions              |         Limited exclusions         |          Flexible exclusions          |
+|               Integrated               |             Integrated             |               External                |
 
 \* No readOnlyRootFilesystem, runtimeClass (excludes deprecated options)<br>
 \*\* Audit support only
@@ -66,12 +66,12 @@ When migrating from PSP to Kyverno, this is the high-level approach that we reco
 
 0. Before getting started, we recommend using the [Kyverno CLI](/docs/kyverno-cli/_index.md) to scan your cluster against the Pod Security Standards baseline profile which Kyverno conveniently implements in as simple as just a simple rule. Starting with baseline is a good way to identify the lowest hanging fruit and what to target. You can do this with just a simple one-liner:
 
-  ```sh
-  curl -s https://raw.githubusercontent.com/kyverno/policies/main/pod-security/subrule/podsecurity-subrule-baseline/podsecurity-subrule-base
-  line.yaml | kubectl kyverno apply --cluster -
-  ```
+```sh
+curl -s https://raw.githubusercontent.com/kyverno/policies/main/pod-security/subrule/podsecurity-subrule-baseline/podsecurity-subrule-base
+line.yaml | kubectl kyverno apply --cluster -
+```
 
-1. Identify which PSP you want to offload to Kyverno starting with the narrowest scoped PSP first. Each field in the PSP should translate to one rule in most cases. Most fields are covered by the Pod Security Standards and Kyverno already has [pre-built policies ready to go](/policies/?policytypes=Pod%2520Security%2520Standards%2520(Baseline)%2BPod%2520Security%2520Standards%2520(Restricted)) for the entire set. It additionally has other policies specifically for [PSP migration cases](/policies/?policytypes=PSP%2520Migration) to cover all remaining capabilities which PSP covered (including mutation use cases).
+1. Identify which PSP you want to offload to Kyverno starting with the narrowest scoped PSP first. Each field in the PSP should translate to one rule in most cases. Most fields are covered by the Pod Security Standards and Kyverno already has [pre-built policies ready to go](</policies/?policytypes=Pod%2520Security%2520Standards%2520(Baseline)%2BPod%2520Security%2520Standards%2520(Restricted)>) for the entire set. It additionally has other policies specifically for [PSP migration cases](/policies/?policytypes=PSP%2520Migration) to cover all remaining capabilities which PSP covered (including mutation use cases).
 2. Identify and install the needed Kyverno policy in `Audit` mode after first determining the scope at which it should operate. Kyverno policies, unlike PSPs, do not require RBAC to consume the policy. As soon as it is installed, it takes effect. There are [two variants](/docs/kyverno-policies/_index.md) of Kyverno policies: ClusterPolicy and Policy. A Policy is Namespaced and is therefore confined to operating on the Pods within that same Namespace. A ClusterPolicy is cluster scoped but may still be configured to selectively operate at a more granular level including a specific Namespace, for a specific User, for a group of Users, for a ServiceAccount, or a combination thereof. In other words, a Policy is maximally scoped at the Namespace. A ClusterPolicy is maximally scoped at the cluster. Each one may have its scope decreased but not increased. They can be mixed and matched to suit your needs.
 3. Before moving forward, wait for [Policy Reports](/docs/policy-reports/_index.md) to be generated. Verify the reports do not contain any Failed entries. A Pod which is blocked by a PSP will not go on to be observed by Kyverno, therefore there should be no Failed results in a Policy Report for a Kyverno policy analogous to its PSP counterpart. For tighter confinement of the Kyverno policy, you can configure the match block to only consider Pods which are allowed due to a specific PSP through use of the annotation `kubernetes.io/psp`. The value of this annotation will be the name of the PSP used for validation. Keep in mind, if choosing to match based on this annotation it will disable [auto-gen rules](/docs/policy-types/cluster-policy/autogen.md) so only Pods will be shown in reports. [Background scanning](/docs/policy-reports/_index.md) (on by default) must be enabled in these policies to evaluate resources which already exist in the cluster.
 4. Once the reports look as intended, change RBAC in such a way that a more permissive PSP is referenced instead. As long as PSP is enabled in the cluster, it is an implicit denying action. Only through the presence of at least one PSP which permits the Pod can it be created.
@@ -80,7 +80,7 @@ When migrating from PSP to Kyverno, this is the high-level approach that we reco
 7. Verify that the result in the report corresponding to this Pod is listed as a Fail result. This indicates the Kyverno policy has caught the Pod and it is now in violation of a Kyverno policy.
 8. Change the policy to `Enforce` mode which will then block these Pods, same as the PSP which was just deprecated.
 9. Continue to follow this process until all PSPs have been moved to the most permissive PSP and are now being enforced by Kyverno.
-10. Optionally, during an outage window, you may choose to deactivate PSP (if applicable) by removing the `PodSecurityPolicy` value from the `--enable-admission-plugins` flag, or inversely, add the `PodSecurityPolicy` value to the  `--disable-admission-plugins` flag on the Kubernetes API server.
+10. Optionally, during an outage window, you may choose to deactivate PSP (if applicable) by removing the `PodSecurityPolicy` value from the `--enable-admission-plugins` flag, or inversely, add the `PodSecurityPolicy` value to the `--disable-admission-plugins` flag on the Kubernetes API server.
 
 ## Guided Migration
 
@@ -122,14 +122,14 @@ metadata:
   name: psp-qa-role
   namespace: qa
 rules:
-- apiGroups:
-  - extensions
-  resources:
-  - podsecuritypolicies
-  resourceNames:
-  - qa
-  verbs:
-  - use
+  - apiGroups:
+      - extensions
+    resources:
+      - podsecuritypolicies
+    resourceNames:
+      - qa
+    verbs:
+      - use
 ```
 
 Once the Role is created, we need to bind this role for the user `chip` in the `qa` Namespace.
@@ -141,8 +141,8 @@ metadata:
   name: psp-qa-bind
   namespace: qa
 subjects:
-- kind: User
-  name: chip
+  - kind: User
+    name: chip
 roleRef:
   kind: Role
   name: psp-qa-role
@@ -162,11 +162,11 @@ spec:
   automountServiceAccountToken: false
   hostIPC: false
   containers:
-  - name: busybox
-    image: busybox:1.35
-    args:
-    - sleep
-    - 1d
+    - name: busybox
+      image: busybox:1.35
+      args:
+        - sleep
+        - 1d
 ```
 
 Here's a "bad" Pod and will be blocked by the `qa` PSP if created by user `chip`.
@@ -182,11 +182,11 @@ spec:
   automountServiceAccountToken: false
   hostIPC: true
   containers:
-  - name: busybox
-    image: busybox:1.35
-    args:
-    - sleep
-    - 1d
+    - name: busybox
+      image: busybox:1.35
+      args:
+        - sleep
+        - 1d
 ```
 
 Now that the baseline has been established, after installing Kyverno, introduce this policy into the cluster which provides the same level of validation as our `qa` PSP. Note a couple things here:
@@ -205,13 +205,13 @@ metadata:
     policies.kyverno.io/category: Pod Security Standards (Baseline)
     policies.kyverno.io/severity: medium
     kyverno.io/kyverno-version: 1.6.0
-    kyverno.io/kubernetes-version: "1.22-1.23"
+    kyverno.io/kubernetes-version: '1.22-1.23'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Host namespaces (Process ID namespace, Inter-Process Communication namespace, and
       network namespace) allow access to shared information and can be used to elevate
       privileges. Pods should not be allowed access to host namespaces. This policy ensures
-      fields which make use of these host namespaces are unset or set to `false`.      
+      fields which make use of these host namespaces are unset or set to `false`.
 spec:
   validationFailureAction: Audit
   background: true
@@ -219,20 +219,20 @@ spec:
     - name: host-namespaces
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            namespaces:
-              - qa
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - qa
       validate:
         message: >-
           Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
-          spec.hostIPC, and spec.hostPID must be unset or set to `false`.          
+          spec.hostIPC, and spec.hostPID must be unset or set to `false`.
         pattern:
           spec:
-            =(hostPID): "false"
-            =(hostIPC): "false"
-            =(hostNetwork): "false"
+            =(hostPID): 'false'
+            =(hostIPC): 'false'
+            =(hostNetwork): 'false'
 ```
 
 With this Kyverno policy installed, assuming there are existing Pods (at least the "good" Pod test from above) in the `qa` Namespace, wait 10-20 seconds and check for Policy Reports. We want to ensure there are only results in the `PASS` column and none in the `FAIL`. Since the PSP is providing the same level of protection, Pods caught by the PSP and blocked will not get created and, therefore, Kyverno should not see any which violate the same controls.
@@ -251,7 +251,7 @@ kind: PodSecurityPolicy
 metadata:
   name: permissive
   annotations:
-    seccomp.security.alpha.kubernetes.io/allowedProfileNames: "*"
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
 spec:
   hostIPC: true
   hostPID: true
@@ -265,12 +265,12 @@ spec:
   fsGroup:
     rule: RunAsAny
   hostPorts:
-  - min: 0
-    max: 65535
+    - min: 0
+      max: 65535
   volumes:
-  - '*'
+    - '*'
   allowedCapabilities:
-  - '*'
+    - '*'
 ```
 
 With the `permissive` PSP created, change the `psp-qa-role` Role in the `qa` Namespace to reference the new PSP instead. The only change we'll make is to flip from `qa` to `permissive` under the `resourceNames` field.
@@ -282,14 +282,14 @@ metadata:
   name: psp-qa-role
   namespace: qa
 rules:
-- apiGroups:
-  - extensions
-  resources:
-  - podsecuritypolicies
-  resourceNames:
-  - permissive
-  verbs:
-  - use
+  - apiGroups:
+      - extensions
+    resources:
+      - podsecuritypolicies
+    resourceNames:
+      - permissive
+    verbs:
+      - use
 ```
 
 Because the `chip` user still has a binding to this Role, we should now be able to test with a sample "bad" Pod. We now expect that this will be permitted by the PSP and allowed in the cluster.
@@ -305,11 +305,11 @@ spec:
   automountServiceAccountToken: false
   hostIPC: true
   containers:
-  - name: busybox
-    image: busybox:1.35
-    args:
-    - sleep
-    - 1d
+    - name: busybox
+      image: busybox:1.35
+      args:
+        - sleep
+        - 1d
 ```
 
 Verify that the `permissive` PSP was the one evaluated by inspecting the annotations on the `badpod` Pod. Here we can see the annotation `kubernetes.io/psp` as assigned the value `permissive` indicating our more permissive PSP was the one evaluated by this Pod's creation request.
@@ -366,9 +366,9 @@ spec:
 ```
 
 ```sh
-Error from server: error when creating "badpod.yaml": admission webhook "validate.kyverno.svc-fail" denied the request: 
+Error from server: error when creating "badpod.yaml": admission webhook "validate.kyverno.svc-fail" denied the request:
 
-resource Pod/qa/extrabadpod was blocked due to the following policies 
+resource Pod/qa/extrabadpod was blocked due to the following policies
 
 disallow-host-namespaces:
   host-namespaces: 'validation error: Sharing the host namespaces is disallowed. The
@@ -378,4 +378,4 @@ disallow-host-namespaces:
 
 When you're comfortable with these results, the Kyverno policy can be opened up further should you wish by removing the match on the `qa` Namespace so it applies across the entire cluster.
 
-When all aspects of your cluster have been migrated to a permissive PSP, you may choose to deactivate the PodSecurityPolicy admission plugin in the cluster by removing the `PodSecurityPolicy` value from the `--enable-admission-plugins` flag, or inversely, add the `PodSecurityPolicy` value to the  `--disable-admission-plugins` flag on the Kubernetes API server.
+When all aspects of your cluster have been migrated to a permissive PSP, you may choose to deactivate the PodSecurityPolicy admission plugin in the cluster by removing the `PodSecurityPolicy` value from the `--enable-admission-plugins` flag, or inversely, add the `PodSecurityPolicy` value to the `--disable-admission-plugins` flag on the Kubernetes API server.

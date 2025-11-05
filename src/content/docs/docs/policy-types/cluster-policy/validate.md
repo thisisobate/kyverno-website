@@ -35,7 +35,7 @@ spec:
         # The `failureAction` tells Kyverno if the resource being validated should be allowed but reported (`Audit`) or blocked (`Enforce`).
         failureAction: Enforce
         # The `message` is what gets displayed to a user if this rule fails validation.
-        message: "You must have label `purpose` with value `production` set on all new namespaces."
+        message: 'You must have label `purpose` with value `production` set on all new namespaces.'
         # The `pattern` object defines what pattern will be checked in the resource. In this case, it is looking for `metadata.labels` with `purpose=production`.
         pattern:
           metadata:
@@ -117,11 +117,11 @@ spec:
           - action: Audit
             namespaces:
               - test
-        message: "The label `app` is required."
+        message: 'The label `app` is required.'
         pattern:
           metadata:
             labels:
-              app: "?*"
+              app: '?*'
 ```
 
 In the above policy, for Namespace `default`, `failureAction` is set to `Enforce` and for Namespace `test`, it's set to `Audit`. For all other Namespaces, the action defaults to the `failureAction` field.
@@ -167,22 +167,22 @@ spec:
                 - Pod
       validate:
         failureAction: Enforce
-        message: "All containers must have CPU and memory resource requests and limits defined."
+        message: 'All containers must have CPU and memory resource requests and limits defined.'
         pattern:
           spec:
             containers:
               # Select all containers in the pod. The `name` field here is not specifically required but serves
               # as a visual aid for instructional purposes.
-              - name: "*"
+              - name: '*'
                 resources:
                   limits:
                     # '?' requires 1 alphanumeric character and '*' means that
                     # there can be 0 or more characters. Using them together
                     # e.g. '?*' requires at least one character.
-                    memory: "?*"
+                    memory: '?*'
                   requests:
-                    memory: "?*"
-                    cpu: "?*"
+                    memory: '?*'
+                    cpu: '?*'
 ```
 
 The following validation rule checks for a label in Deployment, StatefulSet, and DaemonSet resources:
@@ -204,13 +204,13 @@ spec:
                 - DaemonSet
       validate:
         failureAction: Enforce
-        message: "The label `app` is required."
+        message: 'The label `app` is required.'
         pattern:
           spec:
             template:
               metadata:
                 labels:
-                  app: "?*"
+                  app: '?*'
 ```
 
 In order to treat special characters like wildcards as literals, see [this section](jmespath.md#matching-special-characters) in the JMESPath page.
@@ -256,10 +256,10 @@ spec:
                 - Deployment
       validate:
         failureAction: Enforce
-        message: "Replica count for a Deployment must be greater than or equal to 2."
+        message: 'Replica count for a Deployment must be greater than or equal to 2.'
         pattern:
           spec:
-            replicas: ">=2"
+            replicas: '>=2'
 ```
 
 ### Anchors
@@ -296,15 +296,15 @@ spec:
                 - Pod
       validate:
         failureAction: Enforce
-        message: "If a hostPath volume exists and is set to `/var/run/docker.sock`, the label `allow-docker` must equal `true`."
+        message: 'If a hostPath volume exists and is set to `/var/run/docker.sock`, the label `allow-docker` must equal `true`.'
         pattern:
           metadata:
             labels:
-              allow-docker: "true"
+              allow-docker: 'true'
           (spec):
             (volumes):
               - (hostPath):
-                  path: "/var/run/docker.sock"
+                  path: '/var/run/docker.sock'
 ```
 
 This reads as "If a hostPath volume exists and the path equals /var/run/docker.sock, then a label "allow-docker" must be specified with a value of true." In this case, the conditional checks the `spec.volumes` and `spec.volumes.hostPath` map. The child element of `spec.volumes.hostPath` is the `path` key and so the check ends the "If" evaluation at `path`. The entire `metadata` object is a peer element to the `spec` object because these reside at the same hierarchy within a Pod definition. Therefore, conditional anchors can not only compare peers when they are simple key/value, but also when peers are objects or YAML maps.
@@ -327,12 +327,12 @@ spec:
                 - Pod
       validate:
         failureAction: Enforce
-        message: "If a hostPath volume exists, it must not be set to `/var/run/docker.sock`."
+        message: 'If a hostPath volume exists, it must not be set to `/var/run/docker.sock`.'
         pattern:
           =(spec):
             =(volumes):
               - =(hostPath):
-                  path: "!/var/run/docker.sock"
+                  path: '!/var/run/docker.sock'
 ```
 
 This is read as "If a hostPath volume exists, then the path must not be equal to /var/run/docker.sock". In this sample, the object `spec.volumes.hostPath` is being checked, which is where the "If" evaluation ends. Similar to the conditional example above, the `path` key is a child to `hostPath` and therefore is the one being evaluated under the "then" check.
@@ -362,7 +362,7 @@ spec:
                 - Pod
       validate:
         failureAction: Enforce
-        message: "At least one container must use the image `nginx:latest`."
+        message: 'At least one container must use the image `nginx:latest`.'
         pattern:
           spec:
             ^(containers):
@@ -375,7 +375,7 @@ Contrast this existence anchor, which checks for at least one instance, with a [
 pattern:
   spec:
     containers:
-      - name: "*"
+      - name: '*'
         image: nginx:latest
 ```
 
@@ -406,8 +406,8 @@ spec:
         pattern:
           spec:
             containers:
-              - name: "*"
-                <(image): "corp.reg.com/*"
+              - name: '*'
+                <(image): 'corp.reg.com/*'
             imagePullSecrets:
               - name: my-registry-secret
 ```
@@ -492,10 +492,10 @@ validate:
   anyPattern:
     - metadata:
         =(annotations):
-          X(fluxcd.io/*): "*?"
+          X(fluxcd.io/*): '*?'
     - metadata:
         =(annotations):
-          X(flux.weave.works/*): "*?"
+          X(flux.weave.works/*): '*?'
 ```
 
 If the desire is to state, "neither annotation named `fluxcd.io/` nor `flux.weave.works/` may be present", then this would need two separate rules to express as including either one would mean the other is valid and therefore the resource is allowed.
@@ -526,11 +526,11 @@ validate:
   deny:
     conditions:
       any:
-        - key: "{{ request.object.data.team }}"
+        - key: '{{ request.object.data.team }}'
           operator: Equals
           value: eng
           message: The expression team = eng failed.
-        - key: "{{ request.object.data.unit }}"
+        - key: '{{ request.object.data.unit }}'
           operator: Equals
           value: green
           message: The expression unit = green failed.
@@ -569,11 +569,11 @@ spec:
               - cluster-admin
       validate:
         failureAction: Enforce
-        message: "Deleting {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} is not allowed"
+        message: 'Deleting {{request.oldObject.kind}}/{{request.oldObject.metadata.name}} is not allowed'
         deny:
           conditions:
             any:
-              - key: "{{request.operation}}"
+              - key: '{{request.operation}}'
                 operator: Equals
                 value: DELETE
 ```
@@ -606,7 +606,7 @@ spec:
               - cluster-admin
       validate:
         failureAction: Enforce
-        message: "Modifying or deleting this custom resource is forbidden."
+        message: 'Modifying or deleting this custom resource is forbidden.'
         deny: {}
 ```
 
@@ -629,14 +629,14 @@ spec:
               kinds:
                 - NetworkPolicy
               names:
-                - "*-default"
+                - '*-default'
       exclude:
         any:
           - clusterRoles:
               - cluster-admin
       validate:
         failureAction: Enforce
-        message: "Changing default network policies is not allowed."
+        message: 'Changing default network policies is not allowed.'
         deny: {}
 ```
 
@@ -686,19 +686,19 @@ spec:
                 - Pod
       preconditions:
         any:
-          - key: "{{request.operation}}"
+          - key: '{{request.operation}}'
             operator: NotEquals
             value: DELETE
       validate:
         failureAction: Enforce
-        message: "unknown registry"
+        message: 'unknown registry'
         foreach:
-          - list: "request.object.spec.initContainers"
+          - list: 'request.object.spec.initContainers'
             pattern:
-              image: "trusted-registry.io/*"
-          - list: "request.object.spec.containers"
+              image: 'trusted-registry.io/*'
+          - list: 'request.object.spec.containers'
             pattern:
-              image: "trusted-registry.io/*"
+              image: 'trusted-registry.io/*'
 ```
 
 Note that the `pattern` is applied to the `element` and hence does not need to specify `spec.containers` and can directly reference the attributes of the `element`, which is a `container` in the example above.
@@ -725,17 +725,17 @@ spec:
                 - Ingress
       validate:
         failureAction: Enforce
-        message: "All TLS hosts must use a domain of old.com."
+        message: 'All TLS hosts must use a domain of old.com.'
         foreach:
           - list: request.object.spec.tls[]
             foreach:
-              - list: "element.hosts"
+              - list: 'element.hosts'
                 deny:
                   conditions:
                     all:
-                      - key: "{{element}}"
+                      - key: '{{element}}'
                         operator: Equals
-                        value: "*.new.com"
+                        value: '*.new.com'
 ```
 
 A sample Ingress which may get blocked by this look like the below.
@@ -1185,7 +1185,7 @@ spec:
             - controlName: Seccomp
             - controlName: Seccomp
               images:
-                - "*"
+                - '*'
 ```
 
 An example Pod which satisfies all controls in the restricted profile except the Seccomp control is therefore allowed.
@@ -1413,8 +1413,8 @@ spec:
         failureAction: Enforce
         cel:
           expressions:
-            - expression: "object.spec.replicas < 4"
-              message: "Deployment spec.replicas must be less than 4."
+            - expression: 'object.spec.replicas < 4'
+              message: 'Deployment spec.replicas must be less than 4.'
 ```
 
 The `cel.expressions` contains CEL expressions which use the [Common Expression Language (CEL)](https://github.com/google/cel-spec) to validate the request. If an expression evaluates to false, the validation check is enforced according to the `validate[*].failureAction` field.
@@ -1559,10 +1559,10 @@ spec:
             apiVersion: rules.example.com/v1
             kind: ReplicaLimit
           paramRef:
-            name: "replica-limit"
-            parameterNotFoundAction: "Deny"
+            name: 'replica-limit'
+            parameterNotFoundAction: 'Deny'
           expressions:
-            - expression: "object.spec.replicas < params.maxReplicas"
+            - expression: 'object.spec.replicas < params.maxReplicas'
               messageExpression: "'Deployment spec.replicas must be less than ' + string(params.maxReplicas)"
 ```
 
@@ -1574,7 +1574,7 @@ The parameter resource could be as following:
 apiVersion: rules.example.com/v1
 kind: ReplicaLimit
 metadata:
-  name: "replica-limit"
+  name: 'replica-limit'
 maxReplicas: 4
 ```
 
@@ -1619,7 +1619,7 @@ rules:
       cel:
         expressions:
           - expression: "object.spec.externalTrafficPolicy.matches('Local')"
-            message: "All NodePort Services must use an externalTrafficPolicy of Local."
+            message: 'All NodePort Services must use an externalTrafficPolicy of Local.'
 ```
 
 Attempting to apply a `Service` of type `NodePort` with `externalTrafficPolicy` set to `Cluster` will result in a blocking action.
@@ -1630,13 +1630,13 @@ kind: Service
 metadata:
   name: my-service
 spec:
-  type: "NodePort"
+  type: 'NodePort'
   selector:
     app.kubernetes.io/name: MyApp
   ports:
     - port: 80
       targetPort: 80
-  externalTrafficPolicy: "Cluster"
+  externalTrafficPolicy: 'Cluster'
 ```
 
 {{% alert title="Note" color="info" %}}
@@ -1674,7 +1674,7 @@ spec:
             - name: exempt
               expression: "has(object.metadata.labels) && 'exempt' in object.metadata.labels && object.metadata.labels['exempt'] == 'true'"
             - name: containers
-              expression: "object.spec.template.spec.containers"
+              expression: 'object.spec.template.spec.containers'
             - name: containersToCheck
               expression: "variables.containers.filter(c, c.image.contains('example.com/'))"
           expressions:
@@ -1792,8 +1792,8 @@ spec:
         failureAction: Enforce
         cel:
           expressions:
-            - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
-              message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+            - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))'
+              message: 'HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset.'
 ```
 
 Once the policy is created, it is possible to check whether there is a corresponding ValidatingAdmissionPolicy was generated under the `status` object.
@@ -1802,7 +1802,7 @@ Once the policy is created, it is possible to check whether there is a correspon
 status:
   validatingadmissionpolicy:
     generated: true
-    message: ""
+    message: ''
 ```
 
 The generated ValidatingAdmissionPolicy:
@@ -1834,11 +1834,11 @@ spec:
           - UPDATE
         resources:
           - deployments
-        scope: "*"
+        scope: '*'
   validations:
     - expression:
-        "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
-        !has(volume.hostPath))"
+        '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
+        !has(volume.hostPath))'
       message:
         HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
         must be unset.
@@ -1944,8 +1944,8 @@ spec:
         failureAction: Audit
         cel:
           expressions:
-            - expression: "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))"
-              message: "HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset."
+            - expression: '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume, !has(volume.hostPath))'
+              message: 'HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath must be unset.'
 ```
 
 ```yaml
@@ -2019,8 +2019,8 @@ spec:
           - deployments
   validations:
     - expression:
-        "!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
-        !has(volume.hostPath))"
+        '!has(object.spec.template.spec.volumes) || object.spec.template.spec.volumes.all(volume,
+        !has(volume.hostPath))'
       message:
         HostPath volumes are forbidden. The field spec.template.spec.volumes[*].hostPath
         must be unset.

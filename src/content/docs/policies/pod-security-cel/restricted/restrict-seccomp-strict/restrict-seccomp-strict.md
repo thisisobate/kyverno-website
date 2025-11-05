@@ -1,14 +1,15 @@
 ---
-title: "Restrict Seccomp (Strict) in CEL"
+title: 'Restrict Seccomp (Strict) in CEL'
 category: Pod Security Standards (Restricted) in CEL
 version: 1.11.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    The seccomp profile in the Restricted group must not be explicitly set to Unconfined but additionally must also not allow an unset value. This policy,  requiring Kubernetes v1.19 or later, ensures that seccomp is  set to `RuntimeDefault` or `Localhost`. A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
+  The seccomp profile in the Restricted group must not be explicitly set to Unconfined but additionally must also not allow an unset value. This policy,  requiring Kubernetes v1.19 or later, ensures that seccomp is  set to `RuntimeDefault` or `Localhost`. A known issue prevents a policy such as this using `anyPattern` from being persisted properly in Kubernetes 1.23.0-1.23.2.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//pod-security-cel/restricted/restrict-seccomp-strict/restrict-seccomp-strict.yaml" target="-blank">/pod-security-cel/restricted/restrict-seccomp-strict/restrict-seccomp-strict.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/minversion: 1.11.0
     kyverno.io/kyverno-version: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/description: >-
       The seccomp profile in the Restricted group must not be explicitly set to Unconfined
       but additionally must also not allow an unset value. This policy, 
@@ -37,16 +38,16 @@ spec:
     - name: check-seccomp-strict
       match:
         any:
-        - resources:
-            kinds:
-              - Pod
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
-            - expression: >- 
+            - expression: >-
                 !has(object.spec.securityContext) ||
                 !has(object.spec.securityContext.seccompProfile) ||
                 !has(object.spec.securityContext.seccompProfile.type) ||
@@ -55,8 +56,8 @@ spec:
               message: >-
                 Use of custom Seccomp profiles is disallowed. The field
                 spec.securityContext.seccompProfile.type must be set to `RuntimeDefault` or `Localhost`.
-      
-            - expression: >- 
+
+            - expression: >-
                 object.spec.containers.all(container, !has(container.securityContext) ||
                 !has(container.securityContext.seccompProfile) ||
                 !has(container.securityContext.seccompProfile.type) ||
@@ -65,8 +66,8 @@ spec:
               message: >-
                 Use of custom Seccomp profiles is disallowed. The field
                 spec.containers[*].securityContext.seccompProfile.type must be set to `RuntimeDefault` or `Localhost`.
-              
-            - expression: >- 
+
+            - expression: >-
                 !has(object.spec.initContainers) ||
                 object.spec.initContainers.all(container, !has(container.securityContext) ||
                 !has(container.securityContext.seccompProfile) ||
@@ -77,7 +78,7 @@ spec:
                 Use of custom Seccomp profiles is disallowed. The field
                 spec.initContainers[*].securityContext.seccompProfile.type must be set to `RuntimeDefault` or `Localhost`.
 
-            - expression: >- 
+            - expression: >-
                 !has(object.spec.ephemeralContainers) ||
                 object.spec.ephemeralContainers.all(container, !has(container.securityContext) ||
                 !has(container.securityContext.seccompProfile) ||
@@ -87,5 +88,4 @@ spec:
               message: >-
                 Use of custom Seccomp profiles is disallowed. The field
                 spec.ephemeralContainers[*].securityContext.seccompProfile.type must be set to `RuntimeDefault` or `Localhost`.
-
 ```

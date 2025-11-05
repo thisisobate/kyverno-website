@@ -1,14 +1,15 @@
 ---
-title: "Require Labels"
+title: 'Require Labels'
 category: Best Practices
 version: 1.6.0
 subject: Pod, Label
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended labels describe applications in a way that can be queried. This policy validates that the label `app.kubernetes.io/name` is specified with some value.
+  Define and use labels that identify semantic attributes of your application or Deployment. A common set of labels allows tools to work collaboratively, describing objects in a common manner that all tools can understand. The recommended labels describe applications in a way that can be queried. This policy validates that the label `app.kubernetes.io/name` is specified with some value.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//best-practices/require-labels/require-labels.yaml" target="-blank">/best-practices/require-labels/require-labels.yaml</a>
 
 ```yaml
@@ -31,16 +32,16 @@ spec:
   validationFailureAction: Audit
   background: true
   rules:
-  - name: check-for-labels
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-    validate:
-      message: "The label `app.kubernetes.io/name` is required."
-      pattern:
-        metadata:
-          labels:
-            app.kubernetes.io/name: "?*"
+    - name: check-for-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: 'The label `app.kubernetes.io/name` is required.'
+        pattern:
+          metadata:
+            labels:
+              app.kubernetes.io/name: '?*'
 ```

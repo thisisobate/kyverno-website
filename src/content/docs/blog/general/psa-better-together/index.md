@@ -58,23 +58,23 @@ spec:
   background: true
   validationFailureAction: Enforce
   rules:
-  - name: restricted
-    match:
-      any:
-      - resources:
-          kinds:
-          - Pod
-          namespaces:
-          - prod-*
-    validate:
-      podSecurity:
-        level: restricted
-        version: latest
-        exclude:
-        - controlName: Seccomp
-        - controlName: Seccomp
-          images:
-          - cadvisor*
+    - name: restricted
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - prod-*
+      validate:
+        podSecurity:
+          level: restricted
+          version: latest
+          exclude:
+            - controlName: Seccomp
+            - controlName: Seccomp
+              images:
+                - cadvisor*
 ```
 
 This is just one example and there are many variations for how these two technologies can be used simultaneously, each to enforce some aspect of Pod security on your cluster. For more information as well as a list of those variations, see the [documentation](/docs/policy-types/cluster-policy/validate.md#psa-interoperability). In addition to the documentation, there are pre-built samples ready to go [here](/policies/?policytypes=Pod%2520Security).
@@ -100,18 +100,18 @@ spec:
   validationFailureAction: audit
   background: true
   rules:
-  - name: check-namespace-labels
-    match:
-      any:
-      - resources:
-          kinds:
-            - Namespace
-    validate:
-      message: This Namespace is missing a PSA label.
-      pattern:
-        metadata:
-          labels:
-            pod-security.kubernetes.io/*: "?*"
+    - name: check-namespace-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      validate:
+        message: This Namespace is missing a PSA label.
+        pattern:
+          metadata:
+            labels:
+              pod-security.kubernetes.io/*: '?*'
 ```
 
 ### Use Kyverno CLI in pipelines to test against PSS profiles
@@ -123,11 +123,11 @@ Take one of the earlier policies we've pointed out along the way and see a sampl
 Below you can see the result of the Kyverno CLI comparing a standard Deployment with no security settings defined to the restricted profile of the PSS showed previously. As you can see, the Deployment failed the checks and a message is printed with exactly which controls failed and what must be done to address them.
 
 ```sh
-$ kubectl-kyverno apply restricted.yaml -r deploy.yaml 
+$ kubectl-kyverno apply restricted.yaml -r deploy.yaml
 
 Applying 1 policy rule to 1 resource...
 
-policy psa -> resource default/Deployment/busybox failed: 
+policy psa -> resource default/Deployment/busybox failed:
 1. autogen-restricted: Validation rule 'autogen-restricted' failed. It violates PodSecurity "restricted:latest":
 ({Allowed:false ForbiddenReason:allowPrivilegeEscalation != false ForbiddenDetail:container "busybox" must set securityContext.allowPrivilegeEscalation=false})
 ({Allowed:false ForbiddenReason:unrestricted capabilities ForbiddenDetail:container "busybox" must set securityContext.capabilities.drop=["ALL"]})

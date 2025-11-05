@@ -1,14 +1,15 @@
 ---
-title: "Label Existing Namespaces"
+title: 'Label Existing Namespaces'
 category: Other
 version: 1.7.0
 subject: Namespace
-policyType: "mutate"
+policyType: 'mutate'
 description: >
-    Namespaces which preexist may need to be labeled after the fact and it is time consuming to identify which ones should be labeled and either doing so manually or with a scripted approach. This policy, which triggers on any AdmissionReview request to any Namespace, will result in applying the label `mykey=myvalue` to all existing Namespaces. If this policy is updated to change the desired label key or value, it will cause another mutation which updates all Namespaces.
+  Namespaces which preexist may need to be labeled after the fact and it is time consuming to identify which ones should be labeled and either doing so manually or with a scripted approach. This policy, which triggers on any AdmissionReview request to any Namespace, will result in applying the label `mykey=myvalue` to all existing Namespaces. If this policy is updated to change the desired label key or value, it will cause another mutation which updates all Namespaces.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other/label-existing-namespaces/label-existing-namespaces.yaml" target="-blank">/other/label-existing-namespaces/label-existing-namespaces.yaml</a>
 
 ```yaml
@@ -23,7 +24,7 @@ metadata:
     policies.kyverno.io/subject: Namespace
     kyverno.io/kyverno-version: 1.7.0
     policies.kyverno.io/minversion: 1.7.0
-    kyverno.io/kubernetes-version: "1.23"
+    kyverno.io/kubernetes-version: '1.23'
     policies.kyverno.io/description: >-
       Namespaces which preexist may need to be labeled after the fact and it is
       time consuming to identify which ones should be labeled and either doing so manually
@@ -34,19 +35,18 @@ metadata:
 spec:
   mutateExistingOnPolicyUpdate: true
   rules:
-  - name: label-existing-namespaces
-    match:
-      any:
-      - resources:
-          kinds:
-          - Namespace
-    mutate:
-      targets:
-        - apiVersion: v1
-          kind: Namespace
-      patchStrategicMerge:
-        metadata:
-          labels:
-            mykey: myvalue
-
+    - name: label-existing-namespaces
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      mutate:
+        targets:
+          - apiVersion: v1
+            kind: Namespace
+        patchStrategicMerge:
+          metadata:
+            labels:
+              mykey: myvalue
 ```

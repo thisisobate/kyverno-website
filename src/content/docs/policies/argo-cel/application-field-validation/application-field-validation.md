@@ -1,14 +1,15 @@
 ---
-title: "Application Field Validation in CEL expressions"
+title: 'Application Field Validation in CEL expressions'
 category: Argo in CEL
 version: 1.11.0
 subject: Application
-policyType: "validate"
+policyType: 'validate'
 description: >
-    This policy performs some best practices validation on Application fields. Path or chart must be specified but never both. And destination.name or destination.server must be specified but never both.
+  This policy performs some best practices validation on Application fields. Path or chart must be specified but never both. And destination.name or destination.server must be specified but never both.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//argo-cel/application-field-validation/application-field-validation.yaml" target="-blank">/argo-cel/application-field-validation/application-field-validation.yaml</a>
 
 ```yaml
@@ -18,12 +19,12 @@ metadata:
   name: application-field-validation
   annotations:
     policies.kyverno.io/title: Application Field Validation in CEL expressions
-    policies.kyverno.io/category: Argo in CEL 
+    policies.kyverno.io/category: Argo in CEL
     policies.kyverno.io/severity: medium
     policies.kyverno.io/subject: Application
     kyverno.io/kyverno-version: 1.11.0
     policies.kyverno.io/minversion: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/description: >-
       This policy performs some best practices validation on Application fields.
       Path or chart must be specified but never both. And destination.name or
@@ -35,12 +36,12 @@ spec:
     - name: source-path-chart
       match:
         any:
-        - resources:
-            kinds:
-            - Application
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Application
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
@@ -55,12 +56,12 @@ spec:
     - name: destination-server-name
       match:
         any:
-        - resources:
-            kinds:
-            - Application
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Application
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
@@ -72,6 +73,4 @@ spec:
                 )
               message: >-
                 `spec.destination.server` OR `spec.destination.name` should be specified but never both.
-
-
 ```

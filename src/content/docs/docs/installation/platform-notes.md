@@ -16,7 +16,6 @@ ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes' Ser
 #### Configuration Best Practices
 
 1. **Server-Side Configuration**
-
    - Enable `ServerSideDiff` in one of two ways:
      - Per Application: Add the `argocd.argoproj.io/compare-options` annotation
      - Globally: Configure it in the `argocd-cmd-params-cm` ConfigMap
@@ -31,13 +30,11 @@ ArgoCD v2.10 introduced support for `ServerSideDiff`, leveraging Kubernetes' Ser
    ```
 
 2. **RBAC and CRD Management**
-
    - [Enable ServerSideApply](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-options/#server-side-apply) in the `syncOptions` to handle metadata properly
    - Configure ArgoCD to [ignore differences in aggregated ClusterRoles](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/#ignoring-rbac-changes-made-by-aggregateroles)
    - Ensure proper RBAC permissions for ArgoCD to manage Kyverno CRDs
 
 3. **Sync Options Configuration**
-
    - Avoid using `Replace=true` as it may cause issues with existing resources
    - Use `ServerSideApply=true` for smooth resource updates
    - Enable `CreateNamespace=true` if deploying to a new namespace
@@ -83,7 +80,6 @@ spec:
 #### Troubleshooting Guide
 
 1. **CRD Check Failures**
-
    - **Symptom**: Deployment fails during CRD validation
    - **Common Causes**:
      - Insufficient RBAC permissions
@@ -94,7 +90,6 @@ spec:
      - Check ArgoCD logs for specific permission errors
 
 2. **Sync Failures**
-
    - **Symptom**: Resources show as OutOfSync
    - **Common Causes**:
      - Missing ServerSideDiff configuration
@@ -105,7 +100,6 @@ spec:
      - Check resource health status in ArgoCD UI
 
 3. **Resource Management Issues**
-
    - **Symptom**: Resources not properly created or updated
    - **Common Causes**:
      - Incorrect sync options

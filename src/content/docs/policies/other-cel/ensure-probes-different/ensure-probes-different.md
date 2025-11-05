@@ -1,14 +1,15 @@
 ---
-title: "Validate Probes in CEL expressions"
+title: 'Validate Probes in CEL expressions'
 category: Sample in CEL
 version: 1.11.0
 subject: Pod
-policyType: "validate"
+policyType: 'validate'
 description: >
-    Liveness and readiness probes accomplish different goals, and setting both to the same is an anti-pattern and often results in app problems in the future. This policy checks that liveness and readiness probes are not equal. Keep in mind that if both the  probes are not set, they are considered to be equal and hence fails the check.
+  Liveness and readiness probes accomplish different goals, and setting both to the same is an anti-pattern and often results in app problems in the future. This policy checks that liveness and readiness probes are not equal. Keep in mind that if both the  probes are not set, they are considered to be equal and hence fails the check.
 ---
 
 ## Policy Definition
+
 <a href="https://github.com/kyverno/policies/raw/main//other-cel/ensure-probes-different/ensure-probes-different.yaml" target="-blank">/other-cel/ensure-probes-different/ensure-probes-different.yaml</a>
 
 ```yaml
@@ -19,10 +20,10 @@ metadata:
   annotations:
     pod-policies.kyverno.io/autogen-controllers: none
     policies.kyverno.io/title: Validate Probes in CEL expressions
-    policies.kyverno.io/category: Sample in CEL 
+    policies.kyverno.io/category: Sample in CEL
     policies.kyverno.io/severity: medium
     policies.kyverno.io/minversion: 1.11.0
-    kyverno.io/kubernetes-version: "1.26-1.27"
+    kyverno.io/kubernetes-version: '1.26-1.27'
     policies.kyverno.io/subject: Pod
     policies.kyverno.io/description: >-
       Liveness and readiness probes accomplish different goals, and setting both to the same
@@ -36,14 +37,14 @@ spec:
     - name: validate-probes
       match:
         any:
-        - resources:
-            kinds:
-            - Deployment
-            - DaemonSet
-            - StatefulSet
-            operations:
-            - CREATE
-            - UPDATE
+          - resources:
+              kinds:
+                - Deployment
+                - DaemonSet
+                - StatefulSet
+              operations:
+                - CREATE
+                - UPDATE
       validate:
         cel:
           expressions:
@@ -51,7 +52,5 @@ spec:
                 !object.spec.template.spec.containers.exists(container, 
                 has(container.readinessProbe) && has(container.livenessProbe) &&
                 container.readinessProbe == container.livenessProbe)
-              message: "Liveness and readiness probes cannot be the same."
-
-
+              message: 'Liveness and readiness probes cannot be the same.'
 ```

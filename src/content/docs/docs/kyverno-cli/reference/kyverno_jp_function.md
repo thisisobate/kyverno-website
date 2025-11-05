@@ -1,5 +1,5 @@
 ---
-title: "kyverno jp function"
+title: 'kyverno jp function'
 sidebar:
   order: 35
 ---
